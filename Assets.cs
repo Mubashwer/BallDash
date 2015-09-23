@@ -11,10 +11,11 @@ namespace Project
     public class Assets
     {
         LabGame game;
-
+        List<GeometricPrimitive> primitives;
         public Assets(LabGame game)
         {
             this.game = game;
+            primitives = new List<GeometricPrimitive>();
         }
 
         // Dictionary of currently loaded models.
@@ -33,7 +34,19 @@ namespace Project
             return modelDict[modelName];
         }
 
-        // Create a cube with one texture for all faces.
+        // Create a sphere with a texture
+        public MyModel CreateTexturedSphere(float diameter, int tessellation, string textureName)
+        {
+            GeometricPrimitive sphere = GeometricPrimitive.Sphere.New(game.GraphicsDevice, diameter, tessellation, true);
+            primitives.Add(sphere);
+            return new MyModel(game, sphere.VertexBuffer, sphere.IndexBuffer, sphere.IsIndex32Bits, textureName, diameter / 2.0f);
+        }
+
+
+
+        //MUST BE CHANGED TO SUPPORT INDEXED BUFFER
+
+        /*/ Create a cube with one texture for all faces.
         public MyModel CreateTexturedCube(String textureName, float size)
         {
             return CreateTexturedCube(textureName, new Vector3(size, size, size));
@@ -94,6 +107,6 @@ namespace Project
 
             float collisionRadius = (size.X + size.Y + size.Z) / 6 ;
             return new MyModel(game, shapeArray, texturePath, collisionRadius);
-        }
+        }*/
     }
 }

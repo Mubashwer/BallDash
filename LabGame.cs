@@ -112,7 +112,6 @@ namespace Project
             // Create game objects.
             player = new Player(this);
             gameObjects.Add(player);
-            gameObjects.Add(new EnemyController(this));
 
             // Create an input layout from the vertices
 
@@ -222,13 +221,16 @@ namespace Project
 
         public void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)
         {
-            camera.pos.Z = camera.pos.Z * args.Delta.Scale;
+            
+            // TODO: need to change
+
+            /*camera.pos.Z = camera.pos.Z * args.Delta.Scale;
             // Update camera position for all game objects
             foreach (var obj in gameObjects)
             {
                 if (obj.basicEffect != null) { obj.basicEffect.View = camera.View; }
                 obj.OnManipulationUpdated(sender, args);
-            }
+            }*/
         }
 
         public void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args)

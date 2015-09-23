@@ -15,29 +15,46 @@ namespace Project
     }
     public class MyModel
     {
-        public Buffer vertices;
+        public Buffer vertexBuffer;
+        public Buffer indexBuffer;
+        public bool IsIndex32Bits;
         public VertexInputLayout inputLayout;
         public int vertexStride;
         public ModelType modelType;
-        public Texture2D Texture;
+        public Texture2D texture;
         public float collisionRadius;
         
-        public MyModel(LabGame game, VertexPositionColor[] shapeArray, String textureName, float collisionRadius)
+        public MyModel(LabGame game, VertexPositionColor[] vertices, int[] indices, String textureName, float collisionRadius)
         {
-            this.vertices = Buffer.Vertex.New(game.GraphicsDevice, shapeArray);
+            //this.vertexBuffer = Buffer.Vertex.New(game.GraphicsDevice, vertices);
+            this.indexBuffer = Buffer.Vertex.New(game.GraphicsDevice, indices);
             this.inputLayout = VertexInputLayout.New<VertexPositionColor>(0);
             vertexStride = Utilities.SizeOf<VertexPositionColor>();
             modelType = ModelType.Colored;
             this.collisionRadius = collisionRadius;
         }
 
-        public MyModel(LabGame game, VertexPositionTexture[] shapeArray, String textureName, float collisionRadius)
+        public MyModel(LabGame game, VertexPositionNormalTexture[] vertices, int[] indices, String textureName, float collisionRadius)
         {
-            this.vertices = Buffer.Vertex.New(game.GraphicsDevice, shapeArray);
-            this.inputLayout = VertexInputLayout.New<VertexPositionTexture>(0);
-            vertexStride = Utilities.SizeOf<VertexPositionTexture>();
+            this.vertexBuffer = Buffer.Vertex.New(game.GraphicsDevice, vertices);
+            this.indexBuffer = Buffer.Vertex.New(game.GraphicsDevice, indices);
+            this.inputLayout = VertexInputLayout.New<VertexPositionNormalTexture>(0);
+            vertexStride = Utilities.SizeOf<VertexPositionNormalTexture>();
             modelType = ModelType.Textured;
-            Texture = game.Content.Load<Texture2D>(textureName);
+            texture = game.Content.Load<Texture2D>(textureName);
+            this.collisionRadius = collisionRadius;
+        }
+
+
+        public MyModel(LabGame game, Buffer vertexBuffer, Buffer indexBuffer, bool IsIndex32Bits,  String textureName, float collisionRadius)
+        {
+            this.vertexBuffer = vertexBuffer;
+            this.indexBuffer = indexBuffer;
+            this.inputLayout = VertexInputLayout.New<VertexPositionNormalTexture>(0);
+            vertexStride = Utilities.SizeOf<VertexPositionNormalTexture>();
+            this.IsIndex32Bits = IsIndex32Bits; 
+            modelType = ModelType.Textured;
+            texture = game.Content.Load<Texture2D>(textureName);
             this.collisionRadius = collisionRadius;
         }
     }
