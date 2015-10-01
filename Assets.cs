@@ -42,6 +42,17 @@ namespace Project
             return new MyModel(game, sphere.VertexBuffer, sphere.IndexBuffer, sphere.IsIndex32Bits, textureName, diameter / 2.0f);
         }
 
+        public MyModel CreateTexturedCube(float size, string textureName) {
+            GeometricPrimitive cube = GeometricPrimitive.Cube.New(game.GraphicsDevice, size, true);
+            primitives.Add(cube);
+            return new MyModel(game, cube.VertexBuffer, cube.IndexBuffer, cube.IsIndex32Bits, textureName, size / 2.0f);
+        }
+
+        public MyModel CreateTexturedPlane(float width, float height, int tessellation, string textureName) {
+            GeometricPrimitive plane = GeometricPrimitive.Plane.New(game.GraphicsDevice, width, height, tessellation, true);
+            primitives.Add(plane);
+            return new MyModel(game, plane.VertexBuffer, plane.IndexBuffer, plane.IsIndex32Bits, textureName, 0);
+        }
 
 
         //MUST BE CHANGED TO SUPPORT INDEXED BUFFER

@@ -52,6 +52,8 @@
     <Compile Include="Instructions.xaml.cs">
       <DependentUpon>Instructions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MapFloorGameObject.cs" />
+    <Compile Include="MapGameObject.cs" />
     <Compile Include="MyModel.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="MainPage.xaml.cs">
