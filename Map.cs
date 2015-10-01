@@ -10,10 +10,12 @@ namespace Project {
             None = 0,
             Floor = 1,
             Wall = 2,
-            SmallHole1 = 3,
-            SmallHole2 = 4,
-            SmallHole3 = 5,
-            SmallHole4 = 6
+            PlayerStart = 11,
+            PlayerEnd = 12,
+            SmallHole1 = 20,
+            SmallHole2 = 21,
+            SmallHole3 = 22,
+            SmallHole4 = 23
         }
 
         public abstract UnitType this[int x, int y] { get; }

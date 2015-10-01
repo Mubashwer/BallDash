@@ -28,6 +28,7 @@ using Windows.Devices.Sensors;
 
 namespace Project
 {
+    using System.Diagnostics;
     // Use this namespace here in case we need to use Direct3D11 namespace as well, as this
     // namespace will override the Direct3D11.
     using SharpDX.Toolkit.Graphics;
@@ -46,6 +47,7 @@ namespace Project
         public GameInput input;
         public int score;
         public MainPage mainPage;
+        public Map CurrentMap { get; set; }
 
         // TASK 4: Use this to represent difficulty
         public float difficulty;
@@ -112,6 +114,11 @@ namespace Project
             // Create game objects.
             player = new Player(this);
             gameObjects.Add(player);
+
+            // get the current map
+            Map basicMap = new TextMap("testMap.txt");
+            // map test
+            Debug.WriteLine("First map:\n{0}", basicMap.ToString());
 
             // Create an input layout from the vertices
 
