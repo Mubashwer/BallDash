@@ -20,7 +20,7 @@ namespace Project {
 
         public abstract UnitType this[int x, int y] { get; }
 
-        public abstract int Width { get; }
-        public abstract int Height { get; }
+        public abstract int Width { get; set; }
+        public abstract int Height { get; set; }
     }
 }

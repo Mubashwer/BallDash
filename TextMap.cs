@@ -99,11 +99,19 @@ namespace Project {
             get {
                 return this.height;
             }
+            set
+            {
+                this.width = value;
+            }
         }
 
         public override int Width {
             get {
                 return this.width;
+            }
+            set
+            {
+                this.width = value;
             }
         }
 

@@ -25,9 +25,9 @@ namespace Project
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
             myModel = game.assets.GetModel("player", CreatePlayerModel);
-            pos = new SharpDX.Vector3(0, game.boundaryBottom + diameter, 0);
+            pos = new SharpDX.Vector3(0, game.boundaryBottom + diameter * 3, 0);
             transform = new Transform(pos);
-            SetupBasicEffect();
+            //SetupBasicEffect();
             SetupEffect("Phong");
         }
 
@@ -35,36 +35,41 @@ namespace Project
         {
             return game.assets.CreateTexturedSphere(diameter, tessellation, "marble.jpg");
         }
-      
+
 
         // Frame update.
         public override void Update(GameTime gameTime)
         {
 
             // TASK 1: Determine velocity based on accelerometer reading
-            pos.X += (float)game.accelerometerReading.AccelerationX;
-            pos.Y += (float)game.accelerometerReading.AccelerationY;
+            float deltaX = (float)game.accelerometerReading.AccelerationX;
+            float deltaY = (float)game.accelerometerReading.AccelerationY;
 
             // Keep within the boundaries.
-            if (pos.X < game.boundaryLeft + radius) { pos.X = game.boundaryLeft + radius; }
-            if (pos.X > game.boundaryRight - radius) { pos.X = game.boundaryRight - radius; }
-            if (pos.Y < game.boundaryBottom + radius) { pos.Y = game.boundaryBottom + radius; }
-            if (pos.Y > game.boundaryTop - radius) { pos.Y = game.boundaryTop - radius; }
+            if (pos.X + deltaX < game.boundaryLeft + radius) { deltaX = 0; }
+            if (pos.X + deltaX > game.boundaryRight - radius) { deltaX = 0; }
+            if (pos.Y + deltaY < game.boundaryBottom + radius) { deltaY = 0; }
+            if (pos.Y + deltaY > game.boundaryTop - radius) { deltaY = 0; }
 
-            //transform.World = Matrix.Translation(pos);
-            if(transform.Position != pos) transform.Position = pos;
+            if (deltaX == 0 && deltaY == 0) return;
+            pos.X += deltaX;
+            pos.Y += deltaY;
 
-        }
-
-        // React to getting hit by an enemy bullet.
-        public void Hit()
-        {
+            // Get angle of rotation
+            float angle = ((float)Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY))) / radius;
+            // Get axis of rotation in local space
+            Vector3 rotationAxis = Vector3.Cross(Vector3.Transform(new Vector3(deltaX, deltaY, 0), transform.rotation), transform.World.Backward);
+            // Get axis of rotation in world space by reversing rotation
+            rotationAxis = Vector3.Normalize(Vector3.Transform(rotationAxis, Quaternion.Invert(transform.rotation)));
+            // Rotate and translate
+            transform.Rotate(rotationAxis, angle);
+            transform.Position = pos;
 
         }
 
         public override void Tapped(GestureRecognizer sender, TappedEventArgs args)
         {
-        
+
         }
 
         public override void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)

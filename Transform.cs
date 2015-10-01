@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using SharpDX;
 using SharpDX.Toolkit;
 
 namespace Project
 {
-   
+
     public class Transform
     {
         public Matrix World;
         public Matrix WorldInverseTranspose;
+        public Quaternion rotation;
 
-        public Vector3 Position 
+
+        public Vector3 Position
         {
             get
             {
@@ -24,7 +27,7 @@ namespace Project
             {
                 World.TranslationVector = value;
                 WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
-                
+
             }
         }
 
@@ -44,11 +47,12 @@ namespace Project
             }
         }
 
-        
+
         public Transform()
         {
             World = Matrix.Identity;
             WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+            rotation = Quaternion.Identity;
 
         }
 
@@ -56,18 +60,15 @@ namespace Project
         {
             World = Matrix.Translation(position);
             WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+            rotation = Quaternion.Identity;
         }
 
-        public void Rotate(Vector3 axis, float angle) {
-            Matrix rotation = Matrix.RotationAxis(axis, (float)((angle/180)*Math.PI));
-            World = Matrix.Multiply(rotation, World);
-            WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
-        }
 
-        public void RotateInRad(Vector3 axis, float angle)
+        public void Rotate(Vector3 axis, float angle)
         {
-            Matrix rotation = Matrix.RotationAxis(axis, angle);
-            World = Matrix.Multiply(rotation, World);
+            rotation = Quaternion.Multiply(Quaternion.RotationAxis(axis, angle), rotation);
+            rotation = Quaternion.Normalize(rotation);
+            World = Matrix.Multiply(Matrix.RotationQuaternion(rotation), Matrix.Identity);
             WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
         }
     }

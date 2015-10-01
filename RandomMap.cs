@@ -24,8 +24,8 @@ namespace Project {
             }
         }
 
-        public override int Height { get; }
+        public override int Height { get; set; }
 
-        public override int Width { get; }
+        public override int Width { get; set; }
     }
 }
