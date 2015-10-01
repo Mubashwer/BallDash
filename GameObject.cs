@@ -83,7 +83,7 @@ namespace Project
                 effect.Parameters["World"].SetValue(transform.World);
                 effect.Parameters["Projection"].SetValue(game.camera.Projection);
                 effect.Parameters["View"].SetValue(game.camera.View);
-                effect.Parameters["cameraPos"].SetValue(game.camera.transform.Position);
+                effect.Parameters["cameraPos"].SetValue(game.camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
             }
             if (basicEffect != null)

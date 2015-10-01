@@ -13,38 +13,62 @@ namespace Project
     {
         public Matrix World;
         public Matrix WorldInverseTranspose;
-        public Vector3 up;
-        public Vector3 forward;
 
-        private Vector3 position;
         public Vector3 Position 
         {
             get
             {
-                return this.position;
+                return World.TranslationVector;
             }
             set
             {
-                this.position = value;
-                World = Matrix.Translation(this.position);
+                World.TranslationVector = value;
                 WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+                
             }
         }
 
+        public Vector3 Up
+        {
+            get
+            {
+                return World.Up + Position;
+            }
+        }
+
+        public Vector3 Forward
+        {
+            get
+            {
+                return World.Backward + Position;
+            }
+        }
 
         
         public Transform()
         {
-            Position = Vector3.Zero;
-            up = Vector3.UnitY;
-            forward = Vector3.UnitZ;
-        }
-        
-        public Transform(Vector3 position, Vector3 up, Vector3 forward) {
-            this.Position = position;
-            this.up = up;
-            this.forward = forward;
+            World = Matrix.Identity;
+            WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+
         }
 
+        public Transform(Vector3 position)
+        {
+            World = Matrix.Translation(position);
+            WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+        }
+
+        public void Rotate(Vector3 axis, float angle) {
+            Matrix rotation = Matrix.RotationAxis(axis, (float)((angle/180)*Math.PI));
+            World = Matrix.Multiply(rotation, World);
+            WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+        }
+
+        public void RotateInRad(Vector3 axis, float angle)
+        {
+            Matrix rotation = Matrix.RotationAxis(axis, angle);
+            World = Matrix.Multiply(rotation, World);
+            WorldInverseTranspose = Matrix.Transpose(Matrix.Invert(World));
+        }
     }
 }

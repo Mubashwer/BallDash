@@ -26,7 +26,7 @@ namespace Project
             type = GameObjectType.Player;
             myModel = game.assets.GetModel("player", CreatePlayerModel);
             pos = new SharpDX.Vector3(0, game.boundaryBottom + diameter, 0);
-            transform = new Transform(pos, Vector3.UnitY, Vector3.UnitZ);
+            transform = new Transform(pos);
             SetupBasicEffect();
             SetupEffect("Phong");
         }

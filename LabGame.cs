@@ -132,6 +132,41 @@ namespace Project
             {
                 keyboardState = keyboardManager.GetState();
                 flushAddedAndRemovedGameObjects();
+                float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds/1000f;
+                float speed = 3f;
+
+                if (keyboardState.IsKeyDown(Keys.W))
+                {
+                    camera.cameraMoved = true;
+                    camera.pitch -= speed * deltaTime;
+                }
+                if (keyboardState.IsKeyDown(Keys.S))
+                {
+                    camera.cameraMoved = true;
+                    camera.pitch += speed *deltaTime;
+                }
+                if (keyboardState.IsKeyDown(Keys.A))
+                {
+                    camera.cameraMoved = true;
+                    camera.yaw -= speed * deltaTime;
+                }  
+                if (keyboardState.IsKeyDown(Keys.D))
+                {
+                    camera.cameraMoved = true;
+                    camera.yaw += speed * deltaTime;
+                }
+                if (keyboardState.IsKeyDown(Keys.Q))
+                {
+                    camera.cameraMoved = true;
+                    camera.roll -= speed * deltaTime;
+                }
+                if (keyboardState.IsKeyDown(Keys.E))
+                {
+                    camera.cameraMoved = true;
+                    camera.roll += speed * deltaTime;
+                }
+                
+                
                 camera.Update();
                 accelerometerReading = input.accelerometer.GetCurrentReading();
                 for (int i = 0; i < gameObjects.Count; i++)
