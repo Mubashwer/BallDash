@@ -13,7 +13,7 @@ namespace Project
     using SharpDX.Toolkit.Graphics;
     public enum GameObjectType
     {
-        None, Player, Enemy
+        None, Player, Floor, Wall
     }
 
     // Super class for all game objects.
@@ -24,8 +24,10 @@ namespace Project
         public LabGame game;
         public GameObjectType type = GameObjectType.None;
         public Vector3 pos;
-        public Effect effect;
-        public BasicEffect basicEffect;
+        
+        private Effect effect;
+        public String ShaderName { get; set; }
+
 
         public abstract void Update(GameTime gametime);
         public void Draw(GameTime gametime)
@@ -33,6 +35,7 @@ namespace Project
             // Some objects such as the Enemy Controller have no model and thus will not be drawn
             if (myModel != null)
             {
+                SetupEffect();
                 GetParamsFromModel();
 
                 // Setup the vertices
@@ -43,37 +46,17 @@ namespace Project
                 game.GraphicsDevice.SetIndexBuffer(myModel.indexBuffer,myModel.IsIndex32Bits);
 
                 // Apply the effect technique and draw the object
-                if (effect != null)
-                {
-                    effect.CurrentTechnique.Passes[0].Apply();
-                }
-                else if (basicEffect != null)
-                {
-                    basicEffect.CurrentTechnique.Passes[0].Apply();
-                }
+                effect.CurrentTechnique.Passes[0].Apply();
+    
                 game.GraphicsDevice.DrawIndexed(PrimitiveType.TriangleList, myModel.indexBuffer.ElementCount);
             }
         }
 
-        public void SetupBasicEffect()
+
+        public void SetupEffect()
         {
-
-            basicEffect = new BasicEffect(game.GraphicsDevice)
-            {
-                View = game.camera.View,
-                Projection = game.camera.Projection,
-                World = transform.World,
-                Texture = myModel.texture,
-                TextureEnabled = (myModel.modelType == ModelType.Textured),
-                VertexColorEnabled = (myModel.modelType == ModelType.Colored)
-            };
-
-        }
-
-        public void SetupEffect(string shaderName)
-        {
-            effect = game.Content.Load<Effect>(shaderName);
-            effect.Parameters["shaderTexture"].SetResource(myModel.texture);
+            effect = game.Content.Load<Effect>(ShaderName);
+            effect.Parameters["shaderTexture"].SetResource(game.Content.Load<Texture2D>(myModel.TextureName));
         }
 
         public void GetParamsFromModel()
@@ -85,12 +68,6 @@ namespace Project
                 effect.Parameters["View"].SetValue(game.camera.View);
                 effect.Parameters["cameraPos"].SetValue(game.camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
-            }
-            if (basicEffect != null)
-            {
-                basicEffect.View = game.camera.View;
-                basicEffect.Projection = game.camera.Projection;
-                basicEffect.World = transform.World;
             }
         }
 

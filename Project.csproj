@@ -82,6 +82,9 @@
     <Content Include="Content\enemy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\wooden_floor.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="testMap.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

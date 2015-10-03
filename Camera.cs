@@ -22,7 +22,9 @@ namespace Project
 
         private Vector3 defaultCameraTarget;
         private Vector3 defaultUp;
-        private Vector3 position;
+        private Vector3 up;
+        private Vector3 playerPosition;
+
         public Vector3 Position { get; private set; }
 
         private Vector3 cameraTarget;
@@ -35,15 +37,18 @@ namespace Project
         }
 
 
-        public Game game;
+        public LabGame game;
 
 
         // Ensures that all objects are being rendered from a consistent viewpoint
-        public Camera(Game game) {
+        public Camera(LabGame game) {
+            playerPosition = game.player.transform.Position;
             defaultCameraTarget = new Vector3(0, 0, 1);
+            cameraTarget = defaultCameraTarget;
             defaultUp = Vector3.UnitY;
-            position = new Vector3(0, 0, -10);
-            View = Matrix.LookAtLH(position, defaultCameraTarget, defaultUp);
+            up = defaultUp;
+            Position = new Vector3(0, 0, -10);
+            View = Matrix.LookAtLH(Position, defaultCameraTarget, defaultUp);
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.01f, 1000.0f);
             this.game = game;
 
@@ -52,15 +57,25 @@ namespace Project
         // If the screen is resized, the projection matrix will change
         public void Update()
         {
+            Position = Position - playerPosition + game.player.transform.Position;
+            defaultCameraTarget = defaultCameraTarget - playerPosition + game.player.transform.Position;
+            cameraTarget = cameraTarget - playerPosition + game.player.transform.Position;
+            playerPosition = game.player.transform.Position;
+
+
+            Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
+            View = Matrix.LookAtLH(Position, cameraTarget, up);
+
+
             if (!cameraMoved) return;
             cameraMoved = false;
             AngleReset();
             Matrix rotation = Matrix.RotationYawPitchRoll(yaw, pitch, roll);
             cameraTarget = Vector3.TransformCoordinate(defaultCameraTarget, rotation);
-            Vector3 up = Vector3.TransformCoordinate(defaultUp, rotation);
-            cameraTarget = position + cameraTarget;
+            up = Vector3.TransformCoordinate(defaultUp, rotation);
+            cameraTarget = Position + cameraTarget;
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
-            View = Matrix.LookAtLH(position, cameraTarget, up);
+            View = Matrix.LookAtLH(Position, cameraTarget, up);
         }
 
         void AngleReset()

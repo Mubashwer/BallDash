@@ -49,7 +49,7 @@ namespace Project
         }
 
         public MyModel CreateTexturedPlane(float width, float height, int tessellation, string textureName) {
-            GeometricPrimitive plane = GeometricPrimitive.Plane.New(game.GraphicsDevice, width, height, tessellation, true);
+            GeometricPrimitive plane = GeometricPrimitive.Plane.New(game.GraphicsDevice, width, height, tessellation, false);
             primitives.Add(plane);
             return new MyModel(game, plane.VertexBuffer, plane.IndexBuffer, plane.IsIndex32Bits, textureName, 0);
         }

@@ -42,7 +42,7 @@ namespace Project
         private Stack<GameObject> removedGameObjects;
         private KeyboardManager keyboardManager;
         public KeyboardState keyboardState;
-        private Player player;
+        public Player player;
         public AccelerometerReading accelerometerReading;
         public GameInput input;
         public int score;
@@ -87,10 +87,10 @@ namespace Project
             input = new GameInput();
 
             // Set boundaries.
-            boundaryLeft = -4.5f;
-            boundaryRight = 4.5f;
-            boundaryTop = 4;
-            boundaryBottom = -4.5f;
+            boundaryLeft = -50f; //-4.5f;
+            boundaryRight = 50f; //4.5f;
+            boundaryTop = 50f; //4;
+            boundaryBottom = -50f;//-4.5f;
 
             // Initialise event handling.
             input.gestureRecognizer.Tapped += Tapped;
@@ -112,8 +112,10 @@ namespace Project
             removedGameObjects = new Stack<GameObject>();
 
             // Create game objects.
-            player = new Player(this);
+            player = new Player(this, "Phong");
             gameObjects.Add(player);
+            camera = new Camera(this);
+            gameObjects.Add(new MapFloorGameObject(this, "Phong"));
 
             // get the current map
             Map basicMap = new TextMap("testMap.txt");
@@ -128,7 +130,7 @@ namespace Project
         protected override void Initialize()
         {
             Window.Title = "Lab 4";
-            camera = new Camera(this);
+            
 
             base.Initialize();
         }

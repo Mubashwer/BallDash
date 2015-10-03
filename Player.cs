@@ -14,21 +14,20 @@ namespace Project
     using SharpDX.Toolkit.Graphics;
     using SharpDX.Toolkit.Input;
     // Player class.
-    class Player : GameObject
+    public class Player : GameObject
     {
         public float diameter = 2f;
         private float radius;
         public int tessellation = 32;
-        public Player(LabGame game)
+        public Player(LabGame game, String shaderName)
         {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
             myModel = game.assets.GetModel("player", CreatePlayerModel);
-            pos = new SharpDX.Vector3(0, game.boundaryBottom + diameter * 3, 0);
+            pos = new SharpDX.Vector3(0, 0, -diameter);
             transform = new Transform(pos);
-            //SetupBasicEffect();
-            SetupEffect("Phong");
+            ShaderName = shaderName;
         }
 
         public MyModel CreatePlayerModel()
