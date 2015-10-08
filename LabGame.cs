@@ -119,6 +119,16 @@ namespace Project
 
             // get the current map
             Map basicMap = new TextMap("testMap.txt");
+            MazeSolver solver = new MazeSolver(basicMap);
+
+            List<Vector2> path = solver.Path(new Vector2(2, 2), new Vector2(10, 3));
+            foreach (Vector2 unit in path)
+            {
+                Debug.WriteLine(unit);
+            }
+
+
+
             // map test
             Debug.WriteLine("First map:\n{0}", basicMap.ToString());
 
