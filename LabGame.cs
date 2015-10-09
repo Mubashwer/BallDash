@@ -87,10 +87,10 @@ namespace Project
             input = new GameInput();
 
             // Set boundaries.
-            boundaryLeft = -50f; //-4.5f;
+            boundaryLeft = 0f; //-4.5f;
             boundaryRight = 50f; //4.5f;
             boundaryTop = 50f; //4;
-            boundaryBottom = -50f;//-4.5f;
+            boundaryBottom = 0f;//-4.5f;
 
             // Initialise event handling.
             input.gestureRecognizer.Tapped += Tapped;
@@ -112,15 +112,18 @@ namespace Project
             removedGameObjects = new Stack<GameObject>();
 
             // Create game objects.
-            player = new Player(this, "Phong");
+            player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
             gameObjects.Add(player);
             camera = new Camera(this);
-            gameObjects.Add(new MapFloorGameObject(this, "Phong"));
+            
 
             // get the current map
             Map basicMap = new TextMap("testMap.txt");
-            MazeSolver solver = new MazeSolver(basicMap);
+            boundaryRight = basicMap.Width * FloorUnitGameObject.Width;
+            boundaryTop = basicMap.Height * FloorUnitGameObject.Height;
 
+            MazeSolver solver = new MazeSolver(basicMap);
+            LoadFloor(basicMap);
             List<Vector2> path = solver.Path(new Vector2(2, 2), new Vector2(10, 3));
             foreach (Vector2 unit in path)
             {
@@ -135,6 +138,22 @@ namespace Project
             // Create an input layout from the vertices
 
             base.LoadContent();
+        }
+
+        private void LoadFloor(Map map)
+        {
+            var width = FloorUnitGameObject.Width;
+            var height = FloorUnitGameObject.Height;
+            for (float i = 0; i < map.Width; i++)
+            {
+                for (float j = 0; j < map.Height; j++)
+                {
+                    var x = (i * width) + width / 2;
+                    var y = (j * height) + height / 2;
+                    gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, 0)));
+                }
+            }
+            
         }
 
         protected override void Initialize()

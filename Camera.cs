@@ -43,11 +43,11 @@ namespace Project
         // Ensures that all objects are being rendered from a consistent viewpoint
         public Camera(LabGame game) {
             playerPosition = game.player.transform.Position;
-            defaultCameraTarget = new Vector3(0, 0, 1);
+            defaultCameraTarget = new Vector3(playerPosition.X, playerPosition.Y, 1);
             cameraTarget = defaultCameraTarget;
             defaultUp = Vector3.UnitY;
             up = defaultUp;
-            Position = new Vector3(0, 0, -10);
+            Position = new Vector3(playerPosition.X, playerPosition.Y, -15);
             View = Matrix.LookAtLH(Position, defaultCameraTarget, defaultUp);
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.01f, 1000.0f);
             this.game = game;

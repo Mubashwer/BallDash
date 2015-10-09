@@ -53,7 +53,7 @@
     <Compile Include="Instructions.xaml.cs">
       <DependentUpon>Instructions.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MapFloorGameObject.cs" />
+    <Compile Include="FloorUnitGameObject.cs" />
     <Compile Include="MapGameObject.cs" />
     <Compile Include="MazeSolver.cs" />
     <Compile Include="MyModel.cs" />

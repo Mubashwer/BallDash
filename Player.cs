@@ -19,13 +19,14 @@ namespace Project
         public float diameter = 2f;
         private float radius;
         public int tessellation = 32;
-        public Player(LabGame game, String shaderName)
+        public Player(LabGame game, String shaderName, Vector3 position)
         {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
             myModel = game.assets.GetModel("player", CreatePlayerModel);
-            pos = new SharpDX.Vector3(0, 0, -diameter);
+            pos = position;
+            pos.Z = -radius;
             transform = new Transform(pos);
             ShaderName = shaderName;
         }
