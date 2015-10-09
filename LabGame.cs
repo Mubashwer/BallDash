@@ -144,16 +144,21 @@ namespace Project
         {
             var width = FloorUnitGameObject.Width;
             var height = FloorUnitGameObject.Height;
-            for (float i = 0; i < map.Width; i++)
+            for (int i = 0; i < map.Width; i++)
             {
-                for (float j = 0; j < map.Height; j++)
+                for (int j = 0; j < map.Height; j++)
                 {
                     var x = (i * width) + width / 2;
                     var y = (j * height) + height / 2;
-                    gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, 0)));
+                    var z = 0f;
+                    gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z)));
+                    
+                    if (map[i, j] == Map.UnitType.Wall) {
+                        z = -width / 2.0f;
+                        gameObjects.Add(new WallGameObject(this, "Phong", new Vector3(x, y, z)));
+                    }
                 }
             }
-            
         }
 
         protected override void Initialize()
