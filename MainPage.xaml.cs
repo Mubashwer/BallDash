@@ -46,6 +46,10 @@ namespace Project
             txtScore.Text = "Score: " + score.ToString();
         }
 
+        public void UpdateStats(string stats) {
+            txtStats.Text = stats;
+        }
+
         // TASK 2: Starts the game.  Not that it seems easier to simply move the game.Run(this) command to this function,
         // however this seems to result in a reduction in texture quality on some machines.  Not sure why this is the case
         // but this is an easy workaround.  Not we are also making the command button invisible after it is clicked

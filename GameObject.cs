@@ -23,7 +23,7 @@ namespace Project
         public Transform transform;
         public LabGame game;
         public GameObjectType type = GameObjectType.None;
-        public Vector3 pos;
+        public Vector3 position;
         
         private Effect effect;
         public String ShaderName { get; set; }
