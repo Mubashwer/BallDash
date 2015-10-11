@@ -127,21 +127,20 @@ namespace Project {
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
 
-
-            // Update debug stats
-            string stats = "Update Delta: " + elapsedMs
-                + Environment.NewLine + "Tilt X: " + tiltX
-                + Environment.NewLine + "Tilt Y: " + tiltY
-                + Environment.NewLine + "Ball Acc X: " + ballXAccel
-                + Environment.NewLine + "Ball Acc Y: " + ballYAccel
-                + Environment.NewLine + "Ball Vel X: " + velocity.X
-                + Environment.NewLine + "Ball Vel Y: " + velocity.Y
-                + Environment.NewLine + "Ball Vel Z: " + velocity.Z
-                + Environment.NewLine + "Ball Pos X: " + position.X
-                + Environment.NewLine + "Ball Pos Y: " + position.Y
-                + Environment.NewLine + "Ball Pos Z: " + position.Z;
-
             if (updateCounter > 4) {
+                // Update debug stats
+                string stats = "Update Delta: " + elapsedMs
+                    + Environment.NewLine + "Tilt X: " + tiltX
+                    + Environment.NewLine + "Tilt Y: " + tiltY
+                    + Environment.NewLine + "Ball Acc X: " + ballXAccel
+                    + Environment.NewLine + "Ball Acc Y: " + ballYAccel
+                    + Environment.NewLine + "Ball Vel X: " + velocity.X
+                    + Environment.NewLine + "Ball Vel Y: " + velocity.Y
+                    + Environment.NewLine + "Ball Vel Z: " + velocity.Z
+                    + Environment.NewLine + "Ball Pos X: " + position.X
+                    + Environment.NewLine + "Ball Pos Y: " + position.Y
+                    + Environment.NewLine + "Ball Pos Z: " + position.Z;
+
                 game.mainPage.UpdateStats(stats);
                 updateCounter = 0;
             }
