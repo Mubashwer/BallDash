@@ -121,11 +121,11 @@ namespace Project
             Map basicMap = new TextMap("testMap.txt");
             boundaryRight = basicMap.Width * FloorUnitGameObject.Width;
             boundaryTop = basicMap.Height * FloorUnitGameObject.Height;
+            LoadFloor(basicMap);
 
             // SOLVER TEST
             /*
             MazeSolver solver = new MazeSolver(basicMap);
-            LoadFloor(basicMap);
             Dictionary<Vector2, List<Vector2>> paths = solver.SolveMaze(new Vector2(10, 3));
             
             foreach (var path in paths.Values)
