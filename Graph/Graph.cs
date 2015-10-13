@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Toolkit;
 
 namespace Project
 {
-    public class Graph<T> where T: IEquatable<T>
+    public class Graph<T> where T : IEquatable<T>
     {
         private Dictionary<T, Dictionary<T, int>> adjacencyList = new Dictionary<T, Dictionary<T, int>>();
         public int Vertices { get; private set; }
-
         public int Edges { get; private set; }
 
         public bool AddVertex(T vertexKey)
@@ -36,64 +36,66 @@ namespace Project
             return true;
         }
 
-        public List<T> ShortestPath(T start, T finish)
+        public Dictionary<T, List<T>> Djkistra(T source)
         {
             var previous = new Dictionary<T, T>();
             var distances = new Dictionary<T, int>();
-            var nodes = new List<T>();
+            var vertices = new PriorityQueue<T, int>();
 
-            List<T> path = null;
-
-            foreach (var vertex in adjacencyList)
+            foreach (var vertex in adjacencyList.Keys)
             {
-                if (vertex.Key.Equals(start))
-                {
-                    distances[vertex.Key] = 0;
-                }
+                if (vertex.Equals(source))
+                    distances[vertex] = 0;
                 else
-                {
-                    distances[vertex.Key] = int.MaxValue;
-                }
+                    distances[vertex] = int.MaxValue;
 
-                nodes.Add(vertex.Key);
+                vertices[vertex] = distances[vertex];
             }
 
-            while (nodes.Count != 0)
+            while (vertices.Count != 0)
             {
-                nodes.Sort((x, y) => distances[x] - distances[y]);
+                var minimum = vertices.Peek();
+                vertices.Pop();
 
-                var smallest = nodes[0];
-                nodes.Remove(smallest);
-
-                if (smallest.Equals(finish))
-                {
-                    path = new List<T>();
-                    while (previous.ContainsKey(smallest))
-                    {
-                        path.Add(smallest);
-                        smallest = previous[smallest];
-                    }
-
+                if (distances[minimum] == int.MaxValue)
                     break;
-                }
 
-                if (distances[smallest] == int.MaxValue)
+                foreach (var neighbourEdge in adjacencyList[minimum])
                 {
-                    break;
-                }
-
-                foreach (var neighbor in adjacencyList[smallest])
-                {
-                    var alt = distances[smallest] + neighbor.Value;
-                    if (alt < distances[neighbor.Key])
+                    var alt = distances[minimum] + neighbourEdge.Value;
+                    if (alt < distances[neighbourEdge.Key])
                     {
-                        distances[neighbor.Key] = alt;
-                        previous[neighbor.Key] = smallest;
+                        distances[neighbourEdge.Key] = alt;
+                        vertices[neighbourEdge.Key] = distances[neighbourEdge.Key];
+                        previous[neighbourEdge.Key] = minimum;
                     }
                 }
             }
-
-            return path;
+            return ConstructPaths(previous, source);
         }
+
+        //TESTING
+        private Dictionary<T, List<T>> ConstructPaths(Dictionary<T, T> previous, T source)
+        {
+            Dictionary<T, List<T>> paths = new Dictionary<T, List<T>>();
+            
+            foreach(var vertex in previous.Keys)
+            {
+                paths[vertex] = new List<T>();
+                paths[vertex].Add(vertex);
+
+                var current = vertex;
+                while (previous.ContainsKey(previous[current]))
+                {
+                    if (current.Equals(source)) break;
+                    var prev = previous[current];
+                    paths[vertex].Add(prev);
+                    current = prev;
+                }
+                if (previous[current].Equals(source)) paths[vertex].Add(source);
+            }
+            return paths;
+        }
+
     }
 }

@@ -122,13 +122,19 @@ namespace Project
             boundaryRight = basicMap.Width * FloorUnitGameObject.Width;
             boundaryTop = basicMap.Height * FloorUnitGameObject.Height;
 
+            // SOLVER TEST
+            /*
             MazeSolver solver = new MazeSolver(basicMap);
             LoadFloor(basicMap);
-            List<Vector2> path = solver.Path(new Vector2(2, 2), new Vector2(10, 3));
-            foreach (Vector2 unit in path)
+            Dictionary<Vector2, List<Vector2>> paths = solver.SolveMaze(new Vector2(10, 3));
+            
+            foreach (var path in paths.Values)
             {
-                Debug.WriteLine(unit);
-            }
+                Debug.WriteLine("STARTPATH");
+                foreach(var unit in path)
+                    Debug.WriteLine(unit);
+                Debug.WriteLine("ENDPATH");
+            }*/
 
 
 

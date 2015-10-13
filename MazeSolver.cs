@@ -12,6 +12,7 @@ namespace Project
     {
         private Map map;
         private Graph<Vector2> graph;
+        public Dictionary<Vector2, List<Vector2>> Paths {get; set;}
 
         public MazeSolver(Map map)
         {   
@@ -35,39 +36,64 @@ namespace Project
                     {
                         continue;
                     }
+
                     Vector2 current = new Vector2(x, y);
                     Vector2 neighbourUp = new Vector2(x, y + 1);
                     Vector2 neighbourDown = new Vector2(x, y - 1);
-                    Vector2 neighbourLeft = new Vector2(x - 1, y);
+                    //Vector2 neighbourLeft = new Vector2(x - 1, y);
                     Vector2 neighbourRight = new Vector2(x + 1, y);
 
-                    AddEdge(current, neighbourUp);
-                    AddEdge(current, neighbourDown);
-                    AddEdge(current, neighbourLeft);
-                    AddEdge(current, neighbourRight);
+                    //Vector2 neighbourUpLeft = new Vector2(x - 1, y + 1);
+                    Vector2 neighbourUpRight = new Vector2(x + 1, y + 1);
+                    //Vector2 neighbourDownLeft = new Vector2(x - 1, y - 1);
+                    Vector2 neighbourDownRight = new Vector2(x + 1, y - 1);
 
+                    // Variables for number of walls in respective direction
+                    var UpRightWallCount = 0;
+                    var DownRightWallCount = 0;
+                    var RightWallCount = 0;
+
+                    // Add possible edges (Up, Down and Right)
+                    UpRightWallCount += AddEdge(current, neighbourUp);
+                    DownRightWallCount += AddEdge(current, neighbourDown);
+                    RightWallCount += AddEdge(current, neighbourRight);
+                    UpRightWallCount += RightWallCount;
+                    DownRightWallCount += RightWallCount;
+
+                    // Do not add diagonal edge if there are horizontal and vertical walls blocking it
+                    if(UpRightWallCount < 2) AddEdge(current, neighbourUpRight);
+                    if(DownRightWallCount < 2) AddEdge(current, neighbourDownRight);
                 }
             }
 
 
         }
 
-        public List<Vector2> Path(Vector2 start, Vector2 end)
+        public Dictionary<Vector2, List<Vector2>> SolveMaze(Vector2 end)
         {
-            return graph.ShortestPath(start, end);
+            Paths =  graph.Djkistra(end);
+            return Paths;
         }
 
         // Add edge between current unit and neighbour unit if the neighbour
         // unit is within bound and is not a wall
-        private void AddEdge(Vector2 current, Vector2 neighbour)
+        // Returns 0 if edge is added or exists. Returns 1 if edge is not possible
+        private int AddEdge(Vector2 current, Vector2 neighbour)
         {
             if (!OutofBound(neighbour))
             {
-                if (map[(int)neighbour.X, (int)neighbour.Y] != Map.UnitType.Wall)
+                if (GetMapUnit(neighbour) != Map.UnitType.Wall)
                 {
                     graph.AddEdge(current, neighbour, 1);
+                    return 0;
                 }
             }
+            return 1;
+        }
+
+        private Map.UnitType GetMapUnit(Vector2 position) 
+        {
+            return map[(int)position.X, (int)position.Y];
         }
 
         private bool OutofBound(Vector2 location)
