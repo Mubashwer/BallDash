@@ -16,12 +16,13 @@ namespace Project {
     public class Player : GameObject {
         private float diameter = 2f;
         private float radius;
-        private int tessellation = 32;
+        private int tessellation = 24;
 
         private Vector3 velocity;
-        private float maximumVelocity = 8;
+        private float maximumVelocity = 16;
+        private double tiltYOffset = -30;
 
-        public Player(LabGame game, String shaderName, Vector3 position) {
+        public Player(LabGame game, string shaderName, Vector3 position) {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
@@ -33,12 +34,15 @@ namespace Project {
         }
 
         public MyModel CreatePlayerModel() {
-            return game.assets.CreateTexturedSphere(diameter, tessellation, "marble.jpg");
+            return game.assets.CreateTexturedSphere(diameter, tessellation, "marble.dds");
         }
 
 
+        Stopwatch watch = new Stopwatch();
         // Frame update.
         public override void Update(GameTime gameTime) {
+            watch.Reset();
+            watch.Start();
             // get the total elapsed time in seconds since the last update
             double elapsedMs = gameTime.ElapsedGameTime.TotalMilliseconds;
 
@@ -52,6 +56,9 @@ namespace Project {
 
             double tiltX = Math.Atan2(accelReading.AccelerationX, accelReading.AccelerationZ);
             double tiltY = Math.Atan2(accelReading.AccelerationY, accelReading.AccelerationZ);
+
+            // add tilt offset
+            tiltY += DegreesToRadians(tiltYOffset);
 
             // use the tilt angle to calculate the ball's X and Y acceleration
             double ballXAccel = elapsedMs * Math.Sin(tiltX) * 0.01;
@@ -78,8 +85,8 @@ namespace Project {
 
             // add the velocity to the current player position
             // using elapsedMs causes jitter, need to investigate
-            //position += velocity * (float)(elapsedMs / 1000f);
-            position += velocity * 0.1f;
+            position += velocity * (float)(elapsedMs / 1000f);
+            //position += velocity * 0.3f;
 
             // Perform all physics on the object.
             // Detect any collisions with edges here.
@@ -126,12 +133,13 @@ namespace Project {
             // Rotate and translate
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
-
+            watch.Stop();
             if (updateCounter > 4) {
                 // Update debug stats
                 string stats = "Update Delta: " + elapsedMs
-                    + Environment.NewLine + "Tilt X: " + tiltX
-                    + Environment.NewLine + "Tilt Y: " + tiltY
+                    + Environment.NewLine + "Update Stopwatch: " + watch.ElapsedTicks
+                    + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
+                    + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
                     + Environment.NewLine + "Ball Acc X: " + ballXAccel
                     + Environment.NewLine + "Ball Acc Y: " + ballYAccel
                     + Environment.NewLine + "Ball Vel X: " + velocity.X
@@ -145,6 +153,7 @@ namespace Project {
                 updateCounter = 0;
             }
             updateCounter++;
+
         }
 
         private int updateCounter = 0;
@@ -161,6 +170,14 @@ namespace Project {
             }
 
             return vector;
+        }
+
+        private static double RadiansToDegrees(double radian) {
+            return radian * (180 / Math.PI);
+        }
+
+        private static double DegreesToRadians(double degrees) {
+            return degrees / (180 / Math.PI);
         }
 
         public override void Tapped(GestureRecognizer sender, TappedEventArgs args) {

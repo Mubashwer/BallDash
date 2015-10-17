@@ -57,6 +57,7 @@ namespace Project
         // If the screen is resized, the projection matrix will change
         public void Update()
         {
+            
             Position = Position - playerPosition + game.player.transform.Position;
             defaultCameraTarget = defaultCameraTarget - playerPosition + game.player.transform.Position;
             cameraTarget = cameraTarget - playerPosition + game.player.transform.Position;

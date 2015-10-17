@@ -214,9 +214,7 @@ namespace Project
                     camera.cameraMoved = true;
                     camera.roll += speed * deltaTime;
                 }
-                
-                
-                camera.Update();
+
                 accelerometerReading = input.accelerometer.GetCurrentReading();
                 for (int i = 0; i < gameObjects.Count; i++)
                 {
@@ -231,8 +229,11 @@ namespace Project
                     this.Dispose();
                     App.Current.Exit();
                 }
-                // Handle base.Update
+
+                // update the camera last
+                camera.Update();
             }
+            // Handle base.Update
             base.Update(gameTime);
 
         }
