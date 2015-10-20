@@ -84,9 +84,7 @@ namespace Project {
             Vector3 lastPosition = position;
 
             // add the velocity to the current player position
-            // using elapsedMs causes jitter, need to investigate
             position += velocity * (float)(elapsedMs / 1000f);
-            //position += velocity * 0.3f;
 
             // Perform all physics on the object.
             // Detect any collisions with edges here.
@@ -94,7 +92,7 @@ namespace Project {
             // TODO: Add basic collision detection with wall edges and the floor.
             // STRATEGY:
 
-            // 1. Calculate which square the player is on
+            // 1. Calculate which square the player was just on (last position)
             // 2. For the 8 adjacent squares around the player, do the following in both X and Y:
             //    a. Circumnavigate the player ball in the horizontal plane about the radius,
             //       checking to see whether any point lies over an adjacent wall
@@ -103,8 +101,20 @@ namespace Project {
             //       ii)  Reverse the players velocity with dampening
             //       iii) Trigger a collision event so a sound effect can be played
 
+            //1.
+            Vector2 currentMapPos = game.CurrentMap.GetMapCoordinates(new Vector2(position.X, position.Y));
+
+            //2.
+            for (int i = (int)currentMapPos.Y - 1; i < (int)currentMapPos.Y + 1; i++) {
+                for (int j = (int)currentMapPos.X - 1; j < (int)currentMapPos.X + 1; j++) {
+
+
+                }
+            }
+
+
             // Keep within the boundaries. (TODO: Shouldn't be needed after map physics is complete)
-            if (position.X < game.boundaryLeft + radius) {
+                if (position.X < game.boundaryLeft + radius) {
                 position.X = game.boundaryLeft + radius;
                 velocity.X *= -0.3f;
             }

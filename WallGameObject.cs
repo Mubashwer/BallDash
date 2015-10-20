@@ -10,9 +10,6 @@ namespace Project
 {
     public class WallGameObject : GameObject
     {
-
-        public static readonly float Width = 6f;
-        public static readonly float Height = 6f;
         public WallGameObject(LabGame game, String shaderName, Vector3 position)
         {
             this.game = game;
@@ -24,7 +21,7 @@ namespace Project
 
         public MyModel CreateWallModel()
         {
-            return game.assets.CreateTexturedCube(Width, "wooden_wall.jpg");
+            return game.assets.CreateTexturedCube(Map.WorldUnitWidth, "wooden_wall.dds");
         }
 
         public override void Update(GameTime gametime)

@@ -40,11 +40,11 @@ namespace Project {
             List<List<UnitType>> map = new List<List<UnitType>>();
 
             int maxWidth = -1;
-            for (int j = 0; j < readLines.Count; j++) {
-                string currentLine = readLines[j];
+            // (0,0) on the map is the bottom left, so we need to iterate j backwards
+            for (int j = readLines.Count -1; j >= 0 ; j--) {
                 List<UnitType> currentRow = new List<UnitType>();
-                for (int i = 0; i < currentLine.Length; i++) {
-                    char currentChar = currentLine[i];
+                for (int i = 0; i < readLines[j].Length; i++) {
+                    char currentChar = readLines[j][i];
 
                     // add different unit type depending on character
                     switch (currentChar) {
@@ -67,8 +67,8 @@ namespace Project {
                 }
 
                 // update maximum width
-                if (maxWidth < currentLine.Length) {
-                    maxWidth = currentLine.Length;
+                if (maxWidth < readLines[j].Length) {
+                    maxWidth = readLines[j].Length;
                 }
 
                 map.Add(currentRow);

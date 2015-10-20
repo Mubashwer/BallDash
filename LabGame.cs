@@ -115,13 +115,8 @@ namespace Project
             player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
             gameObjects.Add(player);
             camera = new Camera(this);
-            
 
-            // get the current map
-            Map basicMap = new TextMap("testMap.txt");
-            boundaryRight = basicMap.Width * FloorUnitGameObject.Width;
-            boundaryTop = basicMap.Height * FloorUnitGameObject.Height;
-            LoadFloor(basicMap);
+            ChangeMap(new TextMap("testMap.txt"));
 
             // SOLVER TEST
             /*
@@ -139,17 +134,24 @@ namespace Project
 
 
             // map test
-            Debug.WriteLine("First map:\n{0}", basicMap.ToString());
+            Debug.WriteLine("First map:\n{0}", CurrentMap.ToString());
 
             // Create an input layout from the vertices
 
             base.LoadContent();
         }
 
+        public void ChangeMap(Map map) {
+            CurrentMap = map;
+            boundaryRight = CurrentMap.Width * Map.WorldUnitWidth;
+            boundaryTop = CurrentMap.Height * Map.WorldUnitHeight;
+            LoadFloor(CurrentMap);
+        }
+
         private void LoadFloor(Map map)
         {
-            var width = FloorUnitGameObject.Width;
-            var height = FloorUnitGameObject.Height;
+            var width = Map.WorldUnitWidth;
+            var height = Map.WorldUnitHeight;
             for (int i = 0; i < map.Width; i++)
             {
                 for (int j = 0; j < map.Height; j++)

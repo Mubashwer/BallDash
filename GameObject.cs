@@ -10,6 +10,7 @@ using Windows.UI.Core;
 
 namespace Project
 {
+    using System.Collections.Concurrent;
     using SharpDX.Toolkit.Graphics;
     public enum GameObjectType
     {
@@ -52,11 +53,17 @@ namespace Project
             }
         }
 
-
+        private static ConcurrentDictionary<string, Texture2D> TextureCache = new ConcurrentDictionary<string, Texture2D>();
         public void SetupEffect()
         {
             effect = game.Content.Load<Effect>(ShaderName);
-            effect.Parameters["shaderTexture"].SetResource(game.Content.Load<Texture2D>(myModel.TextureName));
+            Texture2D texture;
+            if (!TextureCache.TryGetValue(myModel.TextureName, out texture)) {
+                texture = game.Content.Load<Texture2D>(myModel.TextureName);
+                TextureCache[myModel.TextureName] = texture;
+            }
+
+            effect.Parameters["shaderTexture"].SetResource(texture);
         }
 
         public void GetParamsFromModel()
