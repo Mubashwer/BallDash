@@ -25,7 +25,7 @@ namespace Project
             graph = new Graph<Point>();
             Enabled = false;
             var playerPositionVector = map.GetMapUnitCoordinates(new Vector2(game.player.position.X, game.player.position.Y));
-            playerPosition = new Point((int)playerPositionVector.X, (int)playerPositionVector.Y);
+            playerPosition = new Point((int)playerPositionVector.X+1, (int)playerPositionVector.Y+1);
             
             // Add all map world unit locations as vertices in graph
             for (int x = 0; x < map.Width; x++)
@@ -122,15 +122,15 @@ namespace Project
         public void Hint()
         {          
             var newPlayerPositionVector = map.GetMapUnitCoordinates(new Vector2(game.player.position.X, game.player.position.Y));
-            var newPlayerPosition = new Point((int)newPlayerPositionVector.X, (int)newPlayerPositionVector.Y);
+            var newPlayerPosition = new Point((int)newPlayerPositionVector.X+1, (int)newPlayerPositionVector.Y+1);
             if (newPlayerPosition.Equals(playerPosition)) return;
             playerPosition = newPlayerPosition;
             Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
             ResetHint();
             Dictionary<Point, Point> previous = graph.previous;
             var current = playerPosition;
-            //try
-            //{
+            try
+            {
                 
 
                 current = playerPosition;
@@ -148,11 +148,11 @@ namespace Project
                     current = prev;
 
                 }
-           // }
-            //catch {
-             //   Debug.WriteLine("current: " + current);
-               // Debug.WriteLine("previous" + previous);
-            //}
+           }
+            catch {
+                   Debug.WriteLine("current: " + current);
+                   Debug.WriteLine("previous" + previous);
+            }
         }
     }
 }
