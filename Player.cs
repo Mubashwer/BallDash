@@ -24,6 +24,8 @@ namespace Project {
         public bool CollisionsEnabled { get; set; }
         public float CollisionReboundDampening { get; set; }
 
+        private Vector3 startPosition;
+
         /// <summary>
         /// Triggered when the player dies
         /// </summary>
@@ -33,13 +35,13 @@ namespace Project {
         /// Triggered when the player suffers a physics collision
         /// </summary>
         public event EventHandler Collision;
-        public bool Dead { get; set; }
 
         public Player(LabGame game, string shaderName, Vector3 position) {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
             myModel = game.assets.GetModel("player", CreatePlayerModel);
+            startPosition = position;
             base.position = position;
             base.position.Z = -radius;
             transform = new Transform(base.position);
@@ -56,7 +58,6 @@ namespace Project {
         Stopwatch watch = new Stopwatch();
         // Frame update.
         public override void Update(GameTime gameTime) {
-            if (Dead) return;
 
             watch.Reset();
             watch.Start();
@@ -87,7 +88,7 @@ namespace Project {
             velocity.X += (float)ballXAccel;
             velocity.Y += (float)ballYAccel;
 
-            //velocity.Z += (float)(0.01 * elapsedMs);
+            velocity.Z += (float)(0.01 * elapsedMs);
 
             // add drag to the ball
             velocity -= velocity.Length() * velocity * 0.001f;
@@ -126,11 +127,13 @@ namespace Project {
 
             if (currentBallCenterWorldPosition.Z > radius) {
                 // the ball has half fallen down a hole, consider this a game over event
-                Dead = true;
                 if (PlayerDied != null) {
                     PlayerDied(this, null);
                 }
-                return;
+                
+                // reset player position
+                this.velocity = new Vector3();
+                this.position = startPosition;
             }
 
             if (floorType == Map.UnitType.Floor || floorType == Map.UnitType.Wall) {
@@ -181,23 +184,29 @@ namespace Project {
             }
 
             if (CollisionsEnabled) {
-                bool anyCollision = false;
+                bool playSoundEffect = false;
                 // now, apply collisions based on what we discovered in the previous step
                 if ((collisionLeft && velocity.X < 0)
                     || (collisionRight && velocity.X > 0)) {
                     velocity.X *= -CollisionReboundDampening;
                     position.X = lastPosition.X;
-                    anyCollision = true;
+
+                    if (Math.Abs(velocity.X) > 0.5) {
+                        playSoundEffect = true;
+                    }
                 }
 
                 if ((collisionUp && velocity.Y > 0)
                     || (collisionDown && velocity.Y < 0)) {
                     velocity.Y *= -CollisionReboundDampening;
                     position.Y = lastPosition.Y;
-                    anyCollision = true;
+
+                    if (Math.Abs(velocity.Y) > 0.5) {
+                        playSoundEffect = true;
+                    }
                 }
 
-                if (anyCollision) {
+                if (playSoundEffect) {
                     if (Collision != null) {
                         Collision(this, null);
                     }
