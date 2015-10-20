@@ -25,7 +25,8 @@ namespace Project {
 
         private Effect effect;
         public String ShaderName { get; set; }
-
+        public bool IsHintObject = false;
+        public bool IsEndObject = false;
 
         public abstract void Update(GameTime gametime);
         public void Draw(GameTime gametime) {
@@ -73,6 +74,9 @@ namespace Project {
                 effect.Parameters["View"].SetValue(game.camera.View);
                 effect.Parameters["cameraPos"].SetValue(game.camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
+                if (IsHintObject) effect.Parameters["Ka"].SetValue(2.0f);
+                else if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
+                else effect.Parameters["Ka"].SetValue(1.0f);
             }
         }
 

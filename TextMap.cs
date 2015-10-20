@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,8 +19,12 @@ namespace Project {
 
         private List<List<UnitType>> mapDefinition;
 
+        public override Point StartPosition { get; set; }
+        public override Point EndPosition { get; set; }
+
         private int width;
         private int height;
+
 
         public TextMap(string mapPath) {
             GenerateMap(mapPath);
@@ -63,9 +68,11 @@ namespace Project {
                             break;
                         case PlayerStartCharacter:
                             currentRow.Add(UnitType.PlayerStart);
+                            StartPosition = new Point(i, j);
                             break;
                         case PlayerEndCharacter:
                             currentRow.Add(UnitType.PlayerEnd);
+                            EndPosition = new Point(i, j);
                             break;
                     }
                 }

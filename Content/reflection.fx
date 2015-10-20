@@ -26,14 +26,20 @@ float4x4 World;
 float4x4 View;
 float4x4 Projection;
 float4 cameraPos;
-float4 lightAmbCol = float4(0.6f, 0.6f, 0.6f, 1.0f);
+float4 lightAmbCol = float4(0.4f, 0.4f, 0.4f, 1.0f);
 float4 lightPntPos = float4(0.0f, 0.0f, -2.0f, 1.0f);
 float4 lightPntCol = float4(1.0f, 1.0f, 1.0f, 1.0f);
 float4x4 worldInvTrp;
-float Ka;
 
-Texture2D shaderTexture;
-SamplerState SampleType;
+TextureCube shaderTexture;
+SamplerState SampleType
+{
+	Filter = ANISOTROPIC;
+	MaxAnisotropy = 4;
+
+	AddressU = WRAP;
+	AddressV = WRAP;
+};
 
 //
 
@@ -77,13 +83,14 @@ PS_IN VS(VS_IN input)
 
 float4 PS(PS_IN input) : SV_Target
 {
-
-	float4 col = shaderTexture.Sample(SampleType, input.tex);
+	float3 reflectionVector = reflect(-cameraPos, input.wpos);
+	float4 col = shaderTexture.Sample(SampleType, reflectionVector);
 
 	// Our interpolated normal might not be of length 1
 	float3 interpNormal = normalize(input.wnrm);
 
 	// Calculate ambient RGB intensities
+	float Ka = 1;
 	float3 amb = col.rgb*lightAmbCol.rgb*Ka;
 
 	// Calculate diffuse RBG reflections
@@ -115,7 +122,7 @@ technique Lighting
 {
 	pass Pass1
 	{
-		Profile = 9.1;
+		Profile = 11;
 		VertexShader = VS;
 		PixelShader = PS;
 	}
