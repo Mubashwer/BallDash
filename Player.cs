@@ -24,7 +24,15 @@ namespace Project {
         public bool CollisionsEnabled { get; set; }
         public float CollisionReboundDampening { get; set; }
 
+        /// <summary>
+        /// Triggered when the player dies
+        /// </summary>
         public event EventHandler PlayerDied;
+
+        /// <summary>
+        /// Triggered when the player suffers a physics collision
+        /// </summary>
+        public event EventHandler Collision;
         public bool Dead { get; set; }
 
         public Player(LabGame game, string shaderName, Vector3 position) {
@@ -102,13 +110,12 @@ namespace Project {
             // STRATEGY:
 
             // 1. Calculate which square the player was just on (last position)
-            // 2. For the 8 adjacent squares around the player, do the following in both X and Y:
-            //    a. Circumnavigate the player ball in the horizontal plane about the radius,
-            //       checking to see whether any point lies over an adjacent wall
-            //    b. If the player's edge is over a wall:
-            //       i)   Move the player back such that it is just touching the wall
-            //       ii)  Reverse the players velocity with dampening
-            //       iii) Trigger a collision event so a sound effect can be played
+            // 2. Circumnavigate the player ball in the horizontal plane about the radius,
+            //    checking to see whether any point lies over an adjacent wall
+            // 3. If the player's edge is over a wall:
+            //    a) Move the player back to their previous position
+            //    b) Reverse the players velocity with dampening
+            //    c) Trigger a collision event so a sound effect can be played (TODO)
 
             //1.
             Vector3 currentBallCenterWorldPosition = position + radius * 1.5f;
@@ -174,17 +181,26 @@ namespace Project {
             }
 
             if (CollisionsEnabled) {
+                bool anyCollision = false;
                 // now, apply collisions based on what we discovered in the previous step
                 if ((collisionLeft && velocity.X < 0)
                     || (collisionRight && velocity.X > 0)) {
                     velocity.X *= -CollisionReboundDampening;
                     position.X = lastPosition.X;
+                    anyCollision = true;
                 }
 
                 if ((collisionUp && velocity.Y > 0)
                     || (collisionDown && velocity.Y < 0)) {
                     velocity.Y *= -CollisionReboundDampening;
                     position.Y = lastPosition.Y;
+                    anyCollision = true;
+                }
+
+                if (anyCollision) {
+                    if (Collision != null) {
+                        Collision(this, null);
+                    }
                 }
             }
 
