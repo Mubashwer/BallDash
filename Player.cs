@@ -70,7 +70,7 @@ namespace Project {
             velocity.X += (float)ballXAccel;
             velocity.Y += (float)ballYAccel;
 
-            // TODO: Add gravity to allow the ball to fall down holes.
+            velocity.Z += (float)(0.01 * elapsedMs);
 
             // add drag to the ball
             velocity -= velocity.Length() * velocity * 0.001f;
@@ -102,19 +102,34 @@ namespace Project {
             //       iii) Trigger a collision event so a sound effect can be played
 
             //1.
-            Vector2 currentMapPos = game.CurrentMap.GetMapCoordinates(new Vector2(position.X, position.Y));
+            Vector2 currentMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(position.X + radius, position.Y + radius));
+
+            // Gravity: Check if the current square is a floor, and if so, do not change the height
+            var floorType = game.CurrentMap[(int)currentMapPos.X, (int)currentMapPos.Y];
+
+            if (floorType == Map.UnitType.Floor || floorType == Map.UnitType.Wall) {
+                position.Z = lastPosition.Z;
+                velocity.Z = 0;
+            }
 
             //2.
             for (int i = (int)currentMapPos.Y - 1; i < (int)currentMapPos.Y + 1; i++) {
                 for (int j = (int)currentMapPos.X - 1; j < (int)currentMapPos.X + 1; j++) {
+                    if (game.CurrentMap[j, i] == Map.UnitType.Wall) {
+                        // a square adjacent to the ball is a wall. Check that,
+                        // give the current position of the ball, no part of the balls circumference
+                        // is over the boundary of the wall
+                        int points = 16; // the number of points to check, 16 is a good approximation
+                        for (int k = 0; k < points; k++) {
 
-
+                        }
+                    }
                 }
             }
 
 
             // Keep within the boundaries. (TODO: Shouldn't be needed after map physics is complete)
-                if (position.X < game.boundaryLeft + radius) {
+            if (position.X < game.boundaryLeft + radius) {
                 position.X = game.boundaryLeft + radius;
                 velocity.X *= -0.3f;
             }
@@ -157,7 +172,8 @@ namespace Project {
                     + Environment.NewLine + "Ball Vel Z: " + velocity.Z
                     + Environment.NewLine + "Ball Pos X: " + position.X
                     + Environment.NewLine + "Ball Pos Y: " + position.Y
-                    + Environment.NewLine + "Ball Pos Z: " + position.Z;
+                    + Environment.NewLine + "Ball Pos Z: " + position.Z
+                    + Environment.NewLine + "Tile Type: " + floorType;
 
                 game.mainPage.UpdateStats(stats);
                 updateCounter = 0;

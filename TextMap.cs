@@ -12,6 +12,7 @@ namespace Project {
         public const char WallCharacter = 'x';
         public const char HoleCharacter = 'o';
         public const char BlankCharacter = ' ';
+        public const char FloorCharacter = '.';
         public const char PlayerStartCharacter = 's';
         public const char PlayerEndCharacter = 'e';
 
@@ -51,6 +52,9 @@ namespace Project {
                         case BlankCharacter:
                             currentRow.Add(UnitType.None);
                             break;
+                        case FloorCharacter:
+                            currentRow.Add(UnitType.Floor);
+                            break;
                         case WallCharacter:
                             currentRow.Add(UnitType.Wall);
                             break;
@@ -84,6 +88,8 @@ namespace Project {
             get {
                 // if the x and y is out of range, just return UnitType.None
                 if ((mapDefinition == null)
+                    || (x < 0)
+                    || (y < 0)
                     || (y >= mapDefinition.Count)
                     || (x >= mapDefinition[y].Count)) {
 

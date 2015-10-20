@@ -24,8 +24,8 @@ namespace Project {
         public abstract int Width { get; set; }
         public abstract int Height { get; set; }
 
-        public Vector2 GetMapCoordinates(Vector2 worldCoordinates) {
-            return new Vector2(worldCoordinates.X / WorldUnitWidth, worldCoordinates.Y / WorldUnitHeight);
+        public Vector2 GetMapUnitCoordinates(Vector2 worldCoordinates) {
+            return new Vector2(((worldCoordinates.X - (WorldUnitWidth / 2)) / WorldUnitWidth), ((worldCoordinates.Y - (WorldUnitHeight / 2)) / WorldUnitHeight));
         }
 
         public static readonly float WorldUnitWidth = 3f;

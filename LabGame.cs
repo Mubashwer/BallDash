@@ -159,9 +159,14 @@ namespace Project
                     var x = (i * width) + width / 2;
                     var y = (j * height) + height / 2;
                     var z = 0f;
-                    gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z)));
-                    
-                    if (map[i, j] == Map.UnitType.Wall) {
+
+                    Map.UnitType unitType = map[i, j];
+
+                    if (unitType == Map.UnitType.Floor) {
+                        gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z)));
+                    }
+                    else
+                    if (unitType == Map.UnitType.Wall) {
                         z = -width / 2.0f;
                         gameObjects.Add(new WallGameObject(this, "Phong", new Vector3(x, y, z)));
                     }
