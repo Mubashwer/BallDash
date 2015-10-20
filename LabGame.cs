@@ -165,8 +165,7 @@ namespace Project
                     if (unitType == Map.UnitType.Floor) {
                         gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z)));
                     }
-                    else
-                    if (unitType == Map.UnitType.Wall) {
+                    else if (unitType == Map.UnitType.Wall) {
                         z = -width / 2.0f;
                         gameObjects.Add(new WallGameObject(this, "Phong", new Vector3(x, y, z)));
                     }

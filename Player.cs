@@ -20,7 +20,12 @@ namespace Project {
 
         private Vector3 velocity;
         private float maximumVelocity = 16;
-        private double tiltYOffset = -30;
+        private double tiltYOffset = 0;
+        public bool CollisionsEnabled { get; set; }
+        public float CollisionReboundDampening { get; set; }
+
+        public event EventHandler PlayerDied;
+        public bool Dead { get; set; }
 
         public Player(LabGame game, string shaderName, Vector3 position) {
             this.game = game;
@@ -31,6 +36,8 @@ namespace Project {
             base.position.Z = -radius;
             transform = new Transform(base.position);
             ShaderName = shaderName;
+            CollisionsEnabled = true;
+            CollisionReboundDampening = 0.4f;
         }
 
         public MyModel CreatePlayerModel() {
@@ -41,6 +48,8 @@ namespace Project {
         Stopwatch watch = new Stopwatch();
         // Frame update.
         public override void Update(GameTime gameTime) {
+            if (Dead) return;
+
             watch.Reset();
             watch.Start();
             // get the total elapsed time in seconds since the last update
@@ -70,7 +79,7 @@ namespace Project {
             velocity.X += (float)ballXAccel;
             velocity.Y += (float)ballYAccel;
 
-            velocity.Z += (float)(0.01 * elapsedMs);
+            //velocity.Z += (float)(0.01 * elapsedMs);
 
             // add drag to the ball
             velocity -= velocity.Length() * velocity * 0.001f;
@@ -102,48 +111,81 @@ namespace Project {
             //       iii) Trigger a collision event so a sound effect can be played
 
             //1.
-            Vector2 currentMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(position.X + radius, position.Y + radius));
+            Vector3 currentBallCenterWorldPosition = position + radius * 1.5f;
+            Vector2 currentBallMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(currentBallCenterWorldPosition.X, currentBallCenterWorldPosition.Y));
 
             // Gravity: Check if the current square is a floor, and if so, do not change the height
-            var floorType = game.CurrentMap[(int)currentMapPos.X, (int)currentMapPos.Y];
+            var floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
+
+            if (currentBallCenterWorldPosition.Z > radius) {
+                // the ball has half fallen down a hole, consider this a game over event
+                Dead = true;
+                if (PlayerDied != null) {
+                    PlayerDied(this, null);
+                }
+                return;
+            }
 
             if (floorType == Map.UnitType.Floor || floorType == Map.UnitType.Wall) {
-                position.Z = lastPosition.Z;
+                position.Z = -radius;
                 velocity.Z = 0;
             }
 
             //2.
-            for (int i = (int)currentMapPos.Y - 1; i < (int)currentMapPos.Y + 1; i++) {
-                for (int j = (int)currentMapPos.X - 1; j < (int)currentMapPos.X + 1; j++) {
-                    if (game.CurrentMap[j, i] == Map.UnitType.Wall) {
-                        // a square adjacent to the ball is a wall. Check that,
-                        // give the current position of the ball, no part of the balls circumference
-                        // is over the boundary of the wall
-                        int points = 16; // the number of points to check, 16 is a good approximation
-                        for (int k = 0; k < points; k++) {
+            // Check that, given the current position of the ball, no part of the balls 
+            // circumference is touching a wall
 
-                        }
+            bool collisionUp = false;
+            bool collisionDown = false;
+            bool collisionLeft = false;
+            bool collisionRight = false;
+
+            int points = 16; // the number of points to check, 16 is a good approximation
+            for (int k = 0; k < points; k++) {
+                float pointX = currentBallCenterWorldPosition.X + (radius * (float)Math.Cos((k / (double)points) * 2 * Math.PI));
+                float pointY = currentBallCenterWorldPosition.Y + (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
+
+                // get the map coordinates for this point
+                Vector2 pointMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(pointX, pointY));
+
+                // get the unit type that this point is located within
+                var pointFloorType = game.CurrentMap[(int)pointMapPos.X, (int)pointMapPos.Y];
+
+                // if it's a wall, we have a collision.
+                if (pointFloorType == Map.UnitType.Wall) {
+                    // check if the point's map position is to the left or to the right of the current map position
+                    if ((int)pointMapPos.X > (int)currentBallMapPos.X) {
+                        collisionRight = true;
+                    }
+
+                    if ((int)pointMapPos.X < (int)currentBallMapPos.X) {
+                        collisionLeft = true;
+                    }
+
+                    // check if the point's map position is above or below the current ball map position
+                    if ((int)pointMapPos.Y > (int)currentBallMapPos.Y) {
+                        collisionUp = true;
+                    }
+
+                    if ((int)pointMapPos.Y < (int)currentBallMapPos.Y) {
+                        collisionDown = true;
                     }
                 }
             }
 
+            if (CollisionsEnabled) {
+                // now, apply collisions based on what we discovered in the previous step
+                if ((collisionLeft && velocity.X < 0)
+                    || (collisionRight && velocity.X > 0)) {
+                    velocity.X *= -CollisionReboundDampening;
+                    position.X = lastPosition.X;
+                }
 
-            // Keep within the boundaries. (TODO: Shouldn't be needed after map physics is complete)
-            if (position.X < game.boundaryLeft + radius) {
-                position.X = game.boundaryLeft + radius;
-                velocity.X *= -0.3f;
-            }
-            if (position.X > game.boundaryRight - radius) {
-                position.X = game.boundaryRight - radius;
-                velocity.X *= -0.3f;
-            }
-            if (position.Y < game.boundaryBottom + radius) {
-                position.Y = game.boundaryBottom + radius;
-                velocity.Y *= -0.3f;
-            }
-            if (position.Y > game.boundaryTop - radius) {
-                position.Y = game.boundaryTop - radius;
-                velocity.Y *= -0.3f;
+                if ((collisionUp && velocity.Y > 0)
+                    || (collisionDown && velocity.Y < 0)) {
+                    velocity.Y *= -CollisionReboundDampening;
+                    position.Y = lastPosition.Y;
+                }
             }
 
             // after all physics is done, calculate the actual distance travelled by the ball
@@ -173,7 +215,11 @@ namespace Project {
                     + Environment.NewLine + "Ball Pos X: " + position.X
                     + Environment.NewLine + "Ball Pos Y: " + position.Y
                     + Environment.NewLine + "Ball Pos Z: " + position.Z
-                    + Environment.NewLine + "Tile Type: " + floorType;
+                    + Environment.NewLine + "Tile Type: " + floorType
+                    + Environment.NewLine + "Collision Left: " + collisionLeft
+                    + Environment.NewLine + "Collision Right: " + collisionRight
+                + Environment.NewLine + "Collision Up: " + collisionUp
+                    + Environment.NewLine + "Collision Down: " + collisionDown;
 
                 game.mainPage.UpdateStats(stats);
                 updateCounter = 0;
