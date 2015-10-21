@@ -28,7 +28,7 @@ float4x4 Projection;
 float4 cameraPos;
 float4 lightAmbCol = float4(0.6f, 0.6f, 0.6f, 1.0f);
 float4 lightPntPos = float4(0.0f, 0.0f, -2.0f, 1.0f);
-float4 lightPntCol = float4(1.0f, 1.0f, 1.0f, 1.0f);
+float4 lightPntCol = float4(1.0f, 0.0f, 0.0f, 1.0f);
 float4x4 worldInvTrp;
 float Ka;
 
@@ -115,7 +115,7 @@ technique Lighting
 {
 	pass Pass1
 	{
-		Profile = 9.1;
+		Profile = 10.0;
 		VertexShader = VS;
 		PixelShader = PS;
 	}
