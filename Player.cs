@@ -55,12 +55,9 @@ namespace Project {
         }
 
 
-        Stopwatch watch = new Stopwatch();
         // Frame update.
         public override void Update(GameTime gameTime) {
 
-            watch.Reset();
-            watch.Start();
             // get the total elapsed time in seconds since the last update
             double elapsedMs = gameTime.ElapsedGameTime.TotalMilliseconds;
 
@@ -119,8 +116,8 @@ namespace Project {
             //    c) Trigger a collision event so a sound effect can be played (TODO)
 
             //1.
-            Vector3 currentBallCenterWorldPosition = position + radius * 1.5f;
-            Vector2 currentBallMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(currentBallCenterWorldPosition.X, currentBallCenterWorldPosition.Y));
+            Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
+            Vector2 currentBallMapPos = GetPlayerMapPosition();
 
             // Gravity: Check if the current square is a floor, and if so, do not change the height
             var floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
@@ -136,7 +133,10 @@ namespace Project {
                 this.position = startPosition;
             }
 
-            if (floorType == Map.UnitType.Floor || floorType == Map.UnitType.Wall) {
+            if (floorType == Map.UnitType.Floor 
+                || floorType == Map.UnitType.Wall
+                || floorType == Map.UnitType.PlayerStart
+                || floorType == Map.UnitType.PlayerEnd) {
                 position.Z = -radius;
                 velocity.Z = 0;
             }
@@ -225,11 +225,10 @@ namespace Project {
             // Rotate and translate
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
-            watch.Stop();
+
             if (updateCounter > 4) {
                 // Update debug stats
                 string stats = "Update Delta: " + elapsedMs
-                    + Environment.NewLine + "Update Stopwatch: " + watch.ElapsedTicks
                     + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
                     + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
                     + Environment.NewLine + "Ball Acc X: " + ballXAccel
@@ -275,6 +274,23 @@ namespace Project {
 
         private static double DegreesToRadians(double degrees) {
             return degrees / (180 / Math.PI);
+        }
+
+        
+
+        public Vector3 GetPlayerWorldPosition() {
+            return position + radius * 1.5f;
+        }
+
+        public Vector2 GetPlayerMapPosition() {
+            Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
+            Vector2 currentBallMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(currentBallCenterWorldPosition.X, currentBallCenterWorldPosition.Y));
+            return currentBallMapPos;
+        }
+
+        public Point GetPlayerMapPoint() {
+            Vector2 playerMapPosition = GetPlayerMapPosition();
+            return new Point((int)playerMapPosition.X, (int)playerMapPosition.Y);
         }
 
         public override void Tapped(GestureRecognizer sender, TappedEventArgs args) {
