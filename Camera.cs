@@ -22,6 +22,10 @@ namespace Project {
         private Vector3 defaultUp;
         private Vector3 up;
         private Vector3 playerPosition;
+        private float defaultCameraHeight = -15;
+        private float maxCameraHeight = -25;
+        private float minCameraHeight = -6f;
+
 
         public Vector3 Position { get; private set; }
 
@@ -43,7 +47,7 @@ namespace Project {
             cameraTarget = defaultCameraTarget;
             defaultUp = Vector3.UnitY;
             up = defaultUp;
-            Position = new Vector3(playerPosition.X, playerPosition.Y, -15);
+            Position = new Vector3(playerPosition.X, playerPosition.Y, defaultCameraHeight);
             View = Matrix.LookAtLH(Position, defaultCameraTarget, defaultUp);
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.01f, 1000.0f);
             this.game = game;
@@ -60,7 +64,7 @@ namespace Project {
 
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
             View = Matrix.LookAtLH(Position, cameraTarget, up);
-
+            /*
 
             if (!cameraMoved) return;
             cameraMoved = false;
@@ -71,6 +75,19 @@ namespace Project {
             cameraTarget = Position + cameraTarget;
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
             View = Matrix.LookAtLH(Position, cameraTarget, up);
+            */
+        }
+
+        // Pinch to zoom in/out within given limits
+        public void Zoom(float amount)
+        {
+            float positionZ = Position.Z * amount;
+
+            if(positionZ < maxCameraHeight) positionZ = maxCameraHeight;
+
+            if (positionZ > minCameraHeight) positionZ = minCameraHeight;
+
+            Position = new Vector3(Position.X, Position.Y, positionZ);
         }
 
         void AngleReset() {

@@ -31,6 +31,7 @@ namespace Project.Menus {
         public MazeGame Game { get; set; }
         public GameSettings GameSettings { get; set; }
         public MainMenu MainMenu { get; set; }
+
         public MainPage()
         {
             InitializeComponent();
@@ -39,9 +40,16 @@ namespace Project.Menus {
                 AccelerometerEnabled = true,
                 DebugEnabled = false
             };
-
+            CreateGame();
             MainMenu = new MainMenu(this);
             this.Children.Add(MainMenu);
+
+        }
+
+        public void CreateGame()
+        {
+            Game = new MazeGame(this.GameSettings);
+            Game.Run(this);
         }
     }
 }

@@ -30,7 +30,6 @@ namespace Project.Menus {
     public sealed partial class GamePage
     {
         private MainPage parent;
-        private MainMenu menu;
        
         public GamePage(MainPage parent)
         {
@@ -56,10 +55,11 @@ namespace Project.Menus {
 
         private void Back(object sender, RoutedEventArgs e)
         {
-            parent.Game.Exit();
+            //parent.Game.Exit();
+            parent.Game.Started = false;
             parent.Game.GraphicsDevice.Clear(Color.Black);
             parent.Game.GraphicsDevice.Present();
-            parent.Game.Dispose();
+            //parent.Game.Dispose();
             parent.Children.Add(new MainMenu(parent));
             parent.Children.Remove(this);
         }

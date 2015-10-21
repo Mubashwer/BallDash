@@ -30,6 +30,7 @@ namespace Project.Menus {
     public sealed partial class MainMenu
     {
         private MainPage parent;
+        public GamePage GamePage { get; set; }
         public MainMenu(MainPage parent)
         {
             this.parent = parent;
@@ -40,11 +41,11 @@ namespace Project.Menus {
         // however this seems to result in a reduction in texture quality on some machines.  Not sure why this is the case
         // but this is an easy workaround.  Not we are also making the command button invisible after it is clicked
         private void StartGame(object sender, RoutedEventArgs e) {
+            GamePage = new GamePage(parent);
+            parent.Children.Add(GamePage);
             parent.Children.Remove(this);
-            GamePage gamePage = new GamePage(parent);
-            parent.Children.Add(gamePage);
-            parent.Game = new MazeGame(gamePage, parent.GameSettings);
-            parent.Game.Run(parent);
+            parent.Game.Started = true;
+            parent.Game.GameOverlayPage = GamePage;
         }
 
         private void LoadInstructions(object sender, RoutedEventArgs e)

@@ -62,10 +62,13 @@ namespace Project {
         // Random number generator
         public Random RandomGenerator { get; set; }
 
+        // Checks if game has started
+        public bool Started { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MazeGame" /> class.
         /// </summary>
-        public MazeGame(GamePage gameOverlayPage, GameSettings settings) {
+        public MazeGame(GameSettings settings) {
             this.GameSettings = settings;
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -86,8 +89,7 @@ namespace Project {
             Input.gestureRecognizer.ManipulationStarted += OnManipulationStarted;
             Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
             Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
-
-            this.GameOverlayPage = gameOverlayPage;
+            Started = false;
         }
 
         protected override void LoadContent() {
@@ -164,7 +166,7 @@ namespace Project {
         }
 
         protected override void Update(GameTime gameTime) {
-            if (IsRunning) {
+            if (IsRunning && Started) {
                 KeyboardState = keyboardManager.GetState();
                 flushAddedAndRemovedGameObjects();
                 float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds / 1000f;
@@ -219,7 +221,7 @@ namespace Project {
             if (IsRunning) {
                 // Clears the screen with the Color.Black
                 GraphicsDevice.Clear(Color.Black);
-
+                if (!Started) return;
                 for (int i = 0; i < GameObjects.Count; i++) {
                     GameObjects[i].Draw(gameTime);
                 }
@@ -272,13 +274,7 @@ namespace Project {
 
             // TODO: need to change
 
-            /*camera.pos.Z = camera.pos.Z * args.Delta.Scale;
-            // Update camera position for all game objects
-            foreach (var obj in gameObjects)
-            {
-                if (obj.basicEffect != null) { obj.basicEffect.View = camera.View; }
-                obj.OnManipulationUpdated(sender, args);
-            }*/
+            Camera.Zoom(args.Delta.Scale);
         }
 
         public void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args) {
