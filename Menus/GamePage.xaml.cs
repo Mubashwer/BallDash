@@ -58,6 +58,7 @@ namespace Project.Menus {
         {
             parent.Game.Exit();
             parent.Game.GraphicsDevice.Clear(Color.Black);
+            parent.Game.GraphicsDevice.Present();
             parent.Game.Dispose();
             parent.Children.Add(new MainMenu(parent));
             parent.Children.Remove(this);
