@@ -45,10 +45,18 @@
     </Compile>
     <Compile Include="Assets.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Common\NavigationHelper.cs" />
+    <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="GameInput.cs" />
+    <Compile Include="GraphicCache.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Map.cs" />
+    <Compile Include="Menus\GamePage.xaml.cs">
+      <DependentUpon>GamePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Menus\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -126,6 +134,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Common\StandardStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Menus\GamePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

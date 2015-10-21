@@ -38,12 +38,15 @@ namespace Project.Menus {
         private void StartGame(object sender, RoutedEventArgs e)
         {
             parent.StartGame();
+            parent.Children.Add(new GamePage(parent));
+            parent.Children.Remove(this);
         }
 
         private void LoadInstructions(object sender, RoutedEventArgs e)
         {
             parent.Children.Add(new Instructions(parent));
             parent.Children.Remove(this);
+ 
         }
 
         // TASK 3: Function for setting difficulty

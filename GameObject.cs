@@ -49,21 +49,20 @@ namespace Project {
             }
         }
 
-        private static ConcurrentDictionary<string, Texture2D> TextureCache = new ConcurrentDictionary<string, Texture2D>();
-        private static ConcurrentDictionary<string, Effect> ShaderCache = new ConcurrentDictionary<string, Effect>();
 
         public void SetupEffect() {
-            if (!ShaderCache.TryGetValue(ShaderName, out effect)) {
+            if (!game.GraphicCache.ShaderCache.TryGetValue(ShaderName, out effect)) {
                 effect = game.Content.Load<Effect>(ShaderName);
-                ShaderCache[ShaderName] = effect;
+                game.GraphicCache.ShaderCache[ShaderName] = effect;
             }
 
            
             if (myModel.TextureName != null) {
                 Texture2D texture;
-                if (!TextureCache.TryGetValue(myModel.TextureName, out texture)) {
+                if (!game.GraphicCache.TextureCache.TryGetValue(myModel.TextureName, out texture))
+                {
                     texture = game.Content.Load<Texture2D>(myModel.TextureName);
-                    TextureCache[myModel.TextureName] = texture;
+                    game.GraphicCache.TextureCache[myModel.TextureName] = texture;
                 }
 
                 // only pass texture to the shader if the shader is capable of taking it
@@ -83,9 +82,21 @@ namespace Project {
 
                 // only apply Ka if the shader is capable of using it
                 if (effect.Parameters.Contains("Ka")) {
-                    if (IsHintObject) effect.Parameters["Ka"].SetValue(2.0f);
+                    if (IsHintObject && game.solver.Enabled) effect.Parameters["Ka"].SetValue(2.0f);
                     else if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
                     else effect.Parameters["Ka"].SetValue(1.0f);
+
+                    if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
+                    else if (game.solver.Enabled)
+                    {
+                        if (IsHintObject) effect.Parameters["Ka"].SetValue(1.0f);
+                        else effect.Parameters["Ka"].SetValue(0.7f);
+                    }
+                    else
+                    {
+                        effect.Parameters["Ka"].SetValue(1.0f);
+                    }
+
                 }
             }
         }
