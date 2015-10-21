@@ -61,19 +61,42 @@ namespace Project {
             // get the total elapsed time in seconds since the last update
             double elapsedMs = gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            // Determine acceleration based on accelerometer reading
-            // get current accelerometer reading
-            var accelReading = game.accelerometerReading;
+            double tiltX = 0;
+            double tiltY = 0;
 
-            // find the tilt angle in x and y
-            // in atan2, y param is opposite and x param is adjacent.
-            // x is left and right of device, y is up and down, z is into/out of screen
+            if (game.AccelerometerReading != null) {
+                // Determine acceleration based on accelerometer reading
+                // get current accelerometer reading
+                var accelReading = game.AccelerometerReading;
 
-            double tiltX = Math.Atan2(accelReading.AccelerationX, accelReading.AccelerationZ);
-            double tiltY = Math.Atan2(accelReading.AccelerationY, accelReading.AccelerationZ);
+                // find the tilt angle in x and y
+                // in atan2, y param is opposite and x param is adjacent.
+                // x is left and right of device, y is up and down, z is into/out of screen
 
-            // add tilt offset
-            tiltY += DegreesToRadians(tiltYOffset);
+                tiltX = Math.Atan2(accelReading.AccelerationX, accelReading.AccelerationZ);
+                tiltY = Math.Atan2(accelReading.AccelerationY, accelReading.AccelerationZ);
+
+                // add tilt offset
+                tiltY += DegreesToRadians(tiltYOffset);
+            }
+
+            // also consider arrow keys for getting input tilt
+            if (game.keyboardState.IsKeyDown(Keys.Up)) {
+                tiltY = 2 * Math.PI * ((double)90/360); // tilt forwards 90 degrees
+            }
+
+            if (game.keyboardState.IsKeyDown(Keys.Down)) {
+                tiltY = 2 * Math.PI * ((double)-90 / 360); // tilt backwards 90 degrees
+            }
+
+            if (game.keyboardState.IsKeyDown(Keys.Left)) {
+                tiltX = 2 * Math.PI * ((double)-90 / 360); // tilt backwards 90 degrees
+            }
+
+            if (game.keyboardState.IsKeyDown(Keys.Right)) {
+                tiltX = 2 * Math.PI * ((double)90 / 360); // tilt backwards 90 degrees
+            }
+
 
             // use the tilt angle to calculate the ball's X and Y acceleration
             double ballXAccel = elapsedMs * Math.Sin(tiltX) * 0.01;

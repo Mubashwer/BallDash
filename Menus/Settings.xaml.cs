@@ -34,7 +34,8 @@ namespace Project.Menus {
         {
             InitializeComponent();
             this.parent = parent;
-            this.chkDebugEnabled.IsChecked = parent.game.DebugEnabled;
+            chkDebugEnabled.IsChecked = parent.game.DebugEnabled;
+            chkAccelerometerEnabled.IsChecked = parent.game.AccelerometerEnabled;
         }
 
         private void GoBack(object sender, RoutedEventArgs e)
@@ -44,7 +45,19 @@ namespace Project.Menus {
         }
 
         private void chkDebugEnabled_Checked(object sender, RoutedEventArgs e) {
-            parent.game.DebugEnabled = chkDebugEnabled.IsChecked ?? false;
+            parent.game.DebugEnabled = true;
+        }
+
+        private void chkDebugEnabled_Unchecked(object sender, RoutedEventArgs e) {
+            parent.game.DebugEnabled = false;
+        }
+
+        private void chkAccelerometerEnabled_Checked(object sender, RoutedEventArgs e) {
+            parent.game.AccelerometerEnabled = true;
+        }
+
+        private void chkAccelerometerEnabled_Unchecked(object sender, RoutedEventArgs e) {
+            parent.game.AccelerometerEnabled = false;
         }
     }
 }

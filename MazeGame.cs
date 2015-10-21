@@ -44,7 +44,9 @@ namespace Project
         private KeyboardManager keyboardManager;
         public KeyboardState keyboardState;
         public Player player;
-        public AccelerometerReading accelerometerReading;
+        public AccelerometerReading AccelerometerReading { get; set; }
+        public bool AccelerometerEnabled { get; set; }
+
         public GameInput input;
         public int score;
         public MainPage mainPage;
@@ -89,6 +91,7 @@ namespace Project
             input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
 
             this.mainPage = mainPage;
+            AccelerometerEnabled = true;
 
             score = 0;
         }
@@ -213,7 +216,13 @@ namespace Project
                     camera.roll += speed * deltaTime;
                 }
 
-                accelerometerReading = input.accelerometer.GetCurrentReading();
+                if (AccelerometerEnabled && input.accelerometer != null) {
+                    AccelerometerReading = input.accelerometer.GetCurrentReading();
+                }
+                else {
+                    AccelerometerReading = null;
+                }
+
                 for (int i = 0; i < gameObjects.Count; i++)
                 {
                     gameObjects[i].Update(gameTime);
