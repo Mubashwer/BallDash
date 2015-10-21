@@ -46,15 +46,15 @@ namespace Project.Menus {
             parent.Children.Remove(this);
         }
 
+        private void LoadSettings(object sender, RoutedEventArgs e) {
+            parent.Children.Add(new Settings(parent));
+            parent.Children.Remove(this);
+        }
+
         // TASK 3: Function for setting difficulty
         private void changeDifficulty(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             if (parent.game != null) { parent.game.difficulty = (float)e.NewValue; }
-        }
-
-        private void btnSettings_Click(object sender, RoutedEventArgs e) {
-            parent.Children.Add(new Instructions(parent));
-            parent.Children.Remove(this);
         }
     }
 }

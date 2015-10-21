@@ -227,30 +227,32 @@ namespace Project {
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
 
-            // Update debug stats
-            string stats = "Update Delta: " + elapsedMs
-                + Environment.NewLine + "Updates/second: " + (1000/elapsedMs)
-                + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
-                + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
-                + Environment.NewLine + "Ball Acc X: " + ballXAccel
-                + Environment.NewLine + "Ball Acc Y: " + ballYAccel
-                + Environment.NewLine + "Ball Vel X: " + velocity.X
-                + Environment.NewLine + "Ball Vel Y: " + velocity.Y
-                + Environment.NewLine + "Ball Vel Z: " + velocity.Z
-                + Environment.NewLine + "Ball Pos X: " + position.X
-                + Environment.NewLine + "Ball Pos Y: " + position.Y
-                + Environment.NewLine + "Ball Pos Z: " + position.Z
-                + Environment.NewLine + "Ball Map X: " + currentBallMapPos.X
-                + Environment.NewLine + "Ball Map Y: " + currentBallMapPos.Y
-                + Environment.NewLine + "Ball Map Point X: " + currentBallMapPoint.X
-                + Environment.NewLine + "Ball Map Point Y: " + currentBallMapPoint.Y
-                + Environment.NewLine + "Tile Type: " + floorType
-                + Environment.NewLine + "Collision Left: " + collisionLeft
-                + Environment.NewLine + "Collision Right: " + collisionRight
-                + Environment.NewLine + "Collision Up: " + collisionUp
-                + Environment.NewLine + "Collision Down: " + collisionDown;
+            if (game.DebugEnabled) {
+                // Update debug stats
+                string stats = "Update Delta: " + elapsedMs
+                    + Environment.NewLine + "Updates/second: " + (1000 / elapsedMs)
+                    + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
+                    + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
+                    + Environment.NewLine + "Ball Acc X: " + ballXAccel
+                    + Environment.NewLine + "Ball Acc Y: " + ballYAccel
+                    + Environment.NewLine + "Ball Vel X: " + velocity.X
+                    + Environment.NewLine + "Ball Vel Y: " + velocity.Y
+                    + Environment.NewLine + "Ball Vel Z: " + velocity.Z
+                    + Environment.NewLine + "Ball Pos X: " + position.X
+                    + Environment.NewLine + "Ball Pos Y: " + position.Y
+                    + Environment.NewLine + "Ball Pos Z: " + position.Z
+                    + Environment.NewLine + "Ball Map X: " + currentBallMapPos.X
+                    + Environment.NewLine + "Ball Map Y: " + currentBallMapPos.Y
+                    + Environment.NewLine + "Ball Map Point X: " + currentBallMapPoint.X
+                    + Environment.NewLine + "Ball Map Point Y: " + currentBallMapPoint.Y
+                    + Environment.NewLine + "Tile Type: " + floorType
+                    + Environment.NewLine + "Collision Left: " + collisionLeft
+                    + Environment.NewLine + "Collision Right: " + collisionRight
+                    + Environment.NewLine + "Collision Up: " + collisionUp
+                    + Environment.NewLine + "Collision Down: " + collisionDown;
 
-            game.mainPage.UpdateStats(stats);
+                game.mainPage.UpdateStats(stats);
+            }
         }
 
 

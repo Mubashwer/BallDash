@@ -34,12 +34,17 @@ namespace Project.Menus {
         {
             InitializeComponent();
             this.parent = parent;
+            this.chkDebugEnabled.IsChecked = parent.game.DebugEnabled;
         }
 
         private void GoBack(object sender, RoutedEventArgs e)
         {
             parent.Children.Add(parent.mainMenu);
             parent.Children.Remove(this);
+        }
+
+        private void chkDebugEnabled_Checked(object sender, RoutedEventArgs e) {
+            parent.game.DebugEnabled = chkDebugEnabled.IsChecked ?? false;
         }
     }
 }
