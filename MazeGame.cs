@@ -51,6 +51,7 @@ namespace Project
         public int score;
         public MainPage mainPage;
         public MazeSolver solver;
+        public GraphicCache GraphicCache { get; set; }
 
         public Dictionary<Point, GameObject> tiles = new Dictionary<Point, GameObject>();
         public Map CurrentMap { get; set; }
@@ -66,6 +67,7 @@ namespace Project
         public Random random;
 
         public bool started = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MazeGame" /> class.
         /// </summary>
@@ -73,6 +75,7 @@ namespace Project
         {
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicCache = new GraphicCache();
 
             // Setup the relative directory to the executable directory
             // for loading contents with the ContentManager
@@ -112,7 +115,6 @@ namespace Project
             ChangeMap(basicMap);
 
             // Create an input layout from the vertices
-
             base.LoadContent();
         }
 
@@ -227,8 +229,6 @@ namespace Project
                 {
                     gameObjects[i].Update(gameTime);
                 }
-
-                mainPage.UpdateScore(score);
 
                 if (keyboardState.IsKeyDown(Keys.Escape))
                 {

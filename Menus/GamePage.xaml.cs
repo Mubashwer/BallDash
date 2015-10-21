@@ -26,40 +26,40 @@ namespace Project.Menus {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage
+    // TASK 4: Instructions Page
+    public sealed partial class GamePage
     {
-        public  MazeGame game;
-        public MainMenu mainMenu;
-        public MainPage()
+        private MainPage parent;
+        private MainMenu menu;
+       
+        public GamePage(MainPage parent)
         {
+            this.parent = parent;
             InitializeComponent();
+        }
+
+        // Button for Hint
+        private void ChangeHint(object sender, RoutedEventArgs e)
+        {
+            if (!parent.game.solver.Enabled)
+            {
+                parent.game.solver.Enabled = true;
+            }
+            else
+            {
+                parent.game.solver.Enabled = false;
+            }
+        }
+
+        private void Back(object sender, RoutedEventArgs e)
+        {
             
-            mainMenu = new MainMenu(this);
-            this.Children.Add(mainMenu);
+            parent.game.GraphicsDevice.Clear(Color.Black);
+            parent.game.Exit();
+            parent.game.Dispose();
+            parent.Children.Add(new MainMenu(parent));
+            parent.Children.Remove(this);
         }
-
-        // TASK 1: Update the game's score
-        public void UpdateScore(int score)
-        {
-            txtScore.Text = "Score: " + score.ToString();
-        }
-
-        public void UpdateStats(string stats) {
-            txtStats.Text = stats;
-        }
-
-        // TASK 2: Starts the game.  Not that it seems easier to simply move the game.Run(this) command to this function,
-        // however this seems to result in a reduction in texture quality on some machines.  Not sure why this is the case
-        // but this is an easy workaround.  Not we are also making the command button invisible after it is clicked
-        public void StartGame()
-        {
-
-            game = new MazeGame(this);
-            game.Run(this); this.Children.Remove(mainMenu);
-            game.started = true;
-        }
-
-
 
     }
 }

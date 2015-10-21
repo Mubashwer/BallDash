@@ -13,7 +13,7 @@ namespace Project {
         private Graph<Point> graph;
         MazeGame game;
         public Dictionary<Point, List<Point>> Paths { get; set; }
-        private bool Enabled { get; set; }
+        public bool Enabled { get; set; }
         private Point playerPosition;
 
         public MazeSolver(MazeGame game, Map map) {
@@ -41,7 +41,7 @@ namespace Project {
                     Point current = new Point(x, y);
                     Point neighbourUp = new Point(x, y + 1);
                     Point neighbourDown = new Point(x, y - 1);
-                    Point neighbourLeft = new Point(x - 1, y);
+                    //Point neighbourLeft = new Point(x - 1, y);
                     Point neighbourRight = new Point(x + 1, y);
 
                     //Point neighbourUpLeft = new Point(x - 1, y + 1);
@@ -61,7 +61,7 @@ namespace Project {
                     UpRightWallCount += RightWallCount;
                     DownRightWallCount += RightWallCount;
 
-                    AddEdge(current, neighbourLeft);
+                    //AddEdge(current, neighbourLeft);
 
                     // Do not add diagonal edge if there are horizontal and vertical walls blocking it
                     //if (UpRightWallCount < 2) AddEdge(current, neighbourUpRight);
@@ -98,20 +98,25 @@ namespace Project {
             return (location.X < 0 || location.X >= map.Width || location.Y < 0 || location.Y >= map.Height);
         }
 
-        private void ResetHint() {
+        // Disables hint
+        private void DisableHint() {
             foreach (var gameObject in game.gameObjects) {
                 if (gameObject.IsHintObject) {
                     gameObject.IsHintObject = false;
                 }
             }
+            Enabled = false;
         }
 
+        // Identity hint floor objects from djkistra's previous vertex to vertex path dictionary
         public void Hint() {
+            if (!Enabled) return;
             var newPlayerPosition = game.player.GetPlayerMapPoint();
             if (newPlayerPosition.Equals(playerPosition)) return;
             playerPosition = newPlayerPosition;
-            Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
-            ResetHint();
+            //Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
+            DisableHint(); // reset hint objects 
+            Enabled = true;
             Dictionary<Point, Point> previous = graph.previous;
             var current = playerPosition;
             try {
@@ -131,7 +136,6 @@ namespace Project {
                     }
                     catch (Exception e) {
                         Debug.WriteLine(e);
-                        Debug.WriteLine(prev);
                     }
                     current = prev;
 
@@ -139,8 +143,6 @@ namespace Project {
             }
             catch (Exception e) {
                 Debug.WriteLine(e);
-                Debug.WriteLine("current: " + current);
-                Debug.WriteLine("previous" + previous);
             }
         }
     }
