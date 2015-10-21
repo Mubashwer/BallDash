@@ -47,6 +47,9 @@ namespace Project
         public GameInput input;
         public int score;
         public MainPage mainPage;
+        public MazeSolver solver;
+
+        public Dictionary<Point, GameObject> tiles = new Dictionary<Point, GameObject>();
         public Map CurrentMap { get; set; }
 
         // TASK 4: Use this to represent difficulty
@@ -116,14 +119,15 @@ namespace Project
             gameObjects.Add(player);
             camera = new Camera(this);
 
-            ChangeMap(new TextMap("testMap.txt"));
+            var basicMap = new TextMap("testMap.txt");
+            ChangeMap(basicMap);
 
             // SOLVER TEST
-            /*
-            MazeSolver solver = new MazeSolver(basicMap);
-            Dictionary<Vector2, List<Vector2>> paths = solver.SolveMaze(new Vector2(10, 3));
             
-            foreach (var path in paths.Values)
+            solver = new MazeSolver(this, basicMap);
+            solver.SolveMaze();
+            
+            /*foreach (var path in paths.Values)
             {
                 Debug.WriteLine("STARTPATH");
                 foreach(var unit in path)
@@ -161,13 +165,29 @@ namespace Project
                     var z = 0f;
 
                     Map.UnitType unitType = map[i, j];
-
-                    if (unitType == Map.UnitType.Floor) {
-                        gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z)));
+                    if (unitType == Map.UnitType.PlayerStart)
+                    {
+                        var startObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        gameObjects.Add(startObject);
+                        tiles[new Point(i, j)] = startObject;
+                    }
+                    if (unitType == Map.UnitType.PlayerEnd)
+                    {
+                        var endObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        endObject.IsEndObject = true;
+                        gameObjects.Add(endObject);
+                        tiles[new Point(i, j)] = endObject;
+                    }
+                    else if (unitType == Map.UnitType.Floor) {
+                        var floorObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        gameObjects.Add(floorObject);
+                        tiles[new Point(i, j)] = floorObject;
                     }
                     else if (unitType == Map.UnitType.Wall) {
                         z = -width / 2.0f;
-                        gameObjects.Add(new WallGameObject(this, "Phong", new Vector3(x, y, z)));
+                        var wallObject = new WallGameObject(this, "Phong", new Vector3(x, y, z));
+                        gameObjects.Add(wallObject);
+                        tiles[new Point(i, j)] = wallObject;
                     }
                 }
             }
@@ -239,6 +259,7 @@ namespace Project
                 // update the camera last
                 camera.Update();
             }
+            solver.Hint();
             // Handle base.Update
             base.Update(gameTime);
 
