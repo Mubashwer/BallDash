@@ -49,10 +49,10 @@
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Map.cs" />
-    <Compile Include="MainMenu.xaml.cs">
+    <Compile Include="Menus\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Instructions.xaml.cs">
+    <Compile Include="Menus\Instructions.xaml.cs">
       <DependentUpon>Instructions.xaml</DependentUpon>
     </Compile>
     <Compile Include="FloorUnitGameObject.cs" />
@@ -60,7 +60,7 @@
     <Compile Include="MazeSolver.cs" />
     <Compile Include="MyModel.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Menus\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="LabGame.cs" />
@@ -103,7 +103,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Package.StoreAssociation.xml" />
-    <Content Include="testMap.txt">
+    <Content Include="Maps\testMap.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Project_StoreKey.pfx" />
@@ -126,15 +126,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainMenu.xaml">
+    <Page Include="Menus\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Instructions.xaml">
+    <Page Include="Menus\Instructions.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Menus\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

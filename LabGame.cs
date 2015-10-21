@@ -107,7 +107,7 @@ namespace Project
             gameObjects.Add(player);
             camera = new Camera(this);
 
-            var basicMap = new TextMap("testMap.txt");
+            var basicMap = new TextMap("Maps\\testMap.txt");
             ChangeMap(basicMap);
 
             // Create an input layout from the vertices

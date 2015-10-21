@@ -79,8 +79,6 @@ namespace Project {
             double ballXAccel = elapsedMs * Math.Sin(tiltX) * 0.01;
             double ballYAccel = elapsedMs * Math.Sin(tiltY) * 0.01;
 
-            // TODO: Constrain maximum acceleration
-
             // add ball acceleration to the ball's velocity
             velocity.X += (float)ballXAccel;
             velocity.Y += (float)ballYAccel;
@@ -107,13 +105,15 @@ namespace Project {
             // TODO: Add basic collision detection with wall edges and the floor.
             // STRATEGY:
 
-            // 1. Calculate which square the player was just on (last position)
-            // 2. Circumnavigate the player ball in the horizontal plane about the radius,
-            //    checking to see whether any point lies over an adjacent wall
-            // 3. If the player's edge is over a wall:
-            //    a) Move the player back to their previous position
-            //    b) Reverse the players velocity with dampening
-            //    c) Trigger a collision event so a sound effect can be played (TODO)
+            // 1. Calculate which square the player is on (last position)
+            // 2. Circumnavigate the player ball in the horizontal plane about the radius
+            //    for a given number of points at equal angles,checking to see whether any
+            //    point lies over an adjacent wall
+            // 3. If a point on the player's edge is over a wall, there is a collision. So:
+            //    a) Move the player back to their previous uncollided position
+            //    b) Determine the angle of the collided point, and determine what axis on the ball this effects
+            //    c) Reverse the players velocity  with dampening
+            //    d) Trigger a collision event so a sound effect can be played
 
             //1.
             Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();

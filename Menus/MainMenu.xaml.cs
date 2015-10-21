@@ -52,5 +52,10 @@ namespace Project
         {
             if (parent.game != null) { parent.game.difficulty = (float)e.NewValue; }
         }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e) {
+            parent.Children.Add(new Instructions(parent));
+            parent.Children.Remove(this);
+        }
     }
 }

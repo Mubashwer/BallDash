@@ -9,7 +9,7 @@
     d:DesignWidth="1280"
     d:DesignHeight="800">
     <Grid>
-        <Button x:Name="cmdBack" Content="Back" HorizontalAlignment="Left" Height="77" Margin="954,70,0,0" VerticalAlignment="Top" Width="163" Click="GoBack"/>
-        <TextBlock x:Name="txtInstructions" HorizontalAlignment="Left" Height="148" Margin="415,73,0,0" TextWrapping="Wrap" Text="Enjoy the game" VerticalAlignment="Top" Width="366"/>
+        <Button x:Name="cmdBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
+        <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="215" Margin="0,0,0,0" TextWrapping="Wrap" Text="Enjoy the game" VerticalAlignment="Center" TextAlignment="Center" Width="784"/>
     </Grid>
 </Page>
