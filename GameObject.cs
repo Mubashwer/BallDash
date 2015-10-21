@@ -34,7 +34,7 @@ namespace Project {
             if (myModel != null) {
                 SetupEffect();
                 GetParamsFromModel();
-
+                game.GraphicsDevice.SetBlendState(game.GraphicsDevice.BlendStates.AlphaBlend);
                 // Setup the vertices
                 game.GraphicsDevice.SetVertexBuffer(0, myModel.vertexBuffer, myModel.vertexStride);
                 game.GraphicsDevice.SetVertexInputLayout(myModel.inputLayout);
