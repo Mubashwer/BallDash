@@ -26,8 +26,7 @@ using Windows.UI.Input;
 using Windows.UI.Core;
 using Windows.Devices.Sensors;
 
-namespace Project
-{
+namespace Project {
     using System.Diagnostics;
     using Menus;
     // Use this namespace here in case we need to use Direct3D11 namespace as well, as this
@@ -35,44 +34,39 @@ namespace Project
     using SharpDX.Toolkit.Graphics;
     using SharpDX.Toolkit.Input;
 
-    public class MazeGame : Game
-    {
+    public class MazeGame : Game {
         private GraphicsDeviceManager graphicsDeviceManager;
-        public List<GameObject> gameObjects;
+        private KeyboardManager keyboardManager;
         private Stack<GameObject> addedGameObjects;
         private Stack<GameObject> removedGameObjects;
-        private KeyboardManager keyboardManager;
-        public KeyboardState keyboardState;
-        public Player player;
+
+        public List<GameObject> GameObjects { get; set; }
+        public KeyboardState KeyboardState { get; set; }
+        public Player Player { get; set; }
         public AccelerometerReading AccelerometerReading { get; set; }
-        public bool AccelerometerEnabled { get; set; }
-
-        public GameInput input;
-        public int score;
-        public MainPage mainPage;
-        public MazeSolver solver;
+        public GameInput Input { get; set; }
+        public GamePage GameOverlayPage { get; set; }
+        public MazeSolver MazeSolver { get; set; }
         public GraphicCache GraphicCache { get; set; }
+        public GameSettings GameSettings { get; set; }
 
-        public Dictionary<Point, GameObject> tiles = new Dictionary<Point, GameObject>();
+        public Dictionary<Point, GameObject> Tiles { get; set; }
         public Map CurrentMap { get; set; }
-        public bool DebugEnabled { get; set; }
 
         // Represents the camera's position and orientation
-        public Camera camera;
+        public Camera Camera { get; set; }
 
         // Graphics assets
-        public Assets assets;
+        public Assets Assets { get; set; }
 
         // Random number generator
-        public Random random;
-
-        public bool started = false;
+        public Random RandomGenerator { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MazeGame" /> class.
         /// </summary>
-        public MazeGame(MainPage mainPage)
-        {
+        public MazeGame(GamePage gameOverlayPage, GameSettings settings) {
+            this.GameSettings = settings;
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicCache = new GraphicCache();
@@ -83,33 +77,30 @@ namespace Project
 
             // Create the keyboard manager
             keyboardManager = new KeyboardManager(this);
-            assets = new Assets(this);
-            random = new Random();
-            input = new GameInput();
+            Assets = new Assets(this);
+            RandomGenerator = new Random();
+            Input = new GameInput();
 
             // Initialise event handling.
-            input.gestureRecognizer.Tapped += Tapped;
-            input.gestureRecognizer.ManipulationStarted += OnManipulationStarted;
-            input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
-            input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
+            Input.gestureRecognizer.Tapped += Tapped;
+            Input.gestureRecognizer.ManipulationStarted += OnManipulationStarted;
+            Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
+            Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
 
-            this.mainPage = mainPage;
-            AccelerometerEnabled = true;
-
-            score = 0;
+            this.GameOverlayPage = gameOverlayPage;
         }
 
-        protected override void LoadContent()
-        {
+        protected override void LoadContent() {
             // Initialise game object containers.
-            gameObjects = new List<GameObject>();
+            GameObjects = new List<GameObject>();
             addedGameObjects = new Stack<GameObject>();
             removedGameObjects = new Stack<GameObject>();
+            Tiles = new Dictionary<Point, GameObject>();
 
             // Create game objects.
-            player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
-            gameObjects.Add(player);
-            camera = new Camera(this);
+            Player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
+            GameObjects.Add(Player);
+            Camera = new Camera(this);
 
             var basicMap = new TextMap("Maps\\testMap.txt");
             ChangeMap(basicMap);
@@ -118,203 +109,167 @@ namespace Project
             base.LoadContent();
         }
 
+
         public void ChangeMap(Map map) {
             CurrentMap = map;
             LoadFloor(CurrentMap);
 
-            solver = new MazeSolver(this, map);
-            solver.SolveMaze();
+            MazeSolver = new MazeSolver(this, map);
+            MazeSolver.SolveMaze();
 
             // map test
             Debug.WriteLine("First map:\n{0}", CurrentMap.ToString());
         }
 
-        private void LoadFloor(Map map)
-        {
+        private void LoadFloor(Map map) {
             var width = Map.WorldUnitWidth;
             var height = Map.WorldUnitHeight;
-            for (int i = 0; i < map.Width; i++)
-            {
-                for (int j = 0; j < map.Height; j++)
-                {
+            for (int i = 0; i < map.Width; i++) {
+                for (int j = 0; j < map.Height; j++) {
                     var x = (i * width) + width / 2;
                     var y = (j * height) + height / 2;
                     var z = 0f;
 
                     Map.UnitType unitType = map[i, j];
-                    if (unitType == Map.UnitType.PlayerStart)
-                    {
+                    if (unitType == Map.UnitType.PlayerStart) {
                         var startObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
-                        gameObjects.Add(startObject);
-                        tiles[new Point(i, j)] = startObject;
+                        GameObjects.Add(startObject);
+                        Tiles[new Point(i, j)] = startObject;
                     }
-                    if (unitType == Map.UnitType.PlayerEnd)
-                    {
+                    if (unitType == Map.UnitType.PlayerEnd) {
                         var endObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
                         endObject.IsEndObject = true;
-                        gameObjects.Add(endObject);
-                        tiles[new Point(i, j)] = endObject;
+                        GameObjects.Add(endObject);
+                        Tiles[new Point(i, j)] = endObject;
                     }
                     else if (unitType == Map.UnitType.Floor) {
                         var floorObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
-                        gameObjects.Add(floorObject);
-                        tiles[new Point(i, j)] = floorObject;
+                        GameObjects.Add(floorObject);
+                        Tiles[new Point(i, j)] = floorObject;
                     }
                     else if (unitType == Map.UnitType.Wall) {
                         z = -width / 2.0f;
                         var wallObject = new WallGameObject(this, "Phong", new Vector3(x, y, z));
-                        gameObjects.Add(wallObject);
-                        tiles[new Point(i, j)] = wallObject;
+                        GameObjects.Add(wallObject);
+                        Tiles[new Point(i, j)] = wallObject;
                     }
                 }
             }
         }
 
-        protected override void Initialize()
-        {
-            Window.Title = "Lab 4";
-            
+        protected override void Initialize() {
+            Window.Title = "Ball Dash";
 
             base.Initialize();
         }
 
-        protected override void Update(GameTime gameTime)
-        {
-            if (started)
-            {
-                keyboardState = keyboardManager.GetState();
+        protected override void Update(GameTime gameTime) {
+            if (IsRunning) {
+                KeyboardState = keyboardManager.GetState();
                 flushAddedAndRemovedGameObjects();
-                float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds/1000f;
+                float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds / 1000f;
                 float speed = 3f;
 
-                if (keyboardState.IsKeyDown(Keys.W))
-                {
-                    camera.cameraMoved = true;
-                    camera.pitch -= speed * deltaTime;
+                if (KeyboardState.IsKeyDown(Keys.W)) {
+                    Camera.cameraMoved = true;
+                    Camera.pitch -= speed * deltaTime;
                 }
-                if (keyboardState.IsKeyDown(Keys.S))
-                {
-                    camera.cameraMoved = true;
-                    camera.pitch += speed *deltaTime;
+                if (KeyboardState.IsKeyDown(Keys.S)) {
+                    Camera.cameraMoved = true;
+                    Camera.pitch += speed * deltaTime;
                 }
-                if (keyboardState.IsKeyDown(Keys.A))
-                {
-                    camera.cameraMoved = true;
-                    camera.yaw -= speed * deltaTime;
-                }  
-                if (keyboardState.IsKeyDown(Keys.D))
-                {
-                    camera.cameraMoved = true;
-                    camera.yaw += speed * deltaTime;
+                if (KeyboardState.IsKeyDown(Keys.A)) {
+                    Camera.cameraMoved = true;
+                    Camera.yaw -= speed * deltaTime;
                 }
-                if (keyboardState.IsKeyDown(Keys.Q))
-                {
-                    camera.cameraMoved = true;
-                    camera.roll -= speed * deltaTime;
+                if (KeyboardState.IsKeyDown(Keys.D)) {
+                    Camera.cameraMoved = true;
+                    Camera.yaw += speed * deltaTime;
                 }
-                if (keyboardState.IsKeyDown(Keys.E))
-                {
-                    camera.cameraMoved = true;
-                    camera.roll += speed * deltaTime;
+                if (KeyboardState.IsKeyDown(Keys.Q)) {
+                    Camera.cameraMoved = true;
+                    Camera.roll -= speed * deltaTime;
+                }
+                if (KeyboardState.IsKeyDown(Keys.E)) {
+                    Camera.cameraMoved = true;
+                    Camera.roll += speed * deltaTime;
                 }
 
-                if (AccelerometerEnabled && input.accelerometer != null) {
-                    AccelerometerReading = input.accelerometer.GetCurrentReading();
+                if (GameSettings.AccelerometerEnabled && Input.accelerometer != null) {
+                    AccelerometerReading = Input.accelerometer.GetCurrentReading();
                 }
                 else {
                     AccelerometerReading = null;
                 }
 
-                for (int i = 0; i < gameObjects.Count; i++)
-                {
-                    gameObjects[i].Update(gameTime);
-                }
-
-                if (keyboardState.IsKeyDown(Keys.Escape))
-                {
-                    this.Exit();
-                    this.Dispose();
-                    App.Current.Exit();
+                for (int i = 0; i < GameObjects.Count; i++) {
+                    GameObjects[i].Update(gameTime);
                 }
 
                 // update the camera last
-                camera.Update();
+                Camera.Update();
             }
-            solver.Hint();
+            MazeSolver.Hint();
             // Handle base.Update
             base.Update(gameTime);
 
         }
 
-        protected override void Draw(GameTime gameTime)
-        {
-            if (started)
-            {
-                // Clears the screen with the Color.CornflowerBlue
+        protected override void Draw(GameTime gameTime) {
+            if (IsRunning) {
+                // Clears the screen with the Color.Black
                 GraphicsDevice.Clear(Color.Black);
 
-                for (int i = 0; i < gameObjects.Count; i++)
-                {
-                    gameObjects[i].Draw(gameTime);
+                for (int i = 0; i < GameObjects.Count; i++) {
+                    GameObjects[i].Draw(gameTime);
                 }
             }
             // Handle base.Draw
             base.Draw(gameTime);
         }
         // Count the number of game objects for a certain type.
-        public int Count(GameObjectType type)
-        {
+        public int Count(GameObjectType type) {
             int count = 0;
-            foreach (var obj in gameObjects)
-            {
+            foreach (var obj in GameObjects) {
                 if (obj.type == type) { count++; }
             }
             return count;
         }
 
         // Add a new game object.
-        public void Add(GameObject obj)
-        {
-            if (!gameObjects.Contains(obj) && !addedGameObjects.Contains(obj))
-            {
+        public void Add(GameObject obj) {
+            if (!GameObjects.Contains(obj) && !addedGameObjects.Contains(obj)) {
                 addedGameObjects.Push(obj);
             }
         }
 
         // Remove a game object.
-        public void Remove(GameObject obj)
-        {
-            if (gameObjects.Contains(obj) && !removedGameObjects.Contains(obj))
-            {
+        public void Remove(GameObject obj) {
+            if (GameObjects.Contains(obj) && !removedGameObjects.Contains(obj)) {
                 removedGameObjects.Push(obj);
             }
         }
 
         // Process the buffers of game objects that need to be added/removed.
-        private void flushAddedAndRemovedGameObjects()
-        {
-            while (addedGameObjects.Count > 0) { gameObjects.Add(addedGameObjects.Pop()); }
-            while (removedGameObjects.Count > 0) { gameObjects.Remove(removedGameObjects.Pop()); }
+        private void flushAddedAndRemovedGameObjects() {
+            while (addedGameObjects.Count > 0) { GameObjects.Add(addedGameObjects.Pop()); }
+            while (removedGameObjects.Count > 0) { GameObjects.Remove(removedGameObjects.Pop()); }
         }
 
-        public void OnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args)
-        {
+        public void OnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args) {
             // Pass Manipulation events to the game objects.
 
         }
 
-        public void Tapped(GestureRecognizer sender, TappedEventArgs args)
-        {
+        public void Tapped(GestureRecognizer sender, TappedEventArgs args) {
             // Pass Manipulation events to the game objects.
-            foreach (var obj in gameObjects)
-            {
+            foreach (var obj in GameObjects) {
                 obj.Tapped(sender, args);
             }
         }
 
-        public void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)
-        {
-            
+        public void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args) {
+
             // TODO: need to change
 
             /*camera.pos.Z = camera.pos.Z * args.Delta.Scale;
@@ -326,8 +281,7 @@ namespace Project
             }*/
         }
 
-        public void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args)
-        {
+        public void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args) {
         }
 
     }

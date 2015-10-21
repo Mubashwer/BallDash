@@ -37,26 +37,28 @@ namespace Project.Menus {
             this.parent = parent;
             InitializeComponent();
         }
+        public void UpdateStats(string stats) {
+            txtStats.Text = stats;
+        }
 
         // Button for Hint
         private void ChangeHint(object sender, RoutedEventArgs e)
         {
-            if (!parent.game.solver.Enabled)
+            if (!parent.Game.MazeSolver.Enabled)
             {
-                parent.game.solver.Enabled = true;
+                parent.Game.MazeSolver.Enabled = true;
             }
             else
             {
-                parent.game.solver.Enabled = false;
+                parent.Game.MazeSolver.Enabled = false;
             }
         }
 
         private void Back(object sender, RoutedEventArgs e)
         {
-            
-            parent.game.GraphicsDevice.Clear(Color.Black);
-            parent.game.Exit();
-            parent.game.Dispose();
+            parent.Game.Exit();
+            parent.Game.GraphicsDevice.Clear(Color.Black);
+            parent.Game.Dispose();
             parent.Children.Add(new MainMenu(parent));
             parent.Children.Remove(this);
         }

@@ -28,38 +28,20 @@ namespace Project.Menus {
     /// </summary>
     public sealed partial class MainPage
     {
-        public  MazeGame game;
-        public MainMenu mainMenu;
+        public MazeGame Game { get; set; }
+        public GameSettings GameSettings { get; set; }
+        public MainMenu MainMenu { get; set; }
         public MainPage()
         {
             InitializeComponent();
-            
-            mainMenu = new MainMenu(this);
-            this.Children.Add(mainMenu);
+
+            GameSettings = new GameSettings() {
+                AccelerometerEnabled = true,
+                DebugEnabled = false
+            };
+
+            MainMenu = new MainMenu(this);
+            this.Children.Add(MainMenu);
         }
-
-        // TASK 1: Update the game's score
-        public void UpdateScore(int score)
-        {
-            txtScore.Text = "Score: " + score.ToString();
-        }
-
-        public void UpdateStats(string stats) {
-            txtStats.Text = stats;
-        }
-
-        // TASK 2: Starts the game.  Not that it seems easier to simply move the game.Run(this) command to this function,
-        // however this seems to result in a reduction in texture quality on some machines.  Not sure why this is the case
-        // but this is an easy workaround.  Not we are also making the command button invisible after it is clicked
-        public void StartGame()
-        {
-
-            game = new MazeGame(this);
-            game.Run(this); this.Children.Remove(mainMenu);
-            game.started = true;
-        }
-
-
-
     }
 }

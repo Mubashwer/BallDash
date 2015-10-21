@@ -35,11 +35,16 @@ namespace Project.Menus {
             this.parent = parent;
             InitializeComponent();
         }
-        private void StartGame(object sender, RoutedEventArgs e)
-        {
-            parent.StartGame();
-            parent.Children.Add(new GamePage(parent));
+
+        // TASK 2: Starts the game.  Not that it seems easier to simply move the game.Run(this) command to this function,
+        // however this seems to result in a reduction in texture quality on some machines.  Not sure why this is the case
+        // but this is an easy workaround.  Not we are also making the command button invisible after it is clicked
+        private void StartGame(object sender, RoutedEventArgs e) {
             parent.Children.Remove(this);
+            GamePage gamePage = new GamePage(parent);
+            parent.Children.Add(gamePage);
+            parent.Game = new MazeGame(gamePage, parent.GameSettings);
+            parent.Game.Run(parent);
         }
 
         private void LoadInstructions(object sender, RoutedEventArgs e)

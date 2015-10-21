@@ -34,30 +34,30 @@ namespace Project.Menus {
         {
             InitializeComponent();
             this.parent = parent;
-            chkDebugEnabled.IsChecked = parent.game.DebugEnabled;
-            chkAccelerometerEnabled.IsChecked = parent.game.AccelerometerEnabled;
+            chkDebugEnabled.IsChecked = parent.GameSettings.DebugEnabled;
+            chkAccelerometerEnabled.IsChecked = parent.GameSettings.AccelerometerEnabled;
         }
 
         private void GoBack(object sender, RoutedEventArgs e)
         {
-            parent.Children.Add(parent.mainMenu);
+            parent.Children.Add(parent.MainMenu);
             parent.Children.Remove(this);
         }
 
         private void chkDebugEnabled_Checked(object sender, RoutedEventArgs e) {
-            parent.game.DebugEnabled = true;
+            parent.GameSettings.DebugEnabled = true;
         }
 
         private void chkDebugEnabled_Unchecked(object sender, RoutedEventArgs e) {
-            parent.game.DebugEnabled = false;
+            parent.GameSettings.DebugEnabled = false;
         }
 
         private void chkAccelerometerEnabled_Checked(object sender, RoutedEventArgs e) {
-            parent.game.AccelerometerEnabled = true;
+            parent.GameSettings.AccelerometerEnabled = true;
         }
 
         private void chkAccelerometerEnabled_Unchecked(object sender, RoutedEventArgs e) {
-            parent.game.AccelerometerEnabled = false;
+            parent.GameSettings.AccelerometerEnabled = false;
         }
     }
 }

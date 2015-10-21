@@ -38,7 +38,7 @@ namespace Project {
 
         // Ensures that all objects are being rendered from a consistent viewpoint
         public Camera(MazeGame game) {
-            playerPosition = game.player.transform.Position;
+            playerPosition = game.Player.transform.Position;
             defaultCameraTarget = new Vector3(playerPosition.X, playerPosition.Y, 1);
             cameraTarget = defaultCameraTarget;
             defaultUp = Vector3.UnitY;
@@ -52,10 +52,10 @@ namespace Project {
 
         // If the screen is resized, the projection matrix will change
         public void Update() {
-            Position = Position - playerPosition + game.player.transform.Position;
-            defaultCameraTarget = defaultCameraTarget - playerPosition + game.player.transform.Position;
-            cameraTarget = cameraTarget - playerPosition + game.player.transform.Position;
-            playerPosition = game.player.transform.Position;
+            Position = Position - playerPosition + game.Player.transform.Position;
+            defaultCameraTarget = defaultCameraTarget - playerPosition + game.Player.transform.Position;
+            cameraTarget = cameraTarget - playerPosition + game.Player.transform.Position;
+            playerPosition = game.Player.transform.Position;
 
 
             Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);

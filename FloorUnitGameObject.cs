@@ -13,13 +13,13 @@ namespace Project {
         public FloorUnitGameObject(MazeGame game, String shaderName, Vector3 position) {
             this.game = game;
             type = GameObjectType.FloorUnit;
-            myModel = game.assets.GetModel("FloorUnit"+position.ToString(), CreateFloorModel);
+            myModel = game.Assets.GetModel("FloorUnit"+position.ToString(), CreateFloorModel);
             transform = new Transform(position);
             ShaderName = shaderName;
         }
 
         public MyModel CreateFloorModel() {
-            return game.assets.CreateTexturedPlane(Map.WorldUnitWidth, Map.WorldUnitHeight, 1, "wooden_floor.dds");
+            return game.Assets.CreateTexturedPlane(Map.WorldUnitWidth, Map.WorldUnitHeight, 1, "wooden_floor.dds");
         }
 
         public override void Update(GameTime gametime) {

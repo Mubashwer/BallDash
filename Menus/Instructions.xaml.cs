@@ -40,7 +40,7 @@ namespace Project.Menus
        
         private void GoBack(object sender, RoutedEventArgs e)
         {
-            parent.Children.Add(parent.mainMenu);
+            parent.Children.Add(parent.MainMenu);
             parent.Children.Remove(this);
         }
     }

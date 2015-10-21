@@ -75,19 +75,19 @@ namespace Project {
         public void GetParamsFromModel() {
             if (effect != null) {
                 effect.Parameters["World"].SetValue(transform.World);
-                effect.Parameters["Projection"].SetValue(game.camera.Projection);
-                effect.Parameters["View"].SetValue(game.camera.View);
-                effect.Parameters["cameraPos"].SetValue(game.camera.Position);
+                effect.Parameters["Projection"].SetValue(game.Camera.Projection);
+                effect.Parameters["View"].SetValue(game.Camera.View);
+                effect.Parameters["cameraPos"].SetValue(game.Camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
 
                 // only apply Ka if the shader is capable of using it
                 if (effect.Parameters.Contains("Ka")) {
-                    if (IsHintObject && game.solver.Enabled) effect.Parameters["Ka"].SetValue(2.0f);
+                    if (IsHintObject && game.MazeSolver.Enabled) effect.Parameters["Ka"].SetValue(2.0f);
                     else if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
                     else effect.Parameters["Ka"].SetValue(1.0f);
 
                     if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
-                    else if (game.solver.Enabled)
+                    else if (game.MazeSolver.Enabled)
                     {
                         if (IsHintObject) effect.Parameters["Ka"].SetValue(1.0f);
                         else effect.Parameters["Ka"].SetValue(0.7f);

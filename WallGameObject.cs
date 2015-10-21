@@ -14,14 +14,14 @@ namespace Project
         {
             this.game = game;
             type = GameObjectType.Wall;
-            myModel = game.assets.GetModel("Wall" + position.ToString(), CreateWallModel);
+            myModel = game.Assets.GetModel("Wall" + position.ToString(), CreateWallModel);
             transform = new Transform(position);
             ShaderName = shaderName;
         }
 
         public MyModel CreateWallModel()
         {
-            return game.assets.CreateTexturedCube(Map.WorldUnitWidth, "wooden_wall.dds");
+            return game.Assets.CreateTexturedCube(Map.WorldUnitWidth, "wooden_wall.dds");
         }
 
         public override void Update(GameTime gametime)

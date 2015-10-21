@@ -21,7 +21,7 @@ namespace Project {
             this.game = game;
             graph = new Graph<Point>();
             Enabled = false;
-            var playerPositionVector = map.GetMapUnitCoordinates(new Vector2(game.player.position.X, game.player.position.Y));
+            var playerPositionVector = map.GetMapUnitCoordinates(new Vector2(game.Player.position.X, game.Player.position.Y));
             playerPosition = new Point((int)playerPositionVector.X + 1, (int)playerPositionVector.Y + 1);
 
             // Add all map world unit locations as vertices in graph
@@ -100,7 +100,7 @@ namespace Project {
 
         // Disables hint
         private void DisableHint() {
-            foreach (var gameObject in game.gameObjects) {
+            foreach (var gameObject in game.GameObjects) {
                 if (gameObject.IsHintObject) {
                     gameObject.IsHintObject = false;
                 }
@@ -111,7 +111,7 @@ namespace Project {
         // Identity hint floor objects from djkistra's previous vertex to vertex path dictionary
         public void Hint() {
             if (!Enabled) return;
-            var newPlayerPosition = game.player.GetPlayerMapPoint();
+            var newPlayerPosition = game.Player.GetPlayerMapPoint();
             if (newPlayerPosition.Equals(playerPosition)) return;
             playerPosition = newPlayerPosition;
             //Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
@@ -127,12 +127,12 @@ namespace Project {
                     return;
                 }
 
-                game.tiles[playerPosition].IsHintObject = true;
+                game.Tiles[playerPosition].IsHintObject = true;
                 while (previous.ContainsKey(previous[current])) {
                     if (current.Equals(map.EndPosition)) break;
                     var prev = previous[current];
                     try {
-                        game.tiles[prev].IsHintObject = true;
+                        game.Tiles[prev].IsHintObject = true;
                     }
                     catch (Exception e) {
                         Debug.WriteLine(e);

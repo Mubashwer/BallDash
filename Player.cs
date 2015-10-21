@@ -40,7 +40,7 @@ namespace Project {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
-            myModel = game.assets.GetModel("player", CreatePlayerModel);
+            myModel = game.Assets.GetModel("player", CreatePlayerModel);
             startPosition = position;
             base.position = position;
             base.position.Z = -radius;
@@ -51,7 +51,7 @@ namespace Project {
         }
 
         public MyModel CreatePlayerModel() {
-            return game.assets.CreateTexturedSphere(diameter, tessellation, "marble.dds");
+            return game.Assets.CreateTexturedSphere(diameter, tessellation, "marble.dds");
         }
 
 
@@ -81,19 +81,19 @@ namespace Project {
             }
 
             // also consider arrow keys for getting input tilt
-            if (game.keyboardState.IsKeyDown(Keys.Up)) {
+            if (game.KeyboardState.IsKeyDown(Keys.Up)) {
                 tiltY = 2 * Math.PI * ((double)90/360); // tilt forwards 90 degrees
             }
 
-            if (game.keyboardState.IsKeyDown(Keys.Down)) {
+            if (game.KeyboardState.IsKeyDown(Keys.Down)) {
                 tiltY = 2 * Math.PI * ((double)-90 / 360); // tilt backwards 90 degrees
             }
 
-            if (game.keyboardState.IsKeyDown(Keys.Left)) {
+            if (game.KeyboardState.IsKeyDown(Keys.Left)) {
                 tiltX = 2 * Math.PI * ((double)-90 / 360); // tilt backwards 90 degrees
             }
 
-            if (game.keyboardState.IsKeyDown(Keys.Right)) {
+            if (game.KeyboardState.IsKeyDown(Keys.Right)) {
                 tiltX = 2 * Math.PI * ((double)90 / 360); // tilt backwards 90 degrees
             }
 
@@ -250,7 +250,7 @@ namespace Project {
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
 
-            if (game.DebugEnabled) {
+            if (game.GameSettings.DebugEnabled) {
                 // Update debug stats
                 string stats = "Update Delta: " + elapsedMs
                     + Environment.NewLine + "Updates/second: " + (1000 / elapsedMs)
@@ -274,7 +274,7 @@ namespace Project {
                     + Environment.NewLine + "Collision Up: " + collisionUp
                     + Environment.NewLine + "Collision Down: " + collisionDown;
 
-                game.mainPage.UpdateStats(stats);
+                game.GameOverlayPage.UpdateStats(stats);
             }
         }
 

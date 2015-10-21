@@ -50,6 +50,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="GameInput.cs" />
+    <Compile Include="GameSettings.cs" />
     <Compile Include="GraphicCache.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
