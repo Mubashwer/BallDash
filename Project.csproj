@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="LabGame.cs" />
     <Compile Include="Graph\PriorityQueue.cs" />
+    <Compile Include="Player2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="TextMap.cs" />
