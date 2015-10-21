@@ -27,33 +27,18 @@ namespace Project.Menus {
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     // TASK 4: Instructions Page
-    public sealed partial class MainMenu
+    public sealed partial class Settings
     {
         private MainPage parent;
-        public MainMenu(MainPage parent)
+        public Settings(MainPage parent)
         {
-            this.parent = parent;
             InitializeComponent();
-        }
-        private void StartGame(object sender, RoutedEventArgs e)
-        {
-            parent.StartGame();
+            this.parent = parent;
         }
 
-        private void LoadInstructions(object sender, RoutedEventArgs e)
+        private void GoBack(object sender, RoutedEventArgs e)
         {
-            parent.Children.Add(new Instructions(parent));
-            parent.Children.Remove(this);
-        }
-
-        // TASK 3: Function for setting difficulty
-        private void changeDifficulty(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            if (parent.game != null) { parent.game.difficulty = (float)e.NewValue; }
-        }
-
-        private void btnSettings_Click(object sender, RoutedEventArgs e) {
-            parent.Children.Add(new Instructions(parent));
+            parent.Children.Add(parent.mainMenu);
             parent.Children.Remove(this);
         }
     }

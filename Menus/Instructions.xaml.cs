@@ -22,7 +22,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using SharpDX;
 
-namespace Project
+namespace Project.Menus
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.

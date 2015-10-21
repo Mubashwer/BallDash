@@ -1,5 +1,5 @@
 ﻿<SwapChainBackgroundPanel x:Name="swapppy"
-    x:Class="Project.MainPage"
+    x:Class="Project.Menus.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Project"

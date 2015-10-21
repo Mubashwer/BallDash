@@ -29,6 +29,7 @@ using Windows.Devices.Sensors;
 namespace Project
 {
     using System.Diagnostics;
+    using Menus;
     // Use this namespace here in case we need to use Direct3D11 namespace as well, as this
     // namespace will override the Direct3D11.
     using SharpDX.Toolkit.Graphics;
