@@ -34,64 +34,64 @@ float4x4 worldInvTrp;
 
 struct VS_IN
 {
-	float4 pos : SV_POSITION;
-	float4 nrm : NORMAL;
-	float4 col : COLOR;
+    float4 pos : SV_POSITION;
+    float4 nrm : NORMAL;
+    float4 col : COLOR;
 // Other vertex properties, e.g. texture co-ords, surface Kd, Ks, etc
 };
 
 struct PS_IN
 {
-	float4 pos : SV_POSITION;
-	float4 col : COLOR;
+    float4 pos : SV_POSITION;
+    float4 col : COLOR;
 };
 
 PS_IN VS( VS_IN input )
 {
-	PS_IN output = (PS_IN)0;
+    PS_IN output = (PS_IN)0;
 
-	// Convert Vertex position and corresponding normal into world coords
-	// Note that we have to multiply the normal by the transposed inverse of the world 
-	// transformation matrix (for cases where we have non-uniform scaling; we also don't
-	// care about the "fourth" dimension, because translations don't affect the normal) 
-	float4 worldVertex = mul(input.pos, World);
-	float3 worldNormal = normalize(mul(input.nrm.xyz, (float3x3)worldInvTrp));
+    // Convert Vertex position and corresponding normal into world coords
+    // Note that we have to multiply the normal by the transposed inverse of the world 
+    // transformation matrix (for cases where we have non-uniform scaling; we also don't
+    // care about the "fourth" dimension, because translations don't affect the normal) 
+    float4 worldVertex = mul(input.pos, World);
+    float3 worldNormal = normalize(mul(input.nrm.xyz, (float3x3)worldInvTrp));
 
-	// Calculate ambient RGB intensities
-	float Ka = 1;
-	float3 amb = input.col.rgb*lightAmbCol.rgb*Ka;
+    // Calculate ambient RGB intensities
+    float Ka = 1;
+    float3 amb = input.col.rgb*lightAmbCol.rgb*Ka;
 
-	// Calculate diffuse RBG reflections, we save the results of L.N because we will use it again
-	// (when calculating the reflected ray in our specular component)
-	float fAtt = 1;
-	float Kd = 1;
-	float3 L = normalize(lightPntPos.xyz - worldVertex.xyz);
-	float LdotN = saturate(dot(L,worldNormal.xyz));
-	float3 dif = fAtt*lightPntCol.rgb*Kd*input.col.rgb*LdotN;
+    // Calculate diffuse RBG reflections, we save the results of L.N because we will use it again
+    // (when calculating the reflected ray in our specular component)
+    float fAtt = 1;
+    float Kd = 1;
+    float3 L = normalize(lightPntPos.xyz - worldVertex.xyz);
+    float LdotN = saturate(dot(L,worldNormal.xyz));
+    float3 dif = fAtt*lightPntCol.rgb*Kd*input.col.rgb*LdotN;
 
-	// Calculate specular reflections
-	float Ks = 1;
-	float specN = 5; // Values>>1 give tighter highlights
-	float3 V = normalize(cameraPos.xyz - worldVertex.xyz);
-	float3 R = normalize(2*LdotN*worldNormal.xyz - L.xyz);
-	//float3 R = normalize(0.5*(L.xyz+V.xyz)); //Blinn-Phong equivalent
-	float3 spe = fAtt*lightPntCol.rgb*Ks*pow(saturate(dot(V,R)),specN);
+    // Calculate specular reflections
+    float Ks = 1;
+    float specN = 5; // Values>>1 give tighter highlights
+    float3 V = normalize(cameraPos.xyz - worldVertex.xyz);
+    float3 R = normalize(2*LdotN*worldNormal.xyz - L.xyz);
+    //float3 R = normalize(0.5*(L.xyz+V.xyz)); //Blinn-Phong equivalent
+    float3 spe = fAtt*lightPntCol.rgb*Ks*pow(saturate(dot(V,R)),specN);
 
-	// Combine reflection components
-	output.col.rgb = amb.rgb+dif.rgb+spe.rgb;
-	output.col.a = input.col.a;
+    // Combine reflection components
+    output.col.rgb = amb.rgb+dif.rgb+spe.rgb;
+    output.col.a = input.col.a;
 
-	// Transform vertex in world coordinates to camera coordinates
-	float4 worldPos = mul(input.pos, World);
+    // Transform vertex in world coordinates to camera coordinates
+    float4 worldPos = mul(input.pos, World);
     float4 viewPos = mul(worldPos, View);
     output.pos = mul(viewPos, Projection);
 
-	return output;
+    return output;
 }
 
 float4 PS( PS_IN input ) : SV_Target
 {
-	return input.col;
+    return input.col;
 }
 
 
@@ -99,7 +99,7 @@ technique Lighting
 {
     pass Pass1
     {
-		Profile = 9.1;
+        Profile = 9.1;
         VertexShader = VS;
         PixelShader = PS;
     }

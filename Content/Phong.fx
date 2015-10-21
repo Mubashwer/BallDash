@@ -20,6 +20,7 @@
 //
 // Adapted for COMP30019 by Jeremy Nicholson, 10 Sep 2012
 // Adapted further by Chris Ewin, 23 Sep 2013
+// Adapted further by Mubashwer Salman Khurshid, Oct 2015
 
 // these won't change in a given iteration of the shader
 float4x4 World;
