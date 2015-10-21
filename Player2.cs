@@ -26,7 +26,7 @@ namespace Project
 
         //Texture2DDescription texDesc = new Texture2DDescription() { }
 
-        public Player2(LabGame game, String shaderName, Vector3 position)
+        public Player2(MazeGame game, String shaderName, Vector3 position)
         {
             this.game = game;
             radius = diameter / 2.0f;
