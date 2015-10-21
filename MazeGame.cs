@@ -52,6 +52,7 @@ namespace Project
 
         public Dictionary<Point, GameObject> tiles = new Dictionary<Point, GameObject>();
         public Map CurrentMap { get; set; }
+        public bool DebugEnabled { get; set; }
 
         // TASK 4: Use this to represent difficulty
         public float difficulty;
