@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,13 +13,18 @@ namespace Project {
         public const char WallCharacter = 'x';
         public const char HoleCharacter = 'o';
         public const char BlankCharacter = ' ';
+        public const char FloorCharacter = '.';
         public const char PlayerStartCharacter = 's';
         public const char PlayerEndCharacter = 'e';
 
         private List<List<UnitType>> mapDefinition;
 
+        public override Point StartPosition { get; set; }
+        public override Point EndPosition { get; set; }
+
         private int width;
         private int height;
+
 
         public TextMap(string mapPath) {
             GenerateMap(mapPath);
@@ -40,16 +46,19 @@ namespace Project {
             List<List<UnitType>> map = new List<List<UnitType>>();
 
             int maxWidth = -1;
-            for (int j = 0; j < readLines.Count; j++) {
-                string currentLine = readLines[j];
+            // (0,0) on the map is the bottom left, so we need to iterate j backwards
+            for (int j = readLines.Count -1; j >= 0 ; j--) {
                 List<UnitType> currentRow = new List<UnitType>();
-                for (int i = 0; i < currentLine.Length; i++) {
-                    char currentChar = currentLine[i];
+                for (int i = 0; i < readLines[j].Length; i++) {
+                    char currentChar = readLines[j][i];
 
                     // add different unit type depending on character
                     switch (currentChar) {
                         case BlankCharacter:
                             currentRow.Add(UnitType.None);
+                            break;
+                        case FloorCharacter:
+                            currentRow.Add(UnitType.Floor);
                             break;
                         case WallCharacter:
                             currentRow.Add(UnitType.Wall);
@@ -67,8 +76,8 @@ namespace Project {
                 }
 
                 // update maximum width
-                if (maxWidth < currentLine.Length) {
-                    maxWidth = currentLine.Length;
+                if (maxWidth < readLines[j].Length) {
+                    maxWidth = readLines[j].Length;
                 }
 
                 map.Add(currentRow);
@@ -78,12 +87,31 @@ namespace Project {
             this.height = map.Count;
 
             mapDefinition = map;
+
+            UpdateStartEndPositions();
+        }
+
+        private void UpdateStartEndPositions() {
+            for (int i = 0; i < this.Height; i++) {
+                for (int j = 0; j < this.Width; j++) {
+                    switch (this[j, i]) {
+                        case UnitType.PlayerStart:
+                            this.StartPosition = new Point(j, i);
+                                break;
+                        case UnitType.PlayerEnd:
+                            this.EndPosition = new Point(j, i);
+                            break;
+                    }
+                }
+            }
         }
 
         public override UnitType this[int x, int y] {
             get {
                 // if the x and y is out of range, just return UnitType.None
                 if ((mapDefinition == null)
+                    || (x < 0)
+                    || (y < 0)
                     || (y >= mapDefinition.Count)
                     || (x >= mapDefinition[y].Count)) {
 

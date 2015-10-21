@@ -34,7 +34,7 @@ namespace Project
     using SharpDX.Toolkit.Graphics;
     using SharpDX.Toolkit.Input;
 
-    public class LabGame : Game
+    public class MazeGame : Game
     {
         private GraphicsDeviceManager graphicsDeviceManager;
         public List<GameObject> gameObjects;
@@ -47,6 +47,9 @@ namespace Project
         public GameInput input;
         public int score;
         public MainPage mainPage;
+        public MazeSolver solver;
+
+        public Dictionary<Point, GameObject> tiles = new Dictionary<Point, GameObject>();
         public Map CurrentMap { get; set; }
 
         // TASK 4: Use this to represent difficulty
@@ -61,17 +64,11 @@ namespace Project
         // Random number generator
         public Random random;
 
-        // World boundaries that indicate where the edge of the screen is for the camera.
-        public float boundaryLeft;
-        public float boundaryRight;
-        public float boundaryTop;
-        public float boundaryBottom;
-
         public bool started = false;
         /// <summary>
-        /// Initializes a new instance of the <see cref="LabGame" /> class.
+        /// Initializes a new instance of the <see cref="MazeGame" /> class.
         /// </summary>
-        public LabGame(MainPage mainPage)
+        public MazeGame(MainPage mainPage)
         {
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -85,12 +82,6 @@ namespace Project
             assets = new Assets(this);
             random = new Random();
             input = new GameInput();
-
-            // Set boundaries.
-            boundaryLeft = 0f; //-4.5f;
-            boundaryRight = 50f; //4.5f;
-            boundaryTop = 50f; //4;
-            boundaryBottom = 0f;//-4.5f;
 
             // Initialise event handling.
             input.gestureRecognizer.Tapped += Tapped;
@@ -115,41 +106,30 @@ namespace Project
             player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
             gameObjects.Add(player);
             camera = new Camera(this);
-            
 
-            // get the current map
-            Map basicMap = new TextMap("testMap.txt");
-            boundaryRight = basicMap.Width * FloorUnitGameObject.Width;
-            boundaryTop = basicMap.Height * FloorUnitGameObject.Height;
-            LoadFloor(basicMap);
-
-            // SOLVER TEST
-            /*
-            MazeSolver solver = new MazeSolver(basicMap);
-            Dictionary<Vector2, List<Vector2>> paths = solver.SolveMaze(new Vector2(10, 3));
-            
-            foreach (var path in paths.Values)
-            {
-                Debug.WriteLine("STARTPATH");
-                foreach(var unit in path)
-                    Debug.WriteLine(unit);
-                Debug.WriteLine("ENDPATH");
-            }*/
-
-
-
-            // map test
-            Debug.WriteLine("First map:\n{0}", basicMap.ToString());
+            var basicMap = new TextMap("testMap.txt");
+            ChangeMap(basicMap);
 
             // Create an input layout from the vertices
 
             base.LoadContent();
         }
 
+        public void ChangeMap(Map map) {
+            CurrentMap = map;
+            LoadFloor(CurrentMap);
+
+            solver = new MazeSolver(this, map);
+            solver.SolveMaze();
+
+            // map test
+            Debug.WriteLine("First map:\n{0}", CurrentMap.ToString());
+        }
+
         private void LoadFloor(Map map)
         {
-            var width = FloorUnitGameObject.Width;
-            var height = FloorUnitGameObject.Height;
+            var width = Map.WorldUnitWidth;
+            var height = Map.WorldUnitHeight;
             for (int i = 0; i < map.Width; i++)
             {
                 for (int j = 0; j < map.Height; j++)
@@ -157,11 +137,31 @@ namespace Project
                     var x = (i * width) + width / 2;
                     var y = (j * height) + height / 2;
                     var z = 0f;
-                    gameObjects.Add(new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z)));
-                    
-                    if (map[i, j] == Map.UnitType.Wall) {
+
+                    Map.UnitType unitType = map[i, j];
+                    if (unitType == Map.UnitType.PlayerStart)
+                    {
+                        var startObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        gameObjects.Add(startObject);
+                        tiles[new Point(i, j)] = startObject;
+                    }
+                    if (unitType == Map.UnitType.PlayerEnd)
+                    {
+                        var endObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        endObject.IsEndObject = true;
+                        gameObjects.Add(endObject);
+                        tiles[new Point(i, j)] = endObject;
+                    }
+                    else if (unitType == Map.UnitType.Floor) {
+                        var floorObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        gameObjects.Add(floorObject);
+                        tiles[new Point(i, j)] = floorObject;
+                    }
+                    else if (unitType == Map.UnitType.Wall) {
                         z = -width / 2.0f;
-                        gameObjects.Add(new WallGameObject(this, "Phong", new Vector3(x, y, z)));
+                        var wallObject = new WallGameObject(this, "Phong", new Vector3(x, y, z));
+                        gameObjects.Add(wallObject);
+                        tiles[new Point(i, j)] = wallObject;
                     }
                 }
             }
@@ -214,9 +214,7 @@ namespace Project
                     camera.cameraMoved = true;
                     camera.roll += speed * deltaTime;
                 }
-                
-                
-                camera.Update();
+
                 accelerometerReading = input.accelerometer.GetCurrentReading();
                 for (int i = 0; i < gameObjects.Count; i++)
                 {
@@ -231,8 +229,12 @@ namespace Project
                     this.Dispose();
                     App.Current.Exit();
                 }
-                // Handle base.Update
+
+                // update the camera last
+                camera.Update();
             }
+            solver.Hint();
+            // Handle base.Update
             base.Update(gameTime);
 
         }
@@ -242,7 +244,7 @@ namespace Project
             if (started)
             {
                 // Clears the screen with the Color.CornflowerBlue
-                GraphicsDevice.Clear(Color.CornflowerBlue);
+                GraphicsDevice.Clear(Color.Black);
 
                 for (int i = 0; i < gameObjects.Count; i++)
                 {

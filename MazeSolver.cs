@@ -3,50 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using SharpDX;
 using SharpDX.Toolkit;
 
-namespace Project
-{
-    public class MazeSolver
-    {
+namespace Project {
+    public class MazeSolver {
         private Map map;
-        private Graph<Vector2> graph;
-        public Dictionary<Vector2, List<Vector2>> Paths {get; set;}
+        private Graph<Point> graph;
+        MazeGame game;
+        public Dictionary<Point, List<Point>> Paths { get; set; }
+        private bool Enabled { get; set; }
+        private Point playerPosition;
 
-        public MazeSolver(Map map)
-        {   
+        public MazeSolver(MazeGame game, Map map) {
             this.map = map;
-            graph = new Graph<Vector2>();
-            
+            this.game = game;
+            graph = new Graph<Point>();
+            Enabled = false;
+            var playerPositionVector = map.GetMapUnitCoordinates(new Vector2(game.player.position.X, game.player.position.Y));
+            playerPosition = new Point((int)playerPositionVector.X + 1, (int)playerPositionVector.Y + 1);
+
             // Add all map world unit locations as vertices in graph
-            for (int x = 0; x < map.Width; x++)
-            {
-                for (int y = 0; y < map.Height; y++)
-                {
-                    graph.AddVertex(new Vector2(x, y));
+            for (int x = 0; x < map.Width; x++) {
+                for (int y = 0; y < map.Height; y++) {
+                    graph.AddVertex(new Point(x, y));
                 }
             }
 
-            for (int x = 0; x < map.Width; x++)
-            {
-                for (int y = 0; y < map.Height; y++)
-                {
-                    if (map[x, y] == Map.UnitType.Wall)
-                    {
+            for (int x = 0; x < map.Width; x++) {
+                for (int y = 0; y < map.Height; y++) {
+                    var unitType = map[x, y];
+                    if (unitType != Map.UnitType.Floor && unitType != Map.UnitType.PlayerEnd && unitType != Map.UnitType.PlayerStart) {
                         continue;
                     }
 
-                    Vector2 current = new Vector2(x, y);
-                    Vector2 neighbourUp = new Vector2(x, y + 1);
-                    Vector2 neighbourDown = new Vector2(x, y - 1);
-                    //Vector2 neighbourLeft = new Vector2(x - 1, y);
-                    Vector2 neighbourRight = new Vector2(x + 1, y);
+                    Point current = new Point(x, y);
+                    Point neighbourUp = new Point(x, y + 1);
+                    Point neighbourDown = new Point(x, y - 1);
+                    Point neighbourLeft = new Point(x - 1, y);
+                    Point neighbourRight = new Point(x + 1, y);
 
-                    //Vector2 neighbourUpLeft = new Vector2(x - 1, y + 1);
-                    Vector2 neighbourUpRight = new Vector2(x + 1, y + 1);
-                    //Vector2 neighbourDownLeft = new Vector2(x - 1, y - 1);
-                    Vector2 neighbourDownRight = new Vector2(x + 1, y - 1);
+                    //Point neighbourUpLeft = new Point(x - 1, y + 1);
+                    Point neighbourUpRight = new Point(x + 1, y + 1);
+                    //Point neighbourDownLeft = new Point(x - 1, y - 1);
+                    Point neighbourDownRight = new Point(x + 1, y - 1);
 
                     // Variables for number of walls in respective direction
                     var UpRightWallCount = 0;
@@ -60,30 +61,28 @@ namespace Project
                     UpRightWallCount += RightWallCount;
                     DownRightWallCount += RightWallCount;
 
+                    AddEdge(current, neighbourLeft);
+
                     // Do not add diagonal edge if there are horizontal and vertical walls blocking it
-                    if(UpRightWallCount < 2) AddEdge(current, neighbourUpRight);
-                    if(DownRightWallCount < 2) AddEdge(current, neighbourDownRight);
+                    //if (UpRightWallCount < 2) AddEdge(current, neighbourUpRight);
+                    //if (DownRightWallCount < 2) AddEdge(current, neighbourDownRight);
                 }
             }
 
 
         }
 
-        public Dictionary<Vector2, List<Vector2>> SolveMaze(Vector2 end)
-        {
-            Paths =  graph.Djkistra(end);
-            return Paths;
+        public void SolveMaze() {
+            graph.Djkistra(map.EndPosition);
         }
 
         // Add edge between current unit and neighbour unit if the neighbour
         // unit is within bound and is not a wall
         // Returns 0 if edge is added or exists. Returns 1 if edge is not possible
-        private int AddEdge(Vector2 current, Vector2 neighbour)
-        {
-            if (!OutofBound(neighbour))
-            {
-                if (GetMapUnit(neighbour) != Map.UnitType.Wall)
-                {
+        private int AddEdge(Point current, Point neighbour) {
+            if (!OutofBound(neighbour)) {
+                var mapUnit = GetMapUnit(neighbour);
+                if (mapUnit == Map.UnitType.Floor || mapUnit == Map.UnitType.PlayerEnd || mapUnit == Map.UnitType.PlayerStart) {
                     graph.AddEdge(current, neighbour, 1);
                     return 0;
                 }
@@ -91,14 +90,58 @@ namespace Project
             return 1;
         }
 
-        private Map.UnitType GetMapUnit(Vector2 position) 
-        {
-            return map[(int)position.X, (int)position.Y];
+        private Map.UnitType GetMapUnit(Point position) {
+            return map[position.X, position.Y];
         }
 
-        private bool OutofBound(Vector2 location)
-        {
+        private bool OutofBound(Point location) {
             return (location.X < 0 || location.X >= map.Width || location.Y < 0 || location.Y >= map.Height);
+        }
+
+        private void ResetHint() {
+            foreach (var gameObject in game.gameObjects) {
+                if (gameObject.IsHintObject) {
+                    gameObject.IsHintObject = false;
+                }
+            }
+        }
+
+        public void Hint() {
+            var newPlayerPosition = game.player.GetPlayerMapPoint();
+            if (newPlayerPosition.Equals(playerPosition)) return;
+            playerPosition = newPlayerPosition;
+            Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
+            ResetHint();
+            Dictionary<Point, Point> previous = graph.previous;
+            var current = playerPosition;
+            try {
+                current = playerPosition;
+
+                if (!previous.ContainsKey(current)) {
+                    Debug.WriteLine("NOT FOUND: " + map[current.X, current.Y]);
+                    return;
+                }
+
+                game.tiles[playerPosition].IsHintObject = true;
+                while (previous.ContainsKey(previous[current])) {
+                    if (current.Equals(map.EndPosition)) break;
+                    var prev = previous[current];
+                    try {
+                        game.tiles[prev].IsHintObject = true;
+                    }
+                    catch (Exception e) {
+                        Debug.WriteLine(e);
+                        Debug.WriteLine(prev);
+                    }
+                    current = prev;
+
+                }
+            }
+            catch (Exception e) {
+                Debug.WriteLine(e);
+                Debug.WriteLine("current: " + current);
+                Debug.WriteLine("previous" + previous);
+            }
         }
     }
 }

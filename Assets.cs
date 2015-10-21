@@ -10,9 +10,9 @@ namespace Project
     using SharpDX.Toolkit.Graphics;
     public class Assets
     {
-        LabGame game;
+        MazeGame game;
         List<GeometricPrimitive> primitives;
-        public Assets(LabGame game)
+        public Assets(MazeGame game)
         {
             this.game = game;
             primitives = new List<GeometricPrimitive>();

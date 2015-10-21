@@ -20,41 +20,41 @@
 //
 // Adapted for COMP30019 by Jeremy Nicholson, 10 Sep 2012
 // Adapted further by Chris Ewin, 23 Sep 2013
+// Adapted further by Lucas Cooper Oct 2014
+// Adapted further by Ryan Crosby Oct 2015
 
 // these won't change in a given iteration of the shader
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
 float4 cameraPos;
-float4 lightAmbCol = float4(0.6f, 0.6f, 0.6f, 1.0f);
+float4 lightAmbCol = float4(0.4f, 0.4f, 0.4f, 1.0f);
 float4 lightPntPos = float4(0.0f, 0.0f, -2.0f, 1.0f);
-float4 lightPntCol = float4(1.0f, 0.0f, 0.0f, 1.0f);
+float4 lightPntCol = float4(0.8f, 0.8f, 0.8f, 1.0f);
+float4 objectCol = float4(0.5f, 0.5f, 0.5f, 1.0f);
+float quant = 5.0f;
+//float Time;
 float4x4 worldInvTrp;
-float Ka;
-
-Texture2D shaderTexture;
-SamplerState SampleType;
-
 //
 
 struct VS_IN
 {
 	float4 pos : SV_POSITION;
 	float4 nrm : NORMAL;
-	float2 tex : TEXCOORD0;
-	// Other vertex properties, e.g. texture co-ords, surface Kd, Ks, etc
+	//float4 col : COLOR;
+// Other vertex properties, e.g. texture co-ords, surface Kd, Ks, etc
 };
 
 struct PS_IN
 {
 	float4 pos : SV_POSITION; //Position in camera co-ords
-	float2 tex : TEXCOORD0;
-	float4 wpos : TEXCOORD1; //Position in world co-ords
-	float3 wnrm : TEXCOORD2; //Normal in world co-ords 
+	float4 col : COLOR;
+	float4 wpos : TEXCOORD0; //Position in world co-ords
+	float3 wnrm : TEXCOORD1; //Normal in world co-ords 
 };
 
 
-PS_IN VS(VS_IN input)
+PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 
@@ -67,44 +67,48 @@ PS_IN VS(VS_IN input)
 
 	// Transform vertex in world coordinates to camera coordinates
 	float4 viewPos = mul(output.wpos, View);
-	output.pos = mul(viewPos, Projection);
+    output.pos = mul(viewPos, Projection);
 
-	// Just pass along the colour at the vertex
-	output.tex = input.tex;
-
+	// Make things grey because our models don't have colours.
+	output.col = objectCol;
 	return output;
 }
 
-float4 PS(PS_IN input) : SV_Target
-{
-
-	float4 col = shaderTexture.Sample(SampleType, input.tex);
-
+float4 PS( PS_IN input ) : SV_Target
+	{
 	// Our interpolated normal might not be of length 1
 	float3 interpNormal = normalize(input.wnrm);
 
+
+	// Task 4 Edit Your Shader to Work With 3 Lights
+	// Be careful about shader operations 
+	
 	// Calculate ambient RGB intensities
-	float3 amb = col.rgb*lightAmbCol.rgb*Ka;
+	float Ka = 1;
+	float3 amb = input.col.rgb*lightAmbCol.rgb*Ka;
 
 	// Calculate diffuse RBG reflections
-	float fAtt = 1;
+	float fAtt = 0.8;
 	float Kd = 1;
-	float3 L = normalize(lightPntPos.xyz - input.wpos.xyz);
-	float LdotN = saturate(dot(L, interpNormal.xyz));
-	float3 dif = fAtt*lightPntCol.rgb*Kd*col.rgb*LdotN;
+	// Relative light position rather than absolute
+	float3 L = normalize(lightPntPos);
+	float LdotN = saturate(dot(L,interpNormal.xyz));
+	float3 dif = fAtt*lightPntCol.rgb*Kd*input.col.rgb*LdotN;
 
 	// Calculate specular reflections
 	float Ks = 1;
 	float specN = 5; // Numbers>>1 give more mirror-like highlights
 	float3 V = normalize(cameraPos.xyz - input.wpos.xyz);
-	float3 R = normalize(2 * LdotN*interpNormal.xyz - L.xyz);
-	//float3 R = normalize(0.5*(L.xyz+V.xyz)); //Blinn-Phong equivalent
-	float3 spe = fAtt*lightPntCol.rgb*Ks*pow(saturate(dot(V, R)), specN);
+	float3 R = normalize(0.5*(L.xyz+V.xyz));
+	float3 spe = fAtt*lightPntCol.rgb*Ks*pow(saturate(dot(V,R)),specN);
 
 	// Combine reflection components
-	float4 returnCol = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	returnCol.rgb = amb.rgb + dif.rgb + spe.rgb;
-	returnCol.a = col.a;
+	float4 returnCol = float4(0.0f,0.0f,0.0f,0.0f);
+	returnCol.rgb = amb.rgb+dif.rgb+spe.rgb;
+	returnCol.a = input.col.a;
+	
+	// Quantise output into lighting levels
+	returnCol.rgb = normalize(returnCol.rgb) * (1.0f/quant) * floor(quant * length(returnCol.rgb));
 
 	return returnCol;
 }
@@ -113,10 +117,10 @@ float4 PS(PS_IN input) : SV_Target
 
 technique Lighting
 {
-	pass Pass1
-	{
-		Profile = 10.0;
-		VertexShader = VS;
-		PixelShader = PS;
-	}
+    pass Pass1
+    {
+		Profile = 9.1;
+        VertexShader = VS;
+        PixelShader = PS;
+    }
 }

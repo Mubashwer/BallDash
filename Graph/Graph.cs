@@ -12,6 +12,8 @@ namespace Project
     public class Graph<T> where T : IEquatable<T>
     {
         private Dictionary<T, Dictionary<T, int>> adjacencyList = new Dictionary<T, Dictionary<T, int>>();
+        
+        public Dictionary<T,T> previous = new Dictionary<T, T>();
         public int Vertices { get; private set; }
         public int Edges { get; private set; }
 
@@ -36,9 +38,8 @@ namespace Project
             return true;
         }
 
-        public Dictionary<T, List<T>> Djkistra(T source)
+        public void Djkistra(T source)
         {
-            var previous = new Dictionary<T, T>();
             var distances = new Dictionary<T, int>();
             var vertices = new PriorityQueue<T, int>();
 
@@ -71,11 +72,11 @@ namespace Project
                     }
                 }
             }
-            return ConstructPaths(previous, source);
+            ConstructPaths(source);
         }
 
         //TESTING
-        private Dictionary<T, List<T>> ConstructPaths(Dictionary<T, T> previous, T source)
+        private void ConstructPaths(T source)
         {
             Dictionary<T, List<T>> paths = new Dictionary<T, List<T>>();
             
@@ -94,7 +95,13 @@ namespace Project
                 }
                 if (previous[current].Equals(source)) paths[vertex].Add(source);
             }
-            return paths;
+            foreach (var path in paths.Values)
+            {
+                Debug.WriteLine("STARTPATH");
+                foreach(var unit in path)
+                Debug.WriteLine(unit);
+                Debug.WriteLine("ENDPATH");
+            }
         }
 
     }

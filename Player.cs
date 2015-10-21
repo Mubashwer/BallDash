@@ -16,29 +16,48 @@ namespace Project {
     public class Player : GameObject {
         private float diameter = 2f;
         private float radius;
-        private int tessellation = 32;
+        private int tessellation = 24;
 
         private Vector3 velocity;
-        private float maximumVelocity = 8;
+        private float maximumVelocity = 16;
+        private double tiltYOffset = 0;
+        public bool CollisionsEnabled { get; set; }
+        public float CollisionReboundDampening { get; set; }
 
-        public Player(LabGame game, String shaderName, Vector3 position) {
+        private Vector3 startPosition;
+
+        /// <summary>
+        /// Triggered when the player dies
+        /// </summary>
+        public event EventHandler PlayerDied;
+
+        /// <summary>
+        /// Triggered when the player suffers a physics collision
+        /// </summary>
+        public event EventHandler Collision;
+
+        public Player(MazeGame game, string shaderName, Vector3 position) {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
             myModel = game.assets.GetModel("player", CreatePlayerModel);
+            startPosition = position;
             base.position = position;
             base.position.Z = -radius;
             transform = new Transform(base.position);
             ShaderName = shaderName;
+            CollisionsEnabled = true;
+            CollisionReboundDampening = 0.4f;
         }
 
         public MyModel CreatePlayerModel() {
-            return game.assets.CreateTexturedSphere(diameter, tessellation, "marble.jpg");
+            return game.assets.CreateTexturedSphere(diameter, tessellation, "marble.dds");
         }
 
 
         // Frame update.
         public override void Update(GameTime gameTime) {
+
             // get the total elapsed time in seconds since the last update
             double elapsedMs = gameTime.ElapsedGameTime.TotalMilliseconds;
 
@@ -53,6 +72,9 @@ namespace Project {
             double tiltX = Math.Atan2(accelReading.AccelerationX, accelReading.AccelerationZ);
             double tiltY = Math.Atan2(accelReading.AccelerationY, accelReading.AccelerationZ);
 
+            // add tilt offset
+            tiltY += DegreesToRadians(tiltYOffset);
+
             // use the tilt angle to calculate the ball's X and Y acceleration
             double ballXAccel = elapsedMs * Math.Sin(tiltX) * 0.01;
             double ballYAccel = elapsedMs * Math.Sin(tiltY) * 0.01;
@@ -63,7 +85,7 @@ namespace Project {
             velocity.X += (float)ballXAccel;
             velocity.Y += (float)ballYAccel;
 
-            // TODO: Add gravity to allow the ball to fall down holes.
+            velocity.Z += (float)(0.01 * elapsedMs);
 
             // add drag to the ball
             velocity -= velocity.Length() * velocity * 0.001f;
@@ -77,9 +99,7 @@ namespace Project {
             Vector3 lastPosition = position;
 
             // add the velocity to the current player position
-            // using elapsedMs causes jitter, need to investigate
-            //position += velocity * (float)(elapsedMs / 1000f);
-            position += velocity * 0.1f;
+            position += velocity * (float)(elapsedMs / 1000f);
 
             // Perform all physics on the object.
             // Detect any collisions with edges here.
@@ -87,31 +107,111 @@ namespace Project {
             // TODO: Add basic collision detection with wall edges and the floor.
             // STRATEGY:
 
-            // 1. Calculate which square the player is on
-            // 2. For the 8 adjacent squares around the player, do the following in both X and Y:
-            //    a. Circumnavigate the player ball in the horizontal plane about the radius,
-            //       checking to see whether any point lies over an adjacent wall
-            //    b. If the player's edge is over a wall:
-            //       i)   Move the player back such that it is just touching the wall
-            //       ii)  Reverse the players velocity with dampening
-            //       iii) Trigger a collision event so a sound effect can be played
+            // 1. Calculate which square the player was just on (last position)
+            // 2. Circumnavigate the player ball in the horizontal plane about the radius,
+            //    checking to see whether any point lies over an adjacent wall
+            // 3. If the player's edge is over a wall:
+            //    a) Move the player back to their previous position
+            //    b) Reverse the players velocity with dampening
+            //    c) Trigger a collision event so a sound effect can be played (TODO)
 
-            // Keep within the boundaries. (TODO: Shouldn't be needed after map physics is complete)
-            if (position.X < game.boundaryLeft + radius) {
-                position.X = game.boundaryLeft + radius;
-                velocity.X *= -0.3f;
+            //1.
+            Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
+            Vector2 currentBallMapPos = GetPlayerMapPosition();
+            Point currentBallMapPoint = GetPlayerMapPoint();
+
+            // Gravity: Check if the current square is a floor, and if so, do not change the height
+            var floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
+
+            if (currentBallCenterWorldPosition.Z > radius) {
+                // the ball has half fallen down a hole, consider this a game over event
+                if (PlayerDied != null) {
+                    PlayerDied(this, null);
+                }
+
+                // reset player position
+                this.velocity = new Vector3();
+                this.position = startPosition;
             }
-            if (position.X > game.boundaryRight - radius) {
-                position.X = game.boundaryRight - radius;
-                velocity.X *= -0.3f;
+
+            if (floorType == Map.UnitType.Floor
+                || floorType == Map.UnitType.Wall
+                || floorType == Map.UnitType.PlayerStart
+                || floorType == Map.UnitType.PlayerEnd) {
+                position.Z = -radius;
+                velocity.Z = 0;
             }
-            if (position.Y < game.boundaryBottom + radius) {
-                position.Y = game.boundaryBottom + radius;
-                velocity.Y *= -0.3f;
+
+            //2.
+            // Check that, given the current position of the ball, no part of the balls 
+            // circumference is touching a wall
+
+            bool collisionUp = false;
+            bool collisionDown = false;
+            bool collisionLeft = false;
+            bool collisionRight = false;
+
+            int points = 16; // the number of points to check, 16 is a good approximation
+            for (int k = 0; k < points; k++) {
+                float pointX = currentBallCenterWorldPosition.X + (radius * (float)Math.Cos((k / (double)points) * 2 * Math.PI));
+                float pointY = currentBallCenterWorldPosition.Y + (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
+
+                // get the map coordinates for this point
+                Vector2 pointMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(pointX, pointY));
+
+                // get the unit type that this point is located within
+                var pointFloorType = game.CurrentMap[(int)pointMapPos.X, (int)pointMapPos.Y];
+
+                // if it's a wall, we have a collision.
+                if (pointFloorType == Map.UnitType.Wall) {
+                    // check if the point's map position is to the left or to the right of the current map position
+                    if ((int)pointMapPos.X > (int)currentBallMapPos.X) {
+                        collisionRight = true;
+                    }
+
+                    if ((int)pointMapPos.X < (int)currentBallMapPos.X) {
+                        collisionLeft = true;
+                    }
+
+                    // check if the point's map position is above or below the current ball map position
+                    if ((int)pointMapPos.Y > (int)currentBallMapPos.Y) {
+                        collisionUp = true;
+                    }
+
+                    if ((int)pointMapPos.Y < (int)currentBallMapPos.Y) {
+                        collisionDown = true;
+                    }
+                }
             }
-            if (position.Y > game.boundaryTop - radius) {
-                position.Y = game.boundaryTop - radius;
-                velocity.Y *= -0.3f;
+
+            if (CollisionsEnabled) {
+                bool playSoundEffect = false;
+                // now, apply collisions based on what we discovered in the previous step
+                if ((collisionLeft && velocity.X < 0)
+                    || (collisionRight && velocity.X > 0)) {
+                    velocity.X *= -CollisionReboundDampening;
+                    position.X = lastPosition.X;
+
+                    if (Math.Abs(velocity.X) > 0.5) {
+                        playSoundEffect = true;
+                    }
+                }
+
+                if ((collisionUp && velocity.Y > 0)
+                    || (collisionDown && velocity.Y < 0)) {
+                    velocity.Y *= -CollisionReboundDampening;
+                    position.Y = lastPosition.Y;
+
+                    if (Math.Abs(velocity.Y) > 0.5) {
+                        playSoundEffect = true;
+                    }
+                }
+
+                if (playSoundEffect) {
+                    if (Collision != null) {
+                        Collision(this, null);
+                    }
+                }
             }
 
             // after all physics is done, calculate the actual distance travelled by the ball
@@ -127,27 +227,31 @@ namespace Project {
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
 
-            if (updateCounter > 4) {
-                // Update debug stats
-                string stats = "Update Delta: " + elapsedMs
-                    + Environment.NewLine + "Tilt X: " + tiltX
-                    + Environment.NewLine + "Tilt Y: " + tiltY
-                    + Environment.NewLine + "Ball Acc X: " + ballXAccel
-                    + Environment.NewLine + "Ball Acc Y: " + ballYAccel
-                    + Environment.NewLine + "Ball Vel X: " + velocity.X
-                    + Environment.NewLine + "Ball Vel Y: " + velocity.Y
-                    + Environment.NewLine + "Ball Vel Z: " + velocity.Z
-                    + Environment.NewLine + "Ball Pos X: " + position.X
-                    + Environment.NewLine + "Ball Pos Y: " + position.Y
-                    + Environment.NewLine + "Ball Pos Z: " + position.Z;
+            // Update debug stats
+            string stats = "Update Delta: " + elapsedMs
+                + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
+                + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
+                + Environment.NewLine + "Ball Acc X: " + ballXAccel
+                + Environment.NewLine + "Ball Acc Y: " + ballYAccel
+                + Environment.NewLine + "Ball Vel X: " + velocity.X
+                + Environment.NewLine + "Ball Vel Y: " + velocity.Y
+                + Environment.NewLine + "Ball Vel Z: " + velocity.Z
+                + Environment.NewLine + "Ball Pos X: " + position.X
+                + Environment.NewLine + "Ball Pos Y: " + position.Y
+                + Environment.NewLine + "Ball Pos Z: " + position.Z
+                + Environment.NewLine + "Ball Map X: " + currentBallMapPos.X
+                + Environment.NewLine + "Ball Map Y: " + currentBallMapPos.Y
+                + Environment.NewLine + "Ball Map Point X: " + currentBallMapPoint.X
+                + Environment.NewLine + "Ball Map Point Y: " + currentBallMapPoint.Y
+                + Environment.NewLine + "Tile Type: " + floorType
+                + Environment.NewLine + "Collision Left: " + collisionLeft
+                + Environment.NewLine + "Collision Right: " + collisionRight
+            + Environment.NewLine + "Collision Up: " + collisionUp
+                + Environment.NewLine + "Collision Down: " + collisionDown;
 
-                game.mainPage.UpdateStats(stats);
-                updateCounter = 0;
-            }
-            updateCounter++;
+            game.mainPage.UpdateStats(stats);
         }
 
-        private int updateCounter = 0;
 
         private Vector3 ConstrainVector(Vector3 vector, Vector3 absMax) {
             if (Math.Abs(vector.X) > absMax.X) {
@@ -161,6 +265,31 @@ namespace Project {
             }
 
             return vector;
+        }
+
+        private static double RadiansToDegrees(double radian) {
+            return radian * (180 / Math.PI);
+        }
+
+        private static double DegreesToRadians(double degrees) {
+            return degrees / (180 / Math.PI);
+        }
+
+
+
+        public Vector3 GetPlayerWorldPosition() {
+            return position + radius * 1.5f;
+        }
+
+        public Vector2 GetPlayerMapPosition() {
+            Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
+            Vector2 currentBallMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(currentBallCenterWorldPosition.X, currentBallCenterWorldPosition.Y));
+            return currentBallMapPos;
+        }
+
+        public Point GetPlayerMapPoint() {
+            Vector2 playerMapPosition = GetPlayerMapPosition();
+            return new Point((int)playerMapPosition.X, (int)playerMapPosition.Y);
         }
 
         public override void Tapped(GestureRecognizer sender, TappedEventArgs args) {
