@@ -10,7 +10,7 @@ namespace Project
 {
     public class WallGameObject : GameObject
     {
-        public WallGameObject(LabGame game, string shaderName, Vector3 position)
+        public WallGameObject(MazeGame game, string shaderName, Vector3 position)
         {
             this.game = game;
             type = GameObjectType.Wall;

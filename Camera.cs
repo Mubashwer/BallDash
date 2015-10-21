@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using SharpDX;
 using SharpDX.Toolkit;
-namespace Project
-{
+namespace Project {
     using SharpDX.Toolkit.Input;
 
-    public class Camera
-    {
+    public class Camera {
         public Matrix View;
         public Matrix Projection;
 
@@ -28,20 +26,18 @@ namespace Project
         public Vector3 Position { get; private set; }
 
         private Vector3 cameraTarget;
-        public Vector3 CameraTarget
-        {
-            get
-            {
+        public Vector3 CameraTarget {
+            get {
                 return cameraTarget;
             }
         }
 
 
-        public LabGame game;
+        public MazeGame game;
 
 
         // Ensures that all objects are being rendered from a consistent viewpoint
-        public Camera(LabGame game) {
+        public Camera(MazeGame game) {
             playerPosition = game.player.transform.Position;
             defaultCameraTarget = new Vector3(playerPosition.X, playerPosition.Y, 1);
             cameraTarget = defaultCameraTarget;
@@ -55,9 +51,7 @@ namespace Project
         }
 
         // If the screen is resized, the projection matrix will change
-        public void Update()
-        {
-            
+        public void Update() {
             Position = Position - playerPosition + game.player.transform.Position;
             defaultCameraTarget = defaultCameraTarget - playerPosition + game.player.transform.Position;
             cameraTarget = cameraTarget - playerPosition + game.player.transform.Position;
@@ -79,30 +73,23 @@ namespace Project
             View = Matrix.LookAtLH(Position, cameraTarget, up);
         }
 
-        void AngleReset()
-        {
-            if (yaw >= (float)(2 * Math.PI))
-            {
+        void AngleReset() {
+            if (yaw >= (float)(2 * Math.PI)) {
                 yaw -= (float)(2 * Math.PI);
             }
-            else if (yaw <= -(float)(2 * Math.PI))
-            {
+            else if (yaw <= -(float)(2 * Math.PI)) {
                 yaw += (float)(2 * Math.PI);
             }
-            if (pitch >= (float)(2 * Math.PI))
-            {
+            if (pitch >= (float)(2 * Math.PI)) {
                 pitch -= (float)(2 * Math.PI);
             }
-            else if (pitch <= -(float)(2 * Math.PI))
-            {
+            else if (pitch <= -(float)(2 * Math.PI)) {
                 pitch += (float)(2 * Math.PI);
             }
-            if (roll >= (float)(2 * Math.PI))
-            {
+            if (roll >= (float)(2 * Math.PI)) {
                 roll -= (float)(2 * Math.PI);
             }
-            else if (roll <= -(float)(2 * Math.PI))
-            {
+            else if (roll <= -(float)(2 * Math.PI)) {
                 roll += (float)(2 * Math.PI);
             }
         }

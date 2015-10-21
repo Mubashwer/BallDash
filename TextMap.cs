@@ -68,11 +68,9 @@ namespace Project {
                             break;
                         case PlayerStartCharacter:
                             currentRow.Add(UnitType.PlayerStart);
-                            StartPosition = new Point(i, j);
                             break;
                         case PlayerEndCharacter:
                             currentRow.Add(UnitType.PlayerEnd);
-                            EndPosition = new Point(i, j);
                             break;
                     }
                 }
@@ -89,6 +87,23 @@ namespace Project {
             this.height = map.Count;
 
             mapDefinition = map;
+
+            UpdateStartEndPositions();
+        }
+
+        private void UpdateStartEndPositions() {
+            for (int i = 0; i < this.Height; i++) {
+                for (int j = 0; j < this.Width; j++) {
+                    switch (this[j, i]) {
+                        case UnitType.PlayerStart:
+                            this.StartPosition = new Point(j, i);
+                                break;
+                        case UnitType.PlayerEnd:
+                            this.EndPosition = new Point(j, i);
+                            break;
+                    }
+                }
+            }
         }
 
         public override UnitType this[int x, int y] {

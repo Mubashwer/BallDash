@@ -36,7 +36,7 @@ namespace Project {
         /// </summary>
         public event EventHandler Collision;
 
-        public Player(LabGame game, string shaderName, Vector3 position) {
+        public Player(MazeGame game, string shaderName, Vector3 position) {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
@@ -118,6 +118,7 @@ namespace Project {
             //1.
             Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
             Vector2 currentBallMapPos = GetPlayerMapPosition();
+            Point currentBallMapPoint = GetPlayerMapPoint();
 
             // Gravity: Check if the current square is a floor, and if so, do not change the height
             var floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
@@ -127,13 +128,13 @@ namespace Project {
                 if (PlayerDied != null) {
                     PlayerDied(this, null);
                 }
-                
+
                 // reset player position
                 this.velocity = new Vector3();
                 this.position = startPosition;
             }
 
-            if (floorType == Map.UnitType.Floor 
+            if (floorType == Map.UnitType.Floor
                 || floorType == Map.UnitType.Wall
                 || floorType == Map.UnitType.PlayerStart
                 || floorType == Map.UnitType.PlayerEnd) {
@@ -226,33 +227,31 @@ namespace Project {
             transform.Rotate(rotationAxis, angle);
             transform.Position = position;
 
-            if (updateCounter > 4) {
-                // Update debug stats
-                string stats = "Update Delta: " + elapsedMs
-                    + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
-                    + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
-                    + Environment.NewLine + "Ball Acc X: " + ballXAccel
-                    + Environment.NewLine + "Ball Acc Y: " + ballYAccel
-                    + Environment.NewLine + "Ball Vel X: " + velocity.X
-                    + Environment.NewLine + "Ball Vel Y: " + velocity.Y
-                    + Environment.NewLine + "Ball Vel Z: " + velocity.Z
-                    + Environment.NewLine + "Ball Pos X: " + position.X
-                    + Environment.NewLine + "Ball Pos Y: " + position.Y
-                    + Environment.NewLine + "Ball Pos Z: " + position.Z
-                    + Environment.NewLine + "Tile Type: " + floorType
-                    + Environment.NewLine + "Collision Left: " + collisionLeft
-                    + Environment.NewLine + "Collision Right: " + collisionRight
-                + Environment.NewLine + "Collision Up: " + collisionUp
-                    + Environment.NewLine + "Collision Down: " + collisionDown;
+            // Update debug stats
+            string stats = "Update Delta: " + elapsedMs
+                + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
+                + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
+                + Environment.NewLine + "Ball Acc X: " + ballXAccel
+                + Environment.NewLine + "Ball Acc Y: " + ballYAccel
+                + Environment.NewLine + "Ball Vel X: " + velocity.X
+                + Environment.NewLine + "Ball Vel Y: " + velocity.Y
+                + Environment.NewLine + "Ball Vel Z: " + velocity.Z
+                + Environment.NewLine + "Ball Pos X: " + position.X
+                + Environment.NewLine + "Ball Pos Y: " + position.Y
+                + Environment.NewLine + "Ball Pos Z: " + position.Z
+                + Environment.NewLine + "Ball Map X: " + currentBallMapPos.X
+                + Environment.NewLine + "Ball Map Y: " + currentBallMapPos.Y
+                + Environment.NewLine + "Ball Map Point X: " + currentBallMapPoint.X
+                + Environment.NewLine + "Ball Map Point Y: " + currentBallMapPoint.Y
+                + Environment.NewLine + "Tile Type: " + floorType
+                + Environment.NewLine + "Collision Left: " + collisionLeft
+                + Environment.NewLine + "Collision Right: " + collisionRight
+            + Environment.NewLine + "Collision Up: " + collisionUp
+                + Environment.NewLine + "Collision Down: " + collisionDown;
 
-                game.mainPage.UpdateStats(stats);
-                updateCounter = 0;
-            }
-            updateCounter++;
-
+            game.mainPage.UpdateStats(stats);
         }
 
-        private int updateCounter = 0;
 
         private Vector3 ConstrainVector(Vector3 vector, Vector3 absMax) {
             if (Math.Abs(vector.X) > absMax.X) {
@@ -276,7 +275,7 @@ namespace Project {
             return degrees / (180 / Math.PI);
         }
 
-        
+
 
         public Vector3 GetPlayerWorldPosition() {
             return position + radius * 1.5f;

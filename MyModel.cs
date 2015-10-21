@@ -23,10 +23,10 @@ namespace Project
         public bool IsIndex32Bits;
         public VertexInputLayout inputLayout;
         public int vertexStride;
-        public String TextureName {get; set;}
+        public string TextureName {get; set;}
 
         
-        public MyModel(LabGame game, VertexPositionNormalTexture[] vertices, int[] indices, String textureName, float collisionRadius)
+        public MyModel(MazeGame game, VertexPositionNormalTexture[] vertices, int[] indices, string textureName, float collisionRadius)
         {
             this.vertexBuffer = Buffer.Vertex.New(game.GraphicsDevice, vertices);
             this.indexBuffer = Buffer.Vertex.New(game.GraphicsDevice, indices);
@@ -38,7 +38,7 @@ namespace Project
         }
 
 
-        public MyModel(LabGame game, Buffer vertexBuffer, Buffer indexBuffer, bool IsIndex32Bits,  String textureName, float collisionRadius)
+        public MyModel(MazeGame game, Buffer vertexBuffer, Buffer indexBuffer, bool IsIndex32Bits,  string textureName, float collisionRadius)
         {
             this.vertexBuffer = vertexBuffer;
             this.indexBuffer = indexBuffer;

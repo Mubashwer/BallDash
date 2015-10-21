@@ -34,7 +34,7 @@ namespace Project
     using SharpDX.Toolkit.Graphics;
     using SharpDX.Toolkit.Input;
 
-    public class LabGame : Game
+    public class MazeGame : Game
     {
         private GraphicsDeviceManager graphicsDeviceManager;
         public List<GameObject> gameObjects;
@@ -64,17 +64,11 @@ namespace Project
         // Random number generator
         public Random random;
 
-        // World boundaries that indicate where the edge of the screen is for the camera.
-        public float boundaryLeft;
-        public float boundaryRight;
-        public float boundaryTop;
-        public float boundaryBottom;
-
         public bool started = false;
         /// <summary>
-        /// Initializes a new instance of the <see cref="LabGame" /> class.
+        /// Initializes a new instance of the <see cref="MazeGame" /> class.
         /// </summary>
-        public LabGame(MainPage mainPage)
+        public MazeGame(MainPage mainPage)
         {
             // Creates a graphics manager. This is mandatory.
             graphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -88,12 +82,6 @@ namespace Project
             assets = new Assets(this);
             random = new Random();
             input = new GameInput();
-
-            // Set boundaries.
-            boundaryLeft = 0f; //-4.5f;
-            boundaryRight = 50f; //4.5f;
-            boundaryTop = 50f; //4;
-            boundaryBottom = 0f;//-4.5f;
 
             // Initialise event handling.
             input.gestureRecognizer.Tapped += Tapped;
@@ -122,24 +110,6 @@ namespace Project
             var basicMap = new TextMap("testMap.txt");
             ChangeMap(basicMap);
 
-            // SOLVER TEST
-            
-            solver = new MazeSolver(this, basicMap);
-            solver.SolveMaze();
-            
-            /*foreach (var path in paths.Values)
-            {
-                Debug.WriteLine("STARTPATH");
-                foreach(var unit in path)
-                    Debug.WriteLine(unit);
-                Debug.WriteLine("ENDPATH");
-            }*/
-
-
-
-            // map test
-            Debug.WriteLine("First map:\n{0}", CurrentMap.ToString());
-
             // Create an input layout from the vertices
 
             base.LoadContent();
@@ -147,9 +117,13 @@ namespace Project
 
         public void ChangeMap(Map map) {
             CurrentMap = map;
-            boundaryRight = CurrentMap.Width * Map.WorldUnitWidth;
-            boundaryTop = CurrentMap.Height * Map.WorldUnitHeight;
             LoadFloor(CurrentMap);
+
+            solver = new MazeSolver(this, map);
+            solver.SolveMaze();
+
+            // map test
+            Debug.WriteLine("First map:\n{0}", CurrentMap.ToString());
         }
 
         private void LoadFloor(Map map)
@@ -270,7 +244,7 @@ namespace Project
             if (started)
             {
                 // Clears the screen with the Color.CornflowerBlue
-                GraphicsDevice.Clear(Color.CornflowerBlue);
+                GraphicsDevice.Clear(Color.Black);
 
                 for (int i = 0; i < gameObjects.Count; i++)
                 {

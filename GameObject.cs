@@ -19,7 +19,7 @@ namespace Project {
     abstract public class GameObject {
         public MyModel myModel;
         public Transform transform;
-        public LabGame game;
+        public MazeGame game;
         public GameObjectType type = GameObjectType.None;
         public Vector3 position;
 
@@ -58,13 +58,19 @@ namespace Project {
                 ShaderCache[ShaderName] = effect;
             }
 
-            Texture2D texture;
-            if (!TextureCache.TryGetValue(myModel.TextureName, out texture)) {
-                texture = game.Content.Load<Texture2D>(myModel.TextureName);
-                TextureCache[myModel.TextureName] = texture;
-            }
+           
+            if (myModel.TextureName != null) {
+                Texture2D texture;
+                if (!TextureCache.TryGetValue(myModel.TextureName, out texture)) {
+                    texture = game.Content.Load<Texture2D>(myModel.TextureName);
+                    TextureCache[myModel.TextureName] = texture;
+                }
 
-            effect.Parameters["shaderTexture"].SetResource(texture);
+                // only pass texture to the shader if the shader is capable of taking it
+                if (effect.Parameters.Contains("shaderTexture")) {
+                    effect.Parameters["shaderTexture"].SetResource(texture);
+                }
+            }
         }
 
         public void GetParamsFromModel() {
@@ -74,9 +80,13 @@ namespace Project {
                 effect.Parameters["View"].SetValue(game.camera.View);
                 effect.Parameters["cameraPos"].SetValue(game.camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
-                if (IsHintObject) effect.Parameters["Ka"].SetValue(2.0f);
-                else if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
-                else effect.Parameters["Ka"].SetValue(1.0f);
+
+                // only apply Ka if the shader is capable of using it
+                if (effect.Parameters.Contains("Ka")) {
+                    if (IsHintObject) effect.Parameters["Ka"].SetValue(2.0f);
+                    else if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
+                    else effect.Parameters["Ka"].SetValue(1.0f);
+                }
             }
         }
 
