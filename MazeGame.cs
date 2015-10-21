@@ -54,9 +54,6 @@ namespace Project
         public Map CurrentMap { get; set; }
         public bool DebugEnabled { get; set; }
 
-        // TASK 4: Use this to represent difficulty
-        public float difficulty;
-
         // Represents the camera's position and orientation
         public Camera camera;
 
@@ -94,7 +91,6 @@ namespace Project
             this.mainPage = mainPage;
 
             score = 0;
-            difficulty = 1;
         }
 
         protected override void LoadContent()
