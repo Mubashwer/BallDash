@@ -229,6 +229,7 @@ namespace Project {
 
             // Update debug stats
             string stats = "Update Delta: " + elapsedMs
+                + Environment.NewLine + "Updates/second: " + (1000/elapsedMs)
                 + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
                 + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
                 + Environment.NewLine + "Ball Acc X: " + ballXAccel
@@ -246,7 +247,7 @@ namespace Project {
                 + Environment.NewLine + "Tile Type: " + floorType
                 + Environment.NewLine + "Collision Left: " + collisionLeft
                 + Environment.NewLine + "Collision Right: " + collisionRight
-            + Environment.NewLine + "Collision Up: " + collisionUp
+                + Environment.NewLine + "Collision Up: " + collisionUp
                 + Environment.NewLine + "Collision Down: " + collisionDown;
 
             game.mainPage.UpdateStats(stats);
