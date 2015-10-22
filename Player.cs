@@ -21,7 +21,7 @@ namespace Project {
         private int tessellation = 24;
 
         private Vector3 velocity;
-        private float maximumVelocity = 16;
+        private float maximumVelocity = 32;
         private double tiltYOffset = 0;
         public bool CollisionsEnabled { get; set; }
         public float CollisionReboundDampening { get; set; }
@@ -127,7 +127,7 @@ namespace Project {
             velocity.Z += (float)(ballZAccel * elapsedMs);
 
             // add drag to the ball
-            velocity -= velocity.Length() * velocity * 0.001f;
+            velocity -= velocity.Length() * velocity * 0.00001f * (float)elapsedMs;
 
             // constrain the player's maximum velocity
             if (velocity.Length() > maximumVelocity) {
