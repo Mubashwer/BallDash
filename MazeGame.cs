@@ -102,7 +102,9 @@ namespace Project {
                 }
                 else { // Use 1 white light only
                     Lights[0].LightColor = Color.White.ToColor4();
-                    Lights[0].LightPosition = new Vector3(CurrentLevel.Map.Width / 2f, CurrentLevel.Map.Height / 2f, DefaultLightHeight);
+                    Lights[0].LightPosition = new Vector3(CurrentLevel.Map.Width / 2f * CurrentLevel.Map.MapUnitWidth, 
+                        CurrentLevel.Map.Height* CurrentLevel.Map.MapUnitHeight / 2f, 
+                        DefaultLightHeight);
                     Lights[1].LightColor = Color.Black.ToColor4();
                     Lights[2].LightColor = Color.Black.ToColor4();
                 }
@@ -136,7 +138,7 @@ namespace Project {
             Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
 
             IsStarted = false;
-            DefaultLightHeight = -20f;
+            
         }
 
         private void LoadLevels() {
@@ -235,7 +237,7 @@ namespace Project {
 
             // Generate the game objects that make up the floor
             LoadFloor(map);
-
+            DefaultLightHeight = CurrentLevel.Map.Width / -2f * CurrentLevel.Map.MapUnitWidth;
             AddEnvironmentLights();
             RainbowModeOn = false;
 
@@ -254,11 +256,11 @@ namespace Project {
         // Add Red, Green and Blue environment lights with different rate of movements
         private void AddEnvironmentLights() {
             var rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
-            var red = new Light(Color.Red.ToColor4(), 1f, rate);
+            var red = new Light(this,Color.Red.ToColor4(), 1f, rate);
             rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
-            var green = new Light(Color.Green.ToColor4(), 1f, rate);
+            var green = new Light(this,Color.Green.ToColor4(), 1f, rate);
             rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
-            var blue = new Light(Color.Blue.ToColor4(), 1f, rate);
+            var blue = new Light(this,Color.Blue.ToColor4(), 1f, rate);
             Lights.Add(red);
             Lights.Add(green);
             Lights.Add(blue);
