@@ -7,16 +7,15 @@ using SharpDX;
 
 namespace Project {
     public abstract class Map {
+        [Flags]
         public enum UnitType {
             None = 0,
             Floor = 1,
             Wall = 2,
-            PlayerStart = 11,
-            PlayerEnd = 12,
-            SmallHole1 = 20,
-            SmallHole2 = 21,
-            SmallHole3 = 22,
-            SmallHole4 = 23
+            PlayerStart = 4,
+            PlayerEnd = 8,
+            Hole = 16,
+            Rainbow = 32
         }
 
         public abstract UnitType this[int x, int y] { get; }

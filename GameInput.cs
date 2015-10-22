@@ -35,17 +35,29 @@ namespace Project
         // Call the gesture recognizer when a pointer event occurs
         void OnPointerPressed(CoreWindow sender, PointerEventArgs args)
         {
-            gestureRecognizer.ProcessDownEvent(args.CurrentPoint);
+            try
+            {
+                gestureRecognizer.ProcessDownEvent(args.CurrentPoint);
+            }
+            catch { }
         }
 
         void OnPointerMoved(CoreWindow sender, PointerEventArgs args)
         {
-            gestureRecognizer.ProcessMoveEvents(args.GetIntermediatePoints());
+            try
+            {
+                gestureRecognizer.ProcessMoveEvents(args.GetIntermediatePoints());
+            }
+            catch { }
         }
 
         void OnPointerReleased(CoreWindow sender, PointerEventArgs args)
         {
-            gestureRecognizer.ProcessUpEvent(args.CurrentPoint);
+            try
+            {
+                gestureRecognizer.ProcessUpEvent(args.CurrentPoint);
+            }
+            catch { }
         }
     }
 }

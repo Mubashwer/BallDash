@@ -43,14 +43,8 @@ namespace Project.Menus {
         // Button for Hint
         private void ChangeHint(object sender, RoutedEventArgs e)
         {
-            if (!parent.Game.MazeSolver.Enabled)
-            {
-                parent.Game.MazeSolver.Enabled = true;
-            }
-            else
-            {
-                parent.Game.MazeSolver.Enabled = false;
-            }
+            parent.Game.MazeSolver.Enabled = !parent.Game.MazeSolver.Enabled;
+            parent.Game.RainbowModeOn = !parent.Game.RainbowModeOn;
         }
 
         private void Back(object sender, RoutedEventArgs e)

@@ -10,18 +10,21 @@ namespace Project {
     public class FloorUnitGameObject : GameObject {
         private float unitWidth;
         private float unitHeight;
-        public FloorUnitGameObject(MazeGame game, string shaderName, Vector3 position, float unitWidth, float unitHeight) {
+        private string textureName;
+        public FloorUnitGameObject(MazeGame game, string shaderName, string textureName, Vector3 position, float unitWidth, float unitHeight) {
             this.game = game;
             this.unitWidth = unitWidth;
             this.unitHeight = unitHeight;
             type = GameObjectType.FloorUnit;
-            myModel = game.Assets.GetModel("FloorUnit"+unitWidth.ToString()+":"+unitHeight.ToString(), CreateFloorModel);
+            this.textureName = textureName;
+            myModel = game.Assets.GetModel("FloorUnit" + unitWidth.ToString() + ":" + unitHeight.ToString(), CreateFloorModel);
             transform = new Transform(position);
             ShaderName = shaderName;
+            
         }
 
         public MyModel CreateFloorModel() {
-            return game.Assets.CreateTexturedPlane(unitWidth, unitHeight, 1, "wooden_floor.dds");
+            return game.Assets.CreateTexturedPlane(unitWidth, unitHeight, 1, textureName);
         }
 
         public override void Update(GameTime gametime) {

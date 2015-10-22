@@ -23,15 +23,20 @@
 // Adapted further by Mubashwer Salman Khurshid, Oct 2015
 
 // these won't change in a given iteration of the shader
+#define MAX_LIGHTS 3
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
 float4 cameraPos;
-float4 lightAmbCol = float4(0.6f, 0.6f, 0.6f, 1.0f);
-float4 lightPntPos = float4(0.0f, 0.0f, -2.0f, 1.0f);
-float4 lightPntCol = float4(1.0f, 0.0f, 0.0f, 1.0f);
 float4x4 worldInvTrp;
+
+float4 lightAmbCol = float4(0.6f, 0.6f, 0.6f, 1.0f);
 float Ka;
+
+float4 lightPosition[MAX_LIGHTS];
+float4 lightColor[MAX_LIGHTS];
+float lightIntensity[MAX_LIGHTS];
 
 Texture2D shaderTexture;
 SamplerState SampleType;
@@ -87,27 +92,36 @@ float4 PS(PS_IN input) : SV_Target
 	// Calculate ambient RGB intensities
 	float3 amb = col.rgb*lightAmbCol.rgb*Ka;
 
-	// Calculate diffuse RBG reflections
-	float fAtt = 1;
-	float Kd = 1;
-	float3 L = normalize(lightPntPos.xyz - input.wpos.xyz);
-	float LdotN = saturate(dot(L, interpNormal.xyz));
-	float3 dif = fAtt*lightPntCol.rgb*Kd*col.rgb*LdotN;
+	// The combined colour to be returned
+	float4 returnColComb = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	returnColComb.a = col.a;
+	returnColComb.rgb += amb;
 
-	// Calculate specular reflections
-	float Ks = 1;
-	float specN = 5; // Numbers>>1 give more mirror-like highlights
-	float3 V = normalize(cameraPos.xyz - input.wpos.xyz);
-	float3 R = normalize(2 * LdotN*interpNormal.xyz - L.xyz);
-	//float3 R = normalize(0.5*(L.xyz+V.xyz)); //Blinn-Phong equivalent
-	float3 spe = fAtt*lightPntCol.rgb*Ks*pow(saturate(dot(V, R)), specN);
+	for (int i = 0; i < MAX_LIGHTS; i++)
+	{
+		// Calculate diffuse RBG reflections
+		float fAtt = 1;
+		float Kd = 1;
+		float3 L = normalize(lightPosition[i].xyz - input.wpos.xyz);
+		float LdotN = saturate(dot(L, interpNormal.xyz));
+		float3 dif = fAtt*lightColor[i].rgb*Kd*col.rgb*LdotN;
 
-	// Combine reflection components
-	float4 returnCol = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	returnCol.rgb = amb.rgb + dif.rgb + spe.rgb;
-	returnCol.a = col.a;
+		// Calculate specular reflections
+		float Ks = 1;
+		float specN = 5; // Numbers>>1 give more mirror-like highlights
+		float3 V = normalize(cameraPos.xyz - input.wpos.xyz);
+		float3 R = normalize(2 * LdotN*interpNormal.xyz - L.xyz);
+		//float3 R = normalize(0.5*(L.xyz+V.xyz)); //Blinn-Phong equivalent
+		float3 spe = fAtt*lightColor[i].rgb*Ks*pow(saturate(dot(V, R)), specN);
 
-	return returnCol;
+		// Combine reflection components
+		float4 combCol = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		combCol.rgb = lightIntensity[i] * (dif.rgb + spe.rgb);
+
+		// Combine different lights
+		returnColComb.rgb += combCol.rgb;
+	}
+	return returnColComb;
 }
 
 
