@@ -181,7 +181,7 @@ namespace Project {
             MazeSolver.SolveMaze();
 
             // Create player
-            Vector2 playerPos = map.GetWorldCoordinates(map.StartPosition);
+            Vector2 playerPos = map.GetWorldCoordinates(((Vector2)map.StartPosition) + 0.5f);
             Player = new Player(this, "Phong", playerPos);
             GameObjects.Add(Player);
 
