@@ -7,9 +7,14 @@ MapUnitHeight=3
 MapUnitDepth=3
 
 [Map]
-xxxxxxxxxxxxxxxxxxx
-xx................x
-x.x s.....x   x...x
-x.........xxxxx  .x
-x...xxxx..... x  ex
-xxxxxxxxxxxxxxxxxxx
+      x     x     x
+      xx  xxsxx  xx
+      xxxx......xxxxxxxxx
+    xxxxx.......xxxxx...x
+    xxxxxxxx.xxxxxxxx.x.x
+    xxxxx.......xxxxx.x.x
+    xxxxx.xxxxxxxxxxx.x.x
+    xxxxx.......xxxxx.x.x
+    xxxxxxxxx.xxxxxx..x.x
+     xxxx..........r.xxex
+     xxxxxxxxxxxxxxxxxxxx
