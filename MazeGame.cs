@@ -333,32 +333,45 @@ namespace Project {
                 if (IsStarted) {
                     KeyboardState = keyboardManager.GetState();
                     FlushAddedAndRemovedGameObjects();
-                    float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds / 1000f;
-                    float speed = 3f;
+                    float deltaTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
+                    //float speed = 3f;
 
-                    if (KeyboardState.IsKeyDown(Keys.W)) {
-                        Camera.cameraMoved = true;
-                        Camera.pitch -= speed * deltaTime;
+                    //if (KeyboardState.IsKeyDown(Keys.W)) {
+                    //    Camera.cameraMoved = true;
+                    //    Camera.pitch -= speed * deltaTime;
+                    //}
+                    //if (KeyboardState.IsKeyDown(Keys.S)) {
+                    //    Camera.cameraMoved = true;
+                    //    Camera.pitch += speed * deltaTime;
+                    //}
+                    //if (KeyboardState.IsKeyDown(Keys.A)) {
+                    //    Camera.cameraMoved = true;
+                    //    Camera.yaw -= speed * deltaTime;
+                    //}
+                    //if (KeyboardState.IsKeyDown(Keys.D)) {
+                    //    Camera.cameraMoved = true;
+                    //    Camera.yaw += speed * deltaTime;
+                    //}
+                    //if (KeyboardState.IsKeyDown(Keys.Q)) {
+                    //    Camera.cameraMoved = true;
+                    //    Camera.roll -= speed * deltaTime;
+                    //}
+                    //if (KeyboardState.IsKeyDown(Keys.E)) {
+                    //    Camera.cameraMoved = true;
+                    //    Camera.roll += speed * deltaTime;
+                    //}
+
+                    // H toggles hint
+                    if (KeyboardState.IsKeyPressed(Keys.H)) {
+                        MazeSolver.Enabled = !MazeSolver.Enabled;
                     }
-                    if (KeyboardState.IsKeyDown(Keys.S)) {
-                        Camera.cameraMoved = true;
-                        Camera.pitch += speed * deltaTime;
+
+                    // O and P do camera zoom
+                    if (KeyboardState.IsKeyPressed(Keys.O)) {
+                        Camera.Zoom(1.1f);
                     }
-                    if (KeyboardState.IsKeyDown(Keys.A)) {
-                        Camera.cameraMoved = true;
-                        Camera.yaw -= speed * deltaTime;
-                    }
-                    if (KeyboardState.IsKeyDown(Keys.D)) {
-                        Camera.cameraMoved = true;
-                        Camera.yaw += speed * deltaTime;
-                    }
-                    if (KeyboardState.IsKeyDown(Keys.Q)) {
-                        Camera.cameraMoved = true;
-                        Camera.roll -= speed * deltaTime;
-                    }
-                    if (KeyboardState.IsKeyDown(Keys.E)) {
-                        Camera.cameraMoved = true;
-                        Camera.roll += speed * deltaTime;
+                    if (KeyboardState.IsKeyPressed(Keys.P)) {
+                        Camera.Zoom(0.9f);
                     }
 
                     if (GameSettings.AccelerometerEnabled && Input.accelerometer != null) {
