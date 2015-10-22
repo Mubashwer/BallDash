@@ -198,15 +198,16 @@ namespace Project {
             // Check that, given the current position of the ball, no part of the balls 
             // circumference is touching a wall
 
-            bool collisionUp = false;
-            bool collisionDown = false;
-            bool collisionLeft = false;
-            bool collisionRight = false;
+            Vector2 averageHitVector = new Vector2();
+            bool collisionOccured = false;
 
-            int points = 16; // the number of points to check, 16 is a good approximation
+            int points = 256; // the number of points to check, 16 is a good approximation
             for (int k = 0; k < points; k++) {
-                float pointX = currentBallCenterWorldPosition.X + (radius * (float)Math.Cos((k / (double)points) * 2 * Math.PI));
-                float pointY = currentBallCenterWorldPosition.Y + (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
+                float offsetX = (radius * (float)Math.Cos((k / (double)points) * 2 * Math.PI));
+                float offsetY = (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
+
+                float pointX = currentBallCenterWorldPosition.X + offsetX;
+                float pointY = currentBallCenterWorldPosition.Y + offsetY;
 
                 // get the map coordinates for this point
                 Vector2 pointMapPos = game.CurrentLevel.Map.GetMapUnitCoordinates(new Vector2(pointX, pointY));
@@ -216,48 +217,40 @@ namespace Project {
 
                 // if it's a wall, we have a collision.
                 if (pointFloorType.HasFlag(Map.UnitType.Wall)) {
-                    // check if the point's map position is to the left or to the right of the current map position
-                    if ((int)pointMapPos.X > (int)currentBallMapPos.X) {
-                        collisionRight = true;
-                    }
-
-                    if ((int)pointMapPos.X < (int)currentBallMapPos.X) {
-                        collisionLeft = true;
-                    }
-
-                    // check if the point's map position is above or below the current ball map position
-                    if ((int)pointMapPos.Y > (int)currentBallMapPos.Y) {
-                        collisionUp = true;
-                    }
-
-                    if ((int)pointMapPos.Y < (int)currentBallMapPos.Y) {
-                        collisionDown = true;
-                    }
+                    collisionOccured = true;
+                    averageHitVector.X += offsetX;
+                    averageHitVector.Y += offsetY;
                 }
             }
 
+            float collisionNormalAngle = 0;
             if (CollisionsEnabled) {
                 bool playSoundEffect = false;
-                // now, apply collisions based on what we discovered in the previous step
-                if ((collisionLeft && velocity.X < 0)
-                    || (collisionRight && velocity.X > 0)) {
-                    velocity.X *= -CollisionReboundDampening;
-                    position.X = lastPosition.X;
 
-                    if (Math.Abs(velocity.X) > 0.5) {
-                        playSoundEffect = true;
-                    }
+                // get averaged angle of collision normal
+                if (collisionOccured) {
+                    // reset player position to previous uncollided position
+                    position = lastPosition;
+
+                    collisionNormalAngle = (float)Math.Atan2(averageHitVector.Y, averageHitVector.X);
+
+                    // find length and angle of current ball velocity
+                    float ballVelocityMag = velocity.Length();
+                    float ballVelocityAngle = (float)Math.Atan2(velocity.Y, velocity.X);
+
+                    // dampen ball speed
+                    float newBallVelocityMag = ballVelocityMag * CollisionReboundDampening;
+                    // calculate reflection normal
+                    // TODO: THIS IS INCORRECT. Need to calculate proper reflection angle from
+                    // ballVelocityAngle and collisionNormalAngle
+                    float newBallVelocityAngle = collisionNormalAngle + (float)Math.PI;
+
+                    // calculate new ball X and Y velocity componants
+                    velocity.X = newBallVelocityMag * (float)Math.Cos(newBallVelocityAngle);
+                    velocity.Y = newBallVelocityMag * (float)Math.Sin(newBallVelocityAngle);
                 }
 
-                if ((collisionUp && velocity.Y > 0)
-                    || (collisionDown && velocity.Y < 0)) {
-                    velocity.Y *= -CollisionReboundDampening;
-                    position.Y = lastPosition.Y;
-
-                    if (Math.Abs(velocity.Y) > 0.5) {
-                        playSoundEffect = true;
-                    }
-                }
+                
 
                 if (playSoundEffect) {
                     if (Collision != null) {
@@ -299,10 +292,9 @@ namespace Project {
                     + Environment.NewLine + "Ball Map Point X: " + currentBallMapPoint.X
                     + Environment.NewLine + "Ball Map Point Y: " + currentBallMapPoint.Y
                     + Environment.NewLine + "Tile Type: " + floorType
-                    + Environment.NewLine + "Collision Left: " + collisionLeft
-                    + Environment.NewLine + "Collision Right: " + collisionRight
-                    + Environment.NewLine + "Collision Up: " + collisionUp
-                    + Environment.NewLine + "Collision Down: " + collisionDown;
+                    + Environment.NewLine + "Collision Occured: " + collisionOccured
+                    + Environment.NewLine + "Collision Normal Angle: " + RadiansToDegrees(collisionNormalAngle) + " degrees";
+
 
                 if (touchPosition != null) {
                     stats += Environment.NewLine + "Touch X: " + touchPosition.Value.X
