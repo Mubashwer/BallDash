@@ -281,12 +281,13 @@ namespace Project {
         private void LoadFloor(Map map) {
             var width = map.MapUnitWidth;
             var height = map.MapUnitHeight;
+            GameObjects.Add(new FloorUnitGameObject(this, "Phong", "wooden_wall.dds", new Vector3(map.Width / 2f, map.Height / 2f, 10f), map.Width*width*2, map.Height*height*2));
             for (int i = 0; i < map.Width; i++) {
                 for (int j = 0; j < map.Height; j++) {
                     var x = (i * width) + width / 2;
                     var y = (j * height) + height / 2;
                     var z = 0f;
-
+                    
                     Map.UnitType unitType = map[i, j];
                     if (unitType == Map.UnitType.PlayerStart) {
                         var startObject = new FloorUnitGameObject(this, "Phong", "wooden_floor.dds", new Vector3(x, y, z), width, height);

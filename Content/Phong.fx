@@ -39,7 +39,22 @@ float4 lightColor[MAX_LIGHTS];
 float lightIntensity[MAX_LIGHTS];
 
 Texture2D shaderTexture;
-SamplerState SampleType;
+SamplerState SampleType
+{
+Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+MipLODBias = 0.0f;
+MaxAnisotropy = 1;
+ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+BorderColor[0] = 0;
+BorderColor[1] = 0;
+BorderColor[2] = 0;
+BorderColor[3] = 0;
+MinLOD = 0;
+MaxLOD = D3D11_FLOAT32_MAX;
+};
 
 //
 
@@ -130,7 +145,7 @@ technique Lighting
 {
 	pass Pass1
 	{
-		Profile = 10.0;
+		Profile = 11.0;
 		VertexShader = VS;
 		PixelShader = PS;
 	}
