@@ -127,9 +127,6 @@ namespace Project {
             // load all levels
             LoadLevels();
 
-            // load the first level for testing
-            ChangeMap(AvailableLevels[0].Map);
-
             // Create an input layout from the vertices
             base.LoadContent();
         }
@@ -249,8 +246,10 @@ namespace Project {
 
                 // update the camera last
                 Camera.Update();
+
+                MazeSolver.Hint();
             }
-            MazeSolver.Hint();
+            
             // Handle base.Update
             base.Update(gameTime);
 

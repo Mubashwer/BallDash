@@ -44,6 +44,7 @@ namespace Project.Menus {
             GamePage = new GamePage(parent);
             parent.Children.Add(GamePage);
             parent.Children.Remove(this);
+            parent.Game.ChangeMap(parent.Game.AvailableLevels[0].Map);
             parent.Game.IsStarted = true;
             parent.Game.GameOverlayPage = GamePage;
         }
