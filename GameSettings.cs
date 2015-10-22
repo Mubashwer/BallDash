@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Project {
     public class GameSettings {
         public bool AccelerometerEnabled { get; set; }
+        public bool TouchControlsEnabled { get; set; }
         public bool DebugEnabled { get; set; }
     }
 }

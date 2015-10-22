@@ -12,6 +12,8 @@ using Windows.UI.Core;
 namespace Project {
     using SharpDX.Toolkit.Graphics;
     using SharpDX.Toolkit.Input;
+    using Windows.UI.Xaml;
+
     // Player class.
     public class Player : GameObject {
         private float diameter = 2f;
@@ -23,6 +25,8 @@ namespace Project {
         private double tiltYOffset = 0;
         public bool CollisionsEnabled { get; set; }
         public float CollisionReboundDampening { get; set; }
+
+        private Windows.Foundation.Point? touchPosition { get; set; }
 
         private Vector3 startPosition;
 
@@ -50,6 +54,9 @@ namespace Project {
             ShaderName = shaderName;
             CollisionsEnabled = true;
             CollisionReboundDampening = 0.4f;
+
+            game.Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
+            game.Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
         }
 
         public MyModel CreatePlayerModel() {
@@ -82,6 +89,12 @@ namespace Project {
                 tiltY += DegreesToRadians(tiltYOffset);
             }
 
+            if (game.GameSettings.TouchControlsEnabled) {
+                if (touchPosition != null) {
+
+                }
+            }
+
             // also consider arrow keys for getting input tilt
             if (game.KeyboardState.IsKeyDown(Keys.Up)) {
                 tiltY = 2 * Math.PI * ((double)90/360); // tilt forwards 90 degrees
@@ -101,14 +114,14 @@ namespace Project {
 
 
             // use the tilt angle to calculate the ball's X and Y acceleration
-            double ballXAccel = elapsedMs * Math.Sin(tiltX) * 0.01;
-            double ballYAccel = elapsedMs * Math.Sin(tiltY) * 0.01;
+            double ballXAccel = Math.Sin(tiltX) * 0.01;
+            double ballYAccel = Math.Sin(tiltY) * 0.01;
+            double ballZAccel = 0.01;
 
             // add ball acceleration to the ball's velocity
-            velocity.X += (float)ballXAccel;
-            velocity.Y += (float)ballYAccel;
-
-            velocity.Z += (float)(0.01 * elapsedMs);
+            velocity.X += (float)(ballXAccel * elapsedMs);
+            velocity.Y += (float)(ballYAccel * elapsedMs);
+            velocity.Z += (float)(ballZAccel * elapsedMs);
 
             // add drag to the ball
             velocity -= velocity.Length() * velocity * 0.001f;
@@ -268,6 +281,7 @@ namespace Project {
                     + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
                     + Environment.NewLine + "Ball Acc X: " + ballXAccel
                     + Environment.NewLine + "Ball Acc Y: " + ballYAccel
+                    + Environment.NewLine + "Ball Acc Z: " + ballZAccel
                     + Environment.NewLine + "Ball Vel X: " + velocity.X
                     + Environment.NewLine + "Ball Vel Y: " + velocity.Y
                     + Environment.NewLine + "Ball Vel Z: " + velocity.Z
@@ -283,6 +297,11 @@ namespace Project {
                     + Environment.NewLine + "Collision Right: " + collisionRight
                     + Environment.NewLine + "Collision Up: " + collisionUp
                     + Environment.NewLine + "Collision Down: " + collisionDown;
+
+                if (touchPosition != null) {
+                    stats += Environment.NewLine + "Touch X: " + touchPosition.Value.X
+                    + Environment.NewLine + "Touch Y: " + touchPosition.Value.Y;
+                }
 
                 game.GameOverlayPage.UpdateStats(stats);
             }
@@ -326,14 +345,12 @@ namespace Project {
             return new Point((int)playerMapPosition.X, (int)playerMapPosition.Y);
         }
 
-        public override void Tapped(GestureRecognizer sender, TappedEventArgs args) {
-
+        public override void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args) {
+            touchPosition = new Windows.Foundation.Point((args.Position.X / Window.Current.Bounds.X) - 0.5, (args.Position.Y / Window.Current.Bounds.Y) - 0.5);
         }
 
-        public override void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args) {
-            position.X += (float)args.Delta.Translation.X / 100;
-            position.Y += (float)args.Delta.Translation.Y / 100;
-            transform.Position = position;
+        public override void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args) {
+            touchPosition = null;
         }
     }
 }

@@ -110,6 +110,5 @@ namespace Project {
                 roll += (float)(2 * Math.PI);
             }
         }
-
     }
 }

@@ -114,7 +114,7 @@ namespace Project {
             Input = new GameInput();
 
             // Initialise event handling.
-            Input.gestureRecognizer.Tapped += Tapped;
+            Input.gestureRecognizer.Tapped += OnTapped;
             Input.gestureRecognizer.ManipulationStarted += OnManipulationStarted;
             Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
             Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
@@ -357,24 +357,41 @@ namespace Project {
 
         public void OnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args) {
             // Pass Manipulation events to the game objects.
-
+            if (GameObjects != null) {
+                foreach (var gameObject in GameObjects) {
+                    gameObject.OnManipulationStarted(sender, args);
+                }
+            }
         }
 
-        public void Tapped(GestureRecognizer sender, TappedEventArgs args) {
+        public void OnTapped(GestureRecognizer sender, TappedEventArgs args) {
             // Pass Manipulation events to the game objects.
-            foreach (var obj in GameObjects) {
-                obj.Tapped(sender, args);
+            if (GameObjects != null) {
+                foreach (var gameObject in GameObjects) {
+                    gameObject.OnTapped(sender, args);
+                }
             }
         }
 
         public void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args) {
-
-            // TODO: need to change
-
-            Camera.Zoom(args.Delta.Scale);
+            if (GameObjects != null) {
+                // Pass Manipulation events to the game objects.
+                foreach (var gameObject in GameObjects) {
+                    gameObject.OnManipulationUpdated(sender, args);
+                }
+            }
+            if (Camera != null) {
+                Camera.Zoom(args.Delta.Scale);
+            }
         }
 
         public void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args) {
+            if (GameObjects != null) {
+                // Pass Manipulation events to the game objects.
+                foreach (var gameObject in GameObjects) {
+                    gameObject.OnManipulationCompleted(sender, args);
+                }
+            }
         }
 
     }

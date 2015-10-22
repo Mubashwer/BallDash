@@ -20,11 +20,12 @@ namespace Project {
         public Vector3 position;
 
         private Effect effect;
-        public String ShaderName { get; set; }
+        public string ShaderName { get; set; }
         public bool IsHintObject = false;
         public bool IsEndObject = false;
 
         public abstract void Update(GameTime gametime);
+
         public void Draw(GameTime gametime) {
             // Some objects such as the Enemy Controller have no model and thus will not be drawn
             if (myModel != null) {
@@ -101,7 +102,7 @@ namespace Project {
         }
 
         // These virtual voids allow any object that extends GameObject to respond to tapped and manipulation events
-        public virtual void Tapped(GestureRecognizer sender, TappedEventArgs args) {
+        public virtual void OnTapped(GestureRecognizer sender, TappedEventArgs args) {
 
         }
 
