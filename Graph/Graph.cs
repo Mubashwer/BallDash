@@ -72,7 +72,7 @@ namespace Project
                     }
                 }
             }
-            ConstructPaths(source);
+            //ConstructPaths(source);
         }
 
         //TESTING
