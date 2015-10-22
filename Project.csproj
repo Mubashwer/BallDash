@@ -96,10 +96,25 @@
     <ToolkitFxc Include="Content\Cel.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </ToolkitFxc>
+    <ToolkitFxc Include="Content\Ball1.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </ToolkitFxc>
+    <ToolkitTexture Include="Content\bumpMap.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </ToolkitTexture>
+    <Content Include="Content\bump.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bump2.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\marble.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <ToolkitFxc Include="Content\Rainbow.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </ToolkitFxc>
+    <ToolkitFxc Include="Content\bump2.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </ToolkitFxc>
     <Content Include="Content\wooden_floor.dds">
@@ -115,6 +130,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Content\Glass1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Maps\testMap.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

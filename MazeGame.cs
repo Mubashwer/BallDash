@@ -39,6 +39,7 @@ namespace Project {
         private KeyboardManager keyboardManager;
         private Stack<GameObject> addedGameObjects;
         private Stack<GameObject> removedGameObjects;
+        private Texture2D normalMap;
 
         public List<GameObject> GameObjects { get; set; }
         public KeyboardState KeyboardState { get; set; }
@@ -49,6 +50,8 @@ namespace Project {
         public MazeSolver MazeSolver { get; set; }
         public GraphicCache GraphicCache { get; set; }
         public GameSettings GameSettings { get; set; }
+
+        //public BumpMapShader BumpMap { get; set; }
 
         public Dictionary<Point, GameObject> Tiles { get; set; }
         public Map CurrentMap { get; set; }
@@ -98,13 +101,15 @@ namespace Project {
             addedGameObjects = new Stack<GameObject>();
             removedGameObjects = new Stack<GameObject>();
             Tiles = new Dictionary<Point, GameObject>();
+            
 
             // Create game objects.
-            Player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
+            Player = new Player(this, "Ball1", new Vector3(6f, 6f, 0));
             GameObjects.Add(Player);
             Camera = new Camera(this);
 
             var basicMap = new TextMap("Maps\\testMap.txt");
+            normalMap = Content.Load<Texture2D>("bump2.bmp");
             ChangeMap(basicMap);
 
             // Create an input layout from the vertices

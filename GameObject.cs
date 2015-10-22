@@ -22,6 +22,7 @@ namespace Project {
         public MazeGame game;
         public GameObjectType type = GameObjectType.None;
         public Vector3 position;
+       // public Texture2D normalMap;
 
         private Effect effect;
         public String ShaderName { get; set; }
@@ -38,6 +39,7 @@ namespace Project {
                 // Setup the vertices
                 game.GraphicsDevice.SetVertexBuffer(0, myModel.vertexBuffer, myModel.vertexStride);
                 game.GraphicsDevice.SetVertexInputLayout(myModel.inputLayout);
+                //normalMap = game.Content.Load<Texture2D>("bump2.bmp");
 
                 // Setup the index Buffer
                 game.GraphicsDevice.SetIndexBuffer(myModel.indexBuffer, myModel.IsIndex32Bits);
@@ -79,6 +81,7 @@ namespace Project {
                 effect.Parameters["View"].SetValue(game.Camera.View);
                 effect.Parameters["cameraPos"].SetValue(game.Camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
+                //effect.Parameters["NormalMap"].SetResource(normalMap);
 
                 // only apply Ka if the shader is capable of using it
                 if (effect.Parameters.Contains("Ka")) {
