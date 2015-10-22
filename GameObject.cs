@@ -11,16 +11,12 @@ using Windows.UI.Core;
 namespace Project {
     using System.Collections.Concurrent;
     using SharpDX.Toolkit.Graphics;
-    public enum GameObjectType {
-        None, Player, FloorUnit, Wall
-    }
 
     // Super class for all game objects.
     abstract public class GameObject {
         public MyModel myModel;
         public Transform transform;
         public MazeGame game;
-        public GameObjectType type = GameObjectType.None;
         public Vector3 position;
 
         private Effect effect;

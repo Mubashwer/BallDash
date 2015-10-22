@@ -15,7 +15,6 @@ namespace Project {
             this.game = game;
             this.unitWidth = unitWidth;
             this.unitHeight = unitHeight;
-            type = GameObjectType.FloorUnit;
             this.textureName = textureName;
             myModel = game.Assets.GetModel("FloorUnit" + unitWidth.ToString() + ":" + unitHeight.ToString(), CreateFloorModel);
             transform = new Transform(position);

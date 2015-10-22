@@ -334,14 +334,6 @@ namespace Project {
             // Handle base.Draw
             base.Draw(gameTime);
         }
-        // Count the number of game objects for a certain type.
-        public int Count(GameObjectType type) {
-            int count = 0;
-            foreach (var obj in GameObjects) {
-                if (obj.type == type) { count++; }
-            }
-            return count;
-        }
 
         // Add a new game object.
         public void Add(GameObject obj) {

@@ -39,7 +39,6 @@ namespace Project {
         public Player(MazeGame game, string shaderName, Vector2 position) {
             this.game = game;
             radius = diameter / 2.0f;
-            type = GameObjectType.Player;
             myModel = game.Assets.GetModel("player", CreatePlayerModel);
 
             Vector3 player3dPosition = new Vector3(position, -radius);
