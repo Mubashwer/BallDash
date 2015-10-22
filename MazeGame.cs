@@ -131,8 +131,11 @@ namespace Project {
             base.LoadContent();
         }
 
+        public void ChangeLevel(LevelInfo level) {
+            ChangeMap(level.Map);
+        }
 
-        public void ChangeMap(Map map) {
+        private void ChangeMap(Map map) {
             // clear out all existing assets
             GameObjects.Clear();
             addedGameObjects.Clear();

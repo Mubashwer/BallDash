@@ -37,18 +37,6 @@ namespace Project.Menus {
             InitializeComponent();
         }
 
-        // TASK 2: Starts the game.  Not that it seems easier to simply move the game.Run(this) command to this function,
-        // however this seems to result in a reduction in texture quality on some machines.  Not sure why this is the case
-        // but this is an easy workaround.  Not we are also making the command button invisible after it is clicked
-        private void StartGame(object sender, RoutedEventArgs e) {
-            GamePage = new GamePage(parent);
-            parent.Children.Add(GamePage);
-            parent.Children.Remove(this);
-            parent.Game.ChangeMap(parent.Game.AvailableLevels[0].Map);
-            parent.Game.IsStarted = true;
-            parent.Game.GameOverlayPage = GamePage;
-        }
-
         private void LoadInstructions(object sender, RoutedEventArgs e)
         {
             parent.Children.Add(new Instructions(parent));
@@ -58,6 +46,11 @@ namespace Project.Menus {
 
         private void LoadSettings(object sender, RoutedEventArgs e) {
             parent.Children.Add(new Settings(parent));
+            parent.Children.Remove(this);
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e) {
+            parent.Children.Add(new LevelSelect(parent));
             parent.Children.Remove(this);
         }
     }

@@ -9,7 +9,7 @@
     d:DesignWidth="1280"
     d:DesignHeight="800">
     <Grid>
-        <Button x:Name="cmdBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
         <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="48" Margin="0,205,0,547" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Center" TextAlignment="Center" Width="784"/>
         <CheckBox x:Name="chkDebugEnabled" Content="Show Debug Statistics" HorizontalAlignment="Center" Margin="559,289,549,484" VerticalAlignment="Center" Checked="chkDebugEnabled_Checked" Unchecked="chkDebugEnabled_Unchecked"/>
         <CheckBox x:Name="chkAccelerometerEnabled" Content="Enable Accelerometer" HorizontalAlignment="Center" Margin="559,348,551,425" VerticalAlignment="Center" Checked="chkAccelerometerEnabled_Checked" Unchecked="chkAccelerometerEnabled_Unchecked"/>

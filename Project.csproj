@@ -59,6 +59,9 @@
     <Compile Include="Menus\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Menus\LevelSelect.xaml.cs">
+      <DependentUpon>LevelSelect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Menus\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -140,6 +143,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Menus\GamePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Menus\LevelSelect.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

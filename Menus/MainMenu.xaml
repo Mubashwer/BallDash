@@ -9,7 +9,7 @@
     d:DesignWidth="1280"
     d:DesignHeight="800">
     <Grid>
-        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Height="77" Margin="622,236,0,0" VerticalAlignment="Top" Width="163" Click="StartGame"/>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Height="77" Margin="622,236,0,0" VerticalAlignment="Top" Width="163" Click="btnStart_Click"/>
         <Button x:Name="btnInstructions" Content="Instructions" HorizontalAlignment="Left" Height="77" Margin="622,336,0,0" VerticalAlignment="Top" Width="163" Click="LoadInstructions"/>
         <Button x:Name="btnSettings" Content="Settings" HorizontalAlignment="Left" Height="77" Margin="622,444,0,0" VerticalAlignment="Top" Width="163" Click="LoadSettings"/>
     </Grid>
