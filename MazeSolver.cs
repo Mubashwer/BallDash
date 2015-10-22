@@ -110,7 +110,7 @@ namespace Project {
         public void Hint() {
             if (!Enabled) return;
             var newPlayerPosition = game.Player.GetPlayerMapPoint();
-            if (playerPosition == null || newPlayerPosition.Equals(playerPosition)) return;
+            if (playerPosition != null && newPlayerPosition.Equals(playerPosition)) return;
             playerPosition = newPlayerPosition;
             //Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
             DisableHint(); // reset hint objects 
