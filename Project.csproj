@@ -53,7 +53,6 @@
     <Compile Include="GameSettings.cs" />
     <Compile Include="GraphicCache.cs" />
     <Compile Include="Graph\Graph.cs" />
-    <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="LevelInfo.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Map.cs" />

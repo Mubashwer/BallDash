@@ -12,7 +12,7 @@ namespace Project {
     using System.Collections.Concurrent;
     using SharpDX.Toolkit.Graphics;
 
-    // Super class for all game objects.
+    // Base class for all game objects.
     abstract public class GameObject {
         public MyModel myModel;
         public Transform transform;
