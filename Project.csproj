@@ -116,6 +116,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\wooden_wall.jpg" />
+    <Content Include="Maps\Level3.txt" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Maps\Level2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
