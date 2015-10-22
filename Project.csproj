@@ -54,6 +54,7 @@
     <Compile Include="GraphicCache.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Menus\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>

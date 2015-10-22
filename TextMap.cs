@@ -64,7 +64,7 @@ namespace Project {
                             currentRow.Add(UnitType.Wall);
                             break;
                         case HoleCharacter:
-                            currentRow.Add(UnitType.SmallHole1);
+                            currentRow.Add(UnitType.Hole);
                             break;
                         case PlayerStartCharacter:
                             currentRow.Add(UnitType.PlayerStart);

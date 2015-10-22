@@ -144,7 +144,15 @@ namespace Project {
             Point currentBallMapPoint = GetPlayerMapPoint();
 
             // Gravity: Check if the current square is a floor, and if so, do not change the height
-            var floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
+            Map.UnitType floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
+
+            if (!game.RainbowModeOn)
+            {
+                if (floorType == Map.UnitType.None)
+                {
+                    game.RainbowModeOn = true;
+                }
+            }
 
             if (currentBallCenterWorldPosition.Z > radius) {
                 // the ball has half fallen down a hole, consider this a game over event

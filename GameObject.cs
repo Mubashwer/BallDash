@@ -79,6 +79,9 @@ namespace Project {
                 effect.Parameters["View"].SetValue(game.Camera.View);
                 effect.Parameters["cameraPos"].SetValue(game.Camera.Position);
                 effect.Parameters["worldInvTrp"].SetValue(transform.WorldInverseTranspose);
+                effect.Parameters["lightPosition"].SetValue(game.Lights.Select(l => l.LightPosition).ToArray<Vector3>());
+                effect.Parameters["lightColor"].SetValue(game.Lights.Select(l => l.LightColor).ToArray<Color4>());
+                effect.Parameters["lightIntensity"].SetValue(game.Lights.Select(l => l.LightIntensity).ToArray<float>());
 
                 // only apply Ka if the shader is capable of using it
                 if (effect.Parameters.Contains("Ka")) {

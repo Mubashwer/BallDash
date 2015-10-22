@@ -41,6 +41,7 @@ namespace Project {
         private Stack<GameObject> removedGameObjects;
 
         public List<GameObject> GameObjects { get; set; }
+        public List<Light> Lights { get; set; }
         public KeyboardState KeyboardState { get; set; }
         public Player Player { get; set; }
         public AccelerometerReading AccelerometerReading { get; set; }
@@ -49,6 +50,33 @@ namespace Project {
         public MazeSolver MazeSolver { get; set; }
         public GraphicCache GraphicCache { get; set; }
         public GameSettings GameSettings { get; set; }
+
+        public float DefaultLightHeight { get; set; }
+
+        private bool _enableRainbowEffect = false;
+        public bool RainbowModeOn
+        {
+
+            get { return _enableRainbowEffect; }
+            set 
+            {
+                _enableRainbowEffect = value;
+                if (value) // Rainbow mode turns on three moving red, green and blue lights
+                {
+                    Lights[0].LightColor = Color.Red.ToColor4();
+                    Lights[1].LightColor = Color.Green.ToColor4();
+                    Lights[2].LightColor = Color.Blue.ToColor4();
+                }
+                else
+                { // Use 1 white light only
+                    Lights[0].LightColor = Color.White.ToColor4();
+                    Lights[0].LightPosition = new Vector3(CurrentMap.Width/2f, CurrentMap.Height/2f, DefaultLightHeight);
+                    Lights[1].LightColor = Color.Black.ToColor4();
+                    Lights[2].LightColor = Color.Black.ToColor4();
+                }
+
+            }
+        }
 
         public Dictionary<Point, GameObject> Tiles { get; set; }
         public Map CurrentMap { get; set; }
@@ -90,6 +118,8 @@ namespace Project {
             Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
             Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
             Started = false;
+            DefaultLightHeight = -20f;
+
         }
 
         protected override void LoadContent() {
@@ -98,7 +128,7 @@ namespace Project {
             addedGameObjects = new Stack<GameObject>();
             removedGameObjects = new Stack<GameObject>();
             Tiles = new Dictionary<Point, GameObject>();
-
+            Lights = new List<Light>();
             // Create game objects.
             Player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
             GameObjects.Add(Player);
@@ -107,8 +137,40 @@ namespace Project {
             var basicMap = new TextMap("Maps\\testMap.txt");
             ChangeMap(basicMap);
 
+            AddEnvironmentLights();
+            RainbowModeOn = false;
             // Create an input layout from the vertices
             base.LoadContent();
+        }
+
+        // Add Red, Green and Blue environment lights with different rate of movements
+        private void AddEnvironmentLights()
+        {
+            var rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
+            var red = new Light(Color.Red.ToColor4(), 1f,rate);
+            rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
+            var green = new Light(Color.Green.ToColor4(),1f,rate);
+            rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
+            var blue = new Light(Color.Blue.ToColor4(), 1f,rate);
+            Lights.Add(red);
+            Lights.Add(green);
+            Lights.Add(blue);
+        }
+
+        // Move the Red, Green and Blue Lights in different directions when rainbow mode is activated
+        private void UpdateLightPositions(GameTime gameTime)
+        {
+            if (!RainbowModeOn) return;
+            var time = gameTime.TotalGameTime.TotalMilliseconds;
+            Vector3 rate = Lights[0].Rate;
+            var deltaY = CurrentMap.Height / 2f;
+            var deltaX = CurrentMap.Width / 2f;
+            Lights[0].LightPosition = new Vector3(deltaX * (float)Math.Sin(time * rate.X) + deltaX, deltaY * (float)Math.Cos(time * rate.Y) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
+            rate = Lights[1].Rate;
+            Lights[1].LightPosition = new Vector3(deltaX * (float)Math.Cos(time * rate.Y) + deltaX, deltaY * (float)Math.Sin(time * rate.X) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
+            rate = Lights[2].Rate;
+            Lights[2].LightPosition = new Vector3(deltaX * (float)Math.Cos(time * rate.Y) + deltaX, deltaY * (float)Math.Cos(time * rate.Y) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
+
         }
 
 
@@ -134,18 +196,18 @@ namespace Project {
 
                     Map.UnitType unitType = map[i, j];
                     if (unitType == Map.UnitType.PlayerStart) {
-                        var startObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        var startObject = new FloorUnitGameObject(this, "Phong","wooden_floor.dds", new Vector3(x, y, z));
                         GameObjects.Add(startObject);
                         Tiles[new Point(i, j)] = startObject;
                     }
                     if (unitType == Map.UnitType.PlayerEnd) {
-                        var endObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        var endObject = new FloorUnitGameObject(this, "Phong","wooden_floor.dds", new Vector3(x, y, z));
                         endObject.IsEndObject = true;
                         GameObjects.Add(endObject);
                         Tiles[new Point(i, j)] = endObject;
                     }
                     else if (unitType == Map.UnitType.Floor) {
-                        var floorObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        var floorObject = new FloorUnitGameObject(this, "Phong","wooden_floor.dds", new Vector3(x, y, z));
                         GameObjects.Add(floorObject);
                         Tiles[new Point(i, j)] = floorObject;
                     }
@@ -212,6 +274,7 @@ namespace Project {
                 Camera.Update();
             }
             MazeSolver.Hint();
+            UpdateLightPositions(gameTime);
             // Handle base.Update
             base.Update(gameTime);
 
