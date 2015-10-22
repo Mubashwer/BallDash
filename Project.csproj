@@ -97,6 +97,7 @@
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Content\black_floor.dds" />
     <Content Include="Content\marble.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -208,11 +209,6 @@
     <Reference Include="SharpDX.XInput">
       <HintPath>SharpDX\SharpDX.XInput.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ToolkitModel Include="Content\Car.x">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </ToolkitModel>
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
