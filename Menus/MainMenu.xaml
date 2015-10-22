@@ -9,8 +9,8 @@
     d:DesignWidth="1280"
     d:DesignHeight="800">
     <Grid>
-        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Center" Height="77" Margin="597,362,520,361" VerticalAlignment="Center" Width="163" Click="btnStart_Click"/>
-        <Button x:Name="btnInstructions" Content="Instructions" HorizontalAlignment="Center" Height="77" Margin="597,262,520,461" VerticalAlignment="Center" Width="163" Click="LoadInstructions"/>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Center" Height="77" Margin="597,260,520,463" VerticalAlignment="Center" Width="163" Click="btnStart_Click" RenderTransformOrigin="-0.736,-0.538"/>
+        <Button x:Name="btnInstructions" Content="Instructions" HorizontalAlignment="Center" Height="77" Margin="597,362,520,361" VerticalAlignment="Center" Width="163" Click="LoadInstructions"/>
         <Button x:Name="btnSettings" Content="Settings" HorizontalAlignment="Center" Height="77" Margin="597,465,520,258" VerticalAlignment="Center" Width="163" Click="LoadSettings"/>
     </Grid>
 </Page>
