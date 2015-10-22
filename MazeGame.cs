@@ -54,6 +54,37 @@ namespace Project {
         public GraphicCache GraphicCache { get; set; }
         public GameSettings GameSettings { get; set; }
         public List<LevelInfo> AvailableLevels { get; private set; }
+        public Dictionary<Point, GameObject> Tiles { get; set; }
+        public LevelInfo CurrentLevel { get; set; }
+
+        // Represents the camera's position and orientation
+        public Camera Camera { get; set; }
+
+        // Graphics assets
+        public Assets Assets { get; set; }
+
+        // Random number generator
+        public Random RandomGenerator { get; set; }
+
+        public event EventHandler AllLevelsComplete;
+
+
+        // Checks if game has started, uses a lock for threadsafe concurrency
+        private bool isStarted;
+        private readonly object isStartedLock = new object();
+        public bool IsStarted {
+            get {
+                lock(isStartedLock) {
+                    return isStarted;
+                }
+            }
+            set {
+                lock(isStartedLock) {
+                    isStarted = value;
+                }
+            }
+        }
+
 
         public float DefaultLightHeight { get; set; }
 
@@ -71,28 +102,13 @@ namespace Project {
                 }
                 else { // Use 1 white light only
                     Lights[0].LightColor = Color.White.ToColor4();
-                    Lights[0].LightPosition = new Vector3(CurrentMap.Width / 2f, CurrentMap.Height / 2f, DefaultLightHeight);
+                    Lights[0].LightPosition = new Vector3(CurrentLevel.Map.Width / 2f, CurrentLevel.Map.Height / 2f, DefaultLightHeight);
                     Lights[1].LightColor = Color.Black.ToColor4();
                     Lights[2].LightColor = Color.Black.ToColor4();
                 }
 
             }
         }
-
-        public Dictionary<Point, GameObject> Tiles { get; set; }
-        public Map CurrentMap { get; set; }
-
-        // Represents the camera's position and orientation
-        public Camera Camera { get; set; }
-
-        // Graphics assets
-        public Assets Assets { get; set; }
-
-        // Random number generator
-        public Random RandomGenerator { get; set; }
-
-        // Checks if game has started
-        public bool IsStarted { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MazeGame" /> class.
@@ -159,9 +175,36 @@ namespace Project {
             base.LoadContent();
         }
 
+        private void PlayerCompletedLevel(object sender, EventArgs args) {
+            lock(isStartedLock) {
+                // find the next level higher than this one and load it
+                int currentLevelIndex = AvailableLevels.IndexOf(CurrentLevel);
+                if (currentLevelIndex >= 0) {
+                    int nextLevelIndex = currentLevelIndex + 1;
+                    if (nextLevelIndex < AvailableLevels.Count) {
+                        // another level exists, start it
+                        LevelInfo nextLevel = AvailableLevels[nextLevelIndex];
+                        // load the level
+                        ChangeLevel(nextLevel);
+                        // don't complete the rest of this update
+                    }
+                    else {
+                        // there are no more levels, exit back to the main menu
+                        if (AllLevelsComplete != null) {
+                            IsStarted = false;
+                            AllLevelsComplete(this, null);
+                        }
+                    }
+                }
+            }
+        }
+
 
         public void ChangeLevel(LevelInfo level) {
-            ChangeMap(level.Map);
+            lock(isStartedLock) {
+                CurrentLevel = level;
+                ChangeMap(level.Map);
+            }
         }
 
         private void ChangeMap(Map map) {
@@ -172,8 +215,6 @@ namespace Project {
             Tiles.Clear();
             Lights.Clear();
 
-            CurrentMap = map;
-
             // Solve the maze
             // This precomputes the shortest path to the maze exit for every
             // possible map position
@@ -182,17 +223,32 @@ namespace Project {
 
             // Create player
             Vector2 playerPos = map.GetWorldCoordinates(((Vector2)map.StartPosition) + 0.5f);
+
+            if (Player != null) {
+                Player.CompletedLevel -= PlayerCompletedLevel;
+            }
+
             Player = new Player(this, "Phong", playerPos);
+            Player.CompletedLevel += PlayerCompletedLevel;
+
             GameObjects.Add(Player);
 
             // Generate the game objects that make up the floor
-            LoadFloor(CurrentMap);
+            LoadFloor(map);
 
             AddEnvironmentLights();
             RainbowModeOn = false;
 
             // create camera
             Camera = new Camera(this);
+        }
+
+        public void StopGame() {
+            lock(isStartedLock) {
+                this.IsStarted = false;
+                this.GraphicsDevice.Clear(Color.Black);
+                this.GraphicsDevice.Present();
+            }
         }
 
         // Add Red, Green and Blue environment lights with different rate of movements
@@ -213,8 +269,8 @@ namespace Project {
             if (!RainbowModeOn) return;
             var time = gameTime.TotalGameTime.TotalMilliseconds;
             Vector3 rate = Lights[0].Rate;
-            var deltaY = CurrentMap.Height / 2f;
-            var deltaX = CurrentMap.Width / 2f;
+            var deltaY = CurrentLevel.Map.Height / 2f;
+            var deltaX = CurrentLevel.Map.Width / 2f;
             Lights[0].LightPosition = new Vector3(deltaX * (float)Math.Sin(time * rate.X) + deltaX, deltaY * (float)Math.Cos(time * rate.Y) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
             rate = Lights[1].Rate;
             Lights[1].LightPosition = new Vector3(deltaX * (float)Math.Cos(time * rate.Y) + deltaX, deltaY * (float)Math.Sin(time * rate.X) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
@@ -268,55 +324,56 @@ namespace Project {
         }
 
         protected override void Update(GameTime gameTime) {
-            if (IsStarted) {
-                KeyboardState = keyboardManager.GetState();
-                flushAddedAndRemovedGameObjects();
-                float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds / 1000f;
-                float speed = 3f;
+            lock(isStartedLock) {
+                if (IsStarted) {
+                    KeyboardState = keyboardManager.GetState();
+                    FlushAddedAndRemovedGameObjects();
+                    float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds / 1000f;
+                    float speed = 3f;
 
-                if (KeyboardState.IsKeyDown(Keys.W)) {
-                    Camera.cameraMoved = true;
-                    Camera.pitch -= speed * deltaTime;
-                }
-                if (KeyboardState.IsKeyDown(Keys.S)) {
-                    Camera.cameraMoved = true;
-                    Camera.pitch += speed * deltaTime;
-                }
-                if (KeyboardState.IsKeyDown(Keys.A)) {
-                    Camera.cameraMoved = true;
-                    Camera.yaw -= speed * deltaTime;
-                }
-                if (KeyboardState.IsKeyDown(Keys.D)) {
-                    Camera.cameraMoved = true;
-                    Camera.yaw += speed * deltaTime;
-                }
-                if (KeyboardState.IsKeyDown(Keys.Q)) {
-                    Camera.cameraMoved = true;
-                    Camera.roll -= speed * deltaTime;
-                }
-                if (KeyboardState.IsKeyDown(Keys.E)) {
-                    Camera.cameraMoved = true;
-                    Camera.roll += speed * deltaTime;
-                }
+                    if (KeyboardState.IsKeyDown(Keys.W)) {
+                        Camera.cameraMoved = true;
+                        Camera.pitch -= speed * deltaTime;
+                    }
+                    if (KeyboardState.IsKeyDown(Keys.S)) {
+                        Camera.cameraMoved = true;
+                        Camera.pitch += speed * deltaTime;
+                    }
+                    if (KeyboardState.IsKeyDown(Keys.A)) {
+                        Camera.cameraMoved = true;
+                        Camera.yaw -= speed * deltaTime;
+                    }
+                    if (KeyboardState.IsKeyDown(Keys.D)) {
+                        Camera.cameraMoved = true;
+                        Camera.yaw += speed * deltaTime;
+                    }
+                    if (KeyboardState.IsKeyDown(Keys.Q)) {
+                        Camera.cameraMoved = true;
+                        Camera.roll -= speed * deltaTime;
+                    }
+                    if (KeyboardState.IsKeyDown(Keys.E)) {
+                        Camera.cameraMoved = true;
+                        Camera.roll += speed * deltaTime;
+                    }
 
-                if (GameSettings.AccelerometerEnabled && Input.accelerometer != null) {
-                    AccelerometerReading = Input.accelerometer.GetCurrentReading();
-                }
-                else {
-                    AccelerometerReading = null;
-                }
+                    if (GameSettings.AccelerometerEnabled && Input.accelerometer != null) {
+                        AccelerometerReading = Input.accelerometer.GetCurrentReading();
+                    }
+                    else {
+                        AccelerometerReading = null;
+                    }
 
-                for (int i = 0; i < GameObjects.Count; i++) {
-                    GameObjects[i].Update(gameTime);
+                    for (int i = 0; i < GameObjects.Count; i++) {
+                        GameObjects[i].Update(gameTime);
+                    }
+
+                    // update the camera last
+                    Camera.Update();
+
+                    MazeSolver.Hint();
+                    UpdateLightPositions(gameTime);
                 }
-
-                // update the camera last
-                Camera.Update();
-
-                MazeSolver.Hint();
-                UpdateLightPositions(gameTime);
             }
-
             // Handle base.Update
             base.Update(gameTime);
 
@@ -350,7 +407,7 @@ namespace Project {
         }
 
         // Process the buffers of game objects that need to be added/removed.
-        private void flushAddedAndRemovedGameObjects() {
+        private void FlushAddedAndRemovedGameObjects() {
             while (addedGameObjects.Count > 0) { GameObjects.Add(addedGameObjects.Pop()); }
             while (removedGameObjects.Count > 0) { GameObjects.Remove(removedGameObjects.Pop()); }
         }

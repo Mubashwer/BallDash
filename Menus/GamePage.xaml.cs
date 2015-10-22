@@ -21,42 +21,47 @@
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using SharpDX;
+using System;
 
 namespace Project.Menus {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     // TASK 4: Instructions Page
-    public sealed partial class GamePage
-    {
+    public sealed partial class GamePage {
         private MainPage parent;
-       
-        public GamePage(MainPage parent)
-        {
+
+        public GamePage(MainPage parent) {
             this.parent = parent;
             InitializeComponent();
+            parent.Game.AllLevelsComplete += Game_AllLevelsComplete;
         }
+
         public void UpdateStats(string stats) {
             txtStats.Text = stats;
         }
 
         // Button for Hint
-        private void ChangeHint(object sender, RoutedEventArgs e)
-        {
+        private void ChangeHint(object sender, RoutedEventArgs e) {
             parent.Game.MazeSolver.Enabled = !parent.Game.MazeSolver.Enabled;
             parent.Game.RainbowModeOn = !parent.Game.RainbowModeOn;
         }
 
-        private void Back(object sender, RoutedEventArgs e)
-        {
-            //parent.Game.Exit();
-            parent.Game.IsStarted = false;
-            parent.Game.GraphicsDevice.Clear(Color.Black);
-            parent.Game.GraphicsDevice.Present();
+        private void Back(object sender, RoutedEventArgs e) {
+            StopGame();
+        }
+
+        private void Game_AllLevelsComplete(object sender, EventArgs e) {
+            StopGame();
+        }
+
+        private void StopGame() {
+            parent.Game.StopGame();
+
             //parent.Game.Dispose();
             parent.Children.Add(new MainMenu(parent));
             parent.Children.Remove(this);
+            parent.Game.AllLevelsComplete -= Game_AllLevelsComplete;
         }
-
     }
 }

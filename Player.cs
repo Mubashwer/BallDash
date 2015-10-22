@@ -35,6 +35,8 @@ namespace Project {
         /// </summary>
         public event EventHandler PlayerDied;
 
+        public event EventHandler CompletedLevel;
+
         /// <summary>
         /// Triggered when the player suffers a physics collision
         /// </summary>
@@ -160,7 +162,7 @@ namespace Project {
             Point currentBallMapPoint = GetPlayerMapPoint();
 
             // Gravity: Check if the current square is a floor, and if so, do not change the height
-            Map.UnitType floorType = game.CurrentMap[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
+            Map.UnitType floorType = game.CurrentLevel.Map[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
 
             if (!game.RainbowModeOn)
             {
@@ -181,12 +183,21 @@ namespace Project {
                 this.position = startPosition;
             }
 
+            // detect the ground
             if (floorType == Map.UnitType.Floor
                 || floorType == Map.UnitType.Wall
                 || floorType == Map.UnitType.PlayerStart
                 || floorType == Map.UnitType.PlayerEnd) {
+
                 position.Z = -radius;
                 velocity.Z = 0;
+            }
+
+            // detect the player reaching the end tile
+            if (floorType == Map.UnitType.PlayerEnd) {
+                if (CompletedLevel != null) {
+                    CompletedLevel(this, null);
+                }
             }
 
             //2.
@@ -204,10 +215,10 @@ namespace Project {
                 float pointY = currentBallCenterWorldPosition.Y + (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
 
                 // get the map coordinates for this point
-                Vector2 pointMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(pointX, pointY));
+                Vector2 pointMapPos = game.CurrentLevel.Map.GetMapUnitCoordinates(new Vector2(pointX, pointY));
 
                 // get the unit type that this point is located within
-                var pointFloorType = game.CurrentMap[(int)pointMapPos.X, (int)pointMapPos.Y];
+                var pointFloorType = game.CurrentLevel.Map[(int)pointMapPos.X, (int)pointMapPos.Y];
 
                 // if it's a wall, we have a collision.
                 if (pointFloorType == Map.UnitType.Wall) {
@@ -337,7 +348,7 @@ namespace Project {
 
         public Vector2 GetPlayerMapPosition() {
             Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
-            Vector2 currentBallMapPos = game.CurrentMap.GetMapUnitCoordinates(new Vector2(currentBallCenterWorldPosition.X, currentBallCenterWorldPosition.Y));
+            Vector2 currentBallMapPos = game.CurrentLevel.Map.GetMapUnitCoordinates(new Vector2(currentBallCenterWorldPosition.X, currentBallCenterWorldPosition.Y));
             return currentBallMapPos;
         }
 
