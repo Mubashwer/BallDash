@@ -91,7 +91,8 @@ namespace Project {
 
             if (game.GameSettings.TouchControlsEnabled) {
                 if (touchPosition != null) {
-
+                    tiltX = 2 * Math.PI * ((double)90 / 360) * (touchPosition.Value.X);
+                    tiltY = 2 * Math.PI * ((double)-90 / 360) * (touchPosition.Value.Y);
                 }
             }
 
@@ -277,8 +278,8 @@ namespace Project {
                 // Update debug stats
                 string stats = "Update Delta: " + elapsedMs
                     + Environment.NewLine + "Updates/second: " + (1000 / elapsedMs)
-                    + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + "degrees"
-                    + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + "degrees"
+                    + Environment.NewLine + "Tilt X: " + RadiansToDegrees(tiltX) + " degrees"
+                    + Environment.NewLine + "Tilt Y: " + RadiansToDegrees(tiltY) + " degrees"
                     + Environment.NewLine + "Ball Acc X: " + ballXAccel
                     + Environment.NewLine + "Ball Acc Y: " + ballYAccel
                     + Environment.NewLine + "Ball Acc Z: " + ballZAccel
@@ -346,7 +347,7 @@ namespace Project {
         }
 
         public override void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args) {
-            touchPosition = new Windows.Foundation.Point((args.Position.X / Window.Current.Bounds.X) - 0.5, (args.Position.Y / Window.Current.Bounds.Y) - 0.5);
+            touchPosition = new Windows.Foundation.Point((args.Position.X / Window.Current.Bounds.Width) - 0.5, (args.Position.Y / Window.Current.Bounds.Height) - 0.5);
         }
 
         public override void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args) {

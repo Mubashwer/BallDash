@@ -13,5 +13,6 @@
         <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="48" Margin="0,205,0,547" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Center" TextAlignment="Center" Width="784"/>
         <CheckBox x:Name="chkDebugEnabled" Content="Show Debug Statistics" HorizontalAlignment="Center" Margin="559,289,549,484" VerticalAlignment="Center" Checked="chkDebugEnabled_Checked" Unchecked="chkDebugEnabled_Unchecked"/>
         <CheckBox x:Name="chkAccelerometerEnabled" Content="Enable Accelerometer" HorizontalAlignment="Center" Margin="559,348,551,425" VerticalAlignment="Center" Checked="chkAccelerometerEnabled_Checked" Unchecked="chkAccelerometerEnabled_Unchecked"/>
+        <CheckBox x:Name="chkTouchControlsEnabled" Content="Enable Touch Controls" HorizontalAlignment="Center" Margin="559,396,551,377" VerticalAlignment="Center" Checked="chkTouchControlsEnabled_Checked" Unchecked="chkTouchControlsEnabled_Unchecked"/>
     </Grid>
 </Page>

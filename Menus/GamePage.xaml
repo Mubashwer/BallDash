@@ -11,6 +11,6 @@
     <Grid>
         <Button x:Name="btnHint" Content="Hint" HorizontalAlignment="Left" Height="77" Margin="1087,60,0,0" VerticalAlignment="Top" Width="163" Click="ChangeHint"/>
         <Button x:Name="btnBack" Content="Menu" HorizontalAlignment="Left" Height="77" Margin="1087,167,0,0" VerticalAlignment="Top" Width="163" Click="Back"/>
-        <TextBlock x:Name="txtStats" HorizontalAlignment="Left" Margin="10,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="300" Width="300"/>
+        <TextBlock x:Name="txtStats" HorizontalAlignment="Left" Margin="10,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="681" Width="300"/>
     </Grid>
 </Page>

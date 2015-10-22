@@ -36,6 +36,7 @@ namespace Project.Menus {
             this.parent = parent;
             chkDebugEnabled.IsChecked = parent.GameSettings.DebugEnabled;
             chkAccelerometerEnabled.IsChecked = parent.GameSettings.AccelerometerEnabled;
+            chkTouchControlsEnabled.IsChecked = parent.GameSettings.TouchControlsEnabled;
         }
 
         private void GoBack(object sender, RoutedEventArgs e)
@@ -58,6 +59,14 @@ namespace Project.Menus {
 
         private void chkAccelerometerEnabled_Unchecked(object sender, RoutedEventArgs e) {
             parent.GameSettings.AccelerometerEnabled = false;
+        }
+
+        private void chkTouchControlsEnabled_Checked(object sender, RoutedEventArgs e) {
+            parent.GameSettings.TouchControlsEnabled = true;
+        }
+
+        private void chkTouchControlsEnabled_Unchecked(object sender, RoutedEventArgs e) {
+            parent.GameSettings.TouchControlsEnabled = false;
         }
     }
 }

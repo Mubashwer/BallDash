@@ -38,6 +38,7 @@ namespace Project.Menus {
 
             GameSettings = new GameSettings() {
                 AccelerometerEnabled = true,
+                TouchControlsEnabled = true,
                 DebugEnabled = false
             };
             CreateGame();
