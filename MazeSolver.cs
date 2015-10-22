@@ -14,15 +14,13 @@ namespace Project {
         MazeGame game;
         public Dictionary<Point, List<Point>> Paths { get; set; }
         public bool Enabled { get; set; }
-        private Point playerPosition;
+        private Point? playerPosition = null;
 
         public MazeSolver(MazeGame game, Map map) {
             this.map = map;
             this.game = game;
             graph = new Graph<Point>();
             Enabled = false;
-            var playerPositionVector = map.GetMapUnitCoordinates(new Vector2(game.Player.position.X, game.Player.position.Y));
-            playerPosition = new Point((int)playerPositionVector.X + 1, (int)playerPositionVector.Y + 1);
 
             // Add all map world unit locations as vertices in graph
             for (int x = 0; x < map.Width; x++) {
@@ -112,22 +110,21 @@ namespace Project {
         public void Hint() {
             if (!Enabled) return;
             var newPlayerPosition = game.Player.GetPlayerMapPoint();
-            if (newPlayerPosition.Equals(playerPosition)) return;
+            if (playerPosition == null || newPlayerPosition.Equals(playerPosition)) return;
             playerPosition = newPlayerPosition;
             //Debug.WriteLine("PLAYER MAP POSITION: " + playerPosition);
             DisableHint(); // reset hint objects 
             Enabled = true;
             Dictionary<Point, Point> previous = graph.previous;
-            var current = playerPosition;
+            var current = (Point)playerPosition;
             try {
-                current = playerPosition;
 
                 if (!previous.ContainsKey(current)) {
                     Debug.WriteLine("NOT FOUND: " + map[current.X, current.Y]);
                     return;
                 }
 
-                game.Tiles[playerPosition].IsHintObject = true;
+                game.Tiles[(Point)playerPosition].IsHintObject = true;
                 while (previous.ContainsKey(previous[current])) {
                     if (current.Equals(map.EndPosition)) break;
                     var prev = previous[current];

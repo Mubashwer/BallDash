@@ -36,14 +36,17 @@ namespace Project {
         /// </summary>
         public event EventHandler Collision;
 
-        public Player(MazeGame game, string shaderName, Vector3 position) {
+        public Player(MazeGame game, string shaderName, Vector2 position) {
             this.game = game;
             radius = diameter / 2.0f;
             type = GameObjectType.Player;
             myModel = game.Assets.GetModel("player", CreatePlayerModel);
-            startPosition = position;
-            base.position = position;
-            base.position.Z = -radius;
+
+            Vector3 player3dPosition = new Vector3(position, -radius);
+
+            startPosition = player3dPosition;
+            base.position = startPosition;
+
             transform = new Transform(base.position);
             ShaderName = shaderName;
             CollisionsEnabled = true;
@@ -301,10 +304,8 @@ namespace Project {
             return degrees / (180 / Math.PI);
         }
 
-
-
         public Vector3 GetPlayerWorldPosition() {
-            return position + radius * 1.5f;
+            return position;// + radius;// * 1.5f;
         }
 
         public Vector2 GetPlayerMapPosition() {

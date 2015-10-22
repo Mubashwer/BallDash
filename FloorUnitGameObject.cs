@@ -8,18 +8,20 @@ using SharpDX.Toolkit;
 
 namespace Project {
     public class FloorUnitGameObject : GameObject {
-
-        
-        public FloorUnitGameObject(MazeGame game, String shaderName, Vector3 position) {
+        private float unitWidth;
+        private float unitHeight;
+        public FloorUnitGameObject(MazeGame game, string shaderName, Vector3 position, float unitWidth, float unitHeight) {
             this.game = game;
+            this.unitWidth = unitWidth;
+            this.unitHeight = unitHeight;
             type = GameObjectType.FloorUnit;
-            myModel = game.Assets.GetModel("FloorUnit"+position.ToString(), CreateFloorModel);
+            myModel = game.Assets.GetModel("FloorUnit"+unitWidth.ToString()+":"+unitHeight.ToString(), CreateFloorModel);
             transform = new Transform(position);
             ShaderName = shaderName;
         }
 
         public MyModel CreateFloorModel() {
-            return game.Assets.CreateTexturedPlane(Map.WorldUnitWidth, Map.WorldUnitHeight, 1, "wooden_floor.dds");
+            return game.Assets.CreateTexturedPlane(unitWidth, unitHeight, 1, "wooden_floor.dds");
         }
 
         public override void Update(GameTime gametime) {

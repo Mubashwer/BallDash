@@ -19,38 +19,40 @@ namespace Project {
 
         private List<List<UnitType>> mapDefinition;
 
-        public override Point StartPosition { get; set; }
-        public override Point EndPosition { get; set; }
+        private Point startPosition;
+        private Point endPosition;
+        public override Point StartPosition { get {return startPosition; } }
+        public override Point EndPosition { get { return endPosition; } }
 
-        private int width;
         private int height;
+        private int width;
+        public override int Height { get { return height; } }
+        public override int Width { get { return width; } }
 
+        private float mapUnitWidth;
+        private float mapUnitHeight;
+        private float mapUnitDepth;
+        public override float MapUnitWidth { get { return mapUnitWidth; } }
+        public override float MapUnitHeight { get { return mapUnitHeight; } }
+        public override float MapUnitDepth { get { return mapUnitDepth; } }
 
-        public TextMap(string mapPath) {
-            GenerateMap(mapPath);
+        public TextMap(IList<string> mapLines, float mapUnitWidth, float mapUnitHeight, float mapUnitDepth) : base() {
+            this.mapUnitWidth = mapUnitWidth;
+            this.mapUnitHeight = mapUnitHeight;
+            this.mapUnitDepth = mapUnitDepth;
+
+            GenerateMap(mapLines);
         }
 
-        private void GenerateMap(string mapPath) {
-            IList<string> readLines = null;
-
-            try {
-                StorageFolder folder = Package.Current.InstalledLocation;
-                StorageFile file = folder.GetFileAsync(mapPath).GetAwaiter().GetResult();
-                readLines = FileIO.ReadLinesAsync(file).GetAwaiter().GetResult();
-            }
-            catch (Exception e) {
-                Debug.WriteLine("Could not open map {0}, Error: {1}", mapPath, e.ToString());
-                return;
-            }
-
+        private void GenerateMap(IList<string> mapLines) {
             List<List<UnitType>> map = new List<List<UnitType>>();
 
             int maxWidth = -1;
             // (0,0) on the map is the bottom left, so we need to iterate j backwards
-            for (int j = readLines.Count -1; j >= 0 ; j--) {
+            for (int j = mapLines.Count -1; j >= 0 ; j--) {
                 List<UnitType> currentRow = new List<UnitType>();
-                for (int i = 0; i < readLines[j].Length; i++) {
-                    char currentChar = readLines[j][i];
+                for (int i = 0; i < mapLines[j].Length; i++) {
+                    char currentChar = mapLines[j][i];
 
                     // add different unit type depending on character
                     switch (currentChar) {
@@ -76,8 +78,8 @@ namespace Project {
                 }
 
                 // update maximum width
-                if (maxWidth < readLines[j].Length) {
-                    maxWidth = readLines[j].Length;
+                if (maxWidth < mapLines[j].Length) {
+                    maxWidth = mapLines[j].Length;
                 }
 
                 map.Add(currentRow);
@@ -96,10 +98,10 @@ namespace Project {
                 for (int j = 0; j < this.Width; j++) {
                     switch (this[j, i]) {
                         case UnitType.PlayerStart:
-                            this.StartPosition = new Point(j, i);
+                            startPosition = new Point(j, i);
                                 break;
                         case UnitType.PlayerEnd:
-                            this.EndPosition = new Point(j, i);
+                            endPosition = new Point(j, i);
                             break;
                     }
                 }
@@ -120,26 +122,6 @@ namespace Project {
 
                 // return the unit type at the coordinate
                 return mapDefinition[y][x];
-            }
-        }
-
-        public override int Height {
-            get {
-                return this.height;
-            }
-            set
-            {
-                this.width = value;
-            }
-        }
-
-        public override int Width {
-            get {
-                return this.width;
-            }
-            set
-            {
-                this.width = value;
             }
         }
 

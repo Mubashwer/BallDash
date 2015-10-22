@@ -56,7 +56,7 @@ namespace Project.Menus {
         private void Back(object sender, RoutedEventArgs e)
         {
             //parent.Game.Exit();
-            parent.Game.Started = false;
+            parent.Game.IsStarted = false;
             parent.Game.GraphicsDevice.Clear(Color.Black);
             parent.Game.GraphicsDevice.Present();
             //parent.Game.Dispose();

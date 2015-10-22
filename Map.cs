@@ -21,18 +21,35 @@ namespace Project {
 
         public abstract UnitType this[int x, int y] { get; }
 
-        public abstract int Width { get; set; }
-        public abstract int Height { get; set; }
+        public abstract int Width { get; }
+        public abstract int Height { get; }
 
-        public abstract Point StartPosition { get; set; }
-        public abstract Point EndPosition { get; set; }
+        /// <summary>
+        /// The width (X scale) of a map unit, in world coordinates
+        /// </summary>
+        public abstract float MapUnitWidth { get; }
+
+        /// <summary>
+        /// The height (Y scale) of a map unit, in world coordinates
+        /// </summary>
+        public abstract float MapUnitHeight { get; }
+
+        /// <summary>
+        /// The depth (Z scale) of a map unit, in world coordinates
+        /// </summary>
+        public abstract float MapUnitDepth { get; }
+
+
+        public abstract Point StartPosition { get; }
+        public abstract Point EndPosition { get; }
 
         public Vector2 GetMapUnitCoordinates(Vector2 worldCoordinates) {
-            return new Vector2(((worldCoordinates.X - (WorldUnitWidth / 2)) / WorldUnitWidth), ((worldCoordinates.Y - (WorldUnitHeight / 2)) / WorldUnitHeight));
+            return new Vector2(worldCoordinates.X/ MapUnitWidth, worldCoordinates.Y / MapUnitHeight);
         }
 
-        public static readonly float WorldUnitWidth = 3f;
-        public static readonly float WorldUnitHeight = 3f;
+        public Vector2 GetWorldCoordinates(Vector2 mapCoordinates) {
+            return new Vector2(MapUnitWidth * mapCoordinates.X, MapUnitHeight * mapCoordinates.Y);
+        }
     }
 
     public static class PointExtensions {

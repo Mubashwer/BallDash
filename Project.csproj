@@ -54,6 +54,7 @@
     <Compile Include="GraphicCache.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
+    <Compile Include="LevelInfo.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Menus\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
@@ -115,7 +116,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Package.StoreAssociation.xml" />
-    <Content Include="Maps\testMap.txt">
+    <Content Include="Maps\Level1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Project_StoreKey.pfx" />

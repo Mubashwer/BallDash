@@ -28,11 +28,14 @@ using Windows.Devices.Sensors;
 
 namespace Project {
     using System.Diagnostics;
+    using System.Linq;
     using Menus;
     // Use this namespace here in case we need to use Direct3D11 namespace as well, as this
     // namespace will override the Direct3D11.
     using SharpDX.Toolkit.Graphics;
     using SharpDX.Toolkit.Input;
+    using Windows.ApplicationModel;
+    using Windows.Storage;
 
     public class MazeGame : Game {
         private GraphicsDeviceManager graphicsDeviceManager;
@@ -49,6 +52,7 @@ namespace Project {
         public MazeSolver MazeSolver { get; set; }
         public GraphicCache GraphicCache { get; set; }
         public GameSettings GameSettings { get; set; }
+        public List<LevelInfo> AvailableLevels { get; private set; }
 
         public Dictionary<Point, GameObject> Tiles { get; set; }
         public Map CurrentMap { get; set; }
@@ -63,7 +67,7 @@ namespace Project {
         public Random RandomGenerator { get; set; }
 
         // Checks if game has started
-        public bool Started { get; set; }
+        public bool IsStarted { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MazeGame" /> class.
@@ -89,7 +93,28 @@ namespace Project {
             Input.gestureRecognizer.ManipulationStarted += OnManipulationStarted;
             Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
             Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
-            Started = false;
+            IsStarted = false;
+        }
+
+        private void LoadLevels() {
+            this.AvailableLevels = new List<LevelInfo>();
+
+            try {
+                StorageFolder folder = Package.Current.InstalledLocation.GetFolderAsync("Maps").GetAwaiter().GetResult();
+                IReadOnlyList<StorageFile> mapFiles = folder.GetFilesAsync().GetAwaiter().GetResult();
+
+                foreach (StorageFile thisMapFile in mapFiles) {
+                    IList<string> readLines = FileIO.ReadLinesAsync(thisMapFile).GetAwaiter().GetResult();
+                    LevelInfo level = LevelInfo.CreateFromMapDefinition(readLines);
+                    AvailableLevels.Add(level);
+                }
+            }
+            catch (Exception e) {
+                Debug.WriteLine("Could not open map, Error: {1}", e.ToString());
+                return;
+            }
+
+            AvailableLevels.OrderBy(o => o.Index);
         }
 
         protected override void LoadContent() {
@@ -99,13 +124,11 @@ namespace Project {
             removedGameObjects = new Stack<GameObject>();
             Tiles = new Dictionary<Point, GameObject>();
 
-            // Create game objects.
-            Player = new Player(this, "Phong", new Vector3(6f, 6f, 0));
-            GameObjects.Add(Player);
-            Camera = new Camera(this);
+            // load all levels
+            LoadLevels();
 
-            var basicMap = new TextMap("Maps\\testMap.txt");
-            ChangeMap(basicMap);
+            // load the first level for testing
+            ChangeMap(AvailableLevels[0].Map);
 
             // Create an input layout from the vertices
             base.LoadContent();
@@ -113,19 +136,35 @@ namespace Project {
 
 
         public void ChangeMap(Map map) {
-            CurrentMap = map;
-            LoadFloor(CurrentMap);
+            // clear out all existing assets
+            GameObjects.Clear();
+            addedGameObjects.Clear();
+            removedGameObjects.Clear();
+            Tiles.Clear();
 
+            CurrentMap = map;
+
+            // Solve the maze
+            // This precomputes the shortest path to the maze exit for every
+            // possible map position
             MazeSolver = new MazeSolver(this, map);
             MazeSolver.SolveMaze();
 
-            // map test
-            Debug.WriteLine("First map:\n{0}", CurrentMap.ToString());
+            // Create player
+            Vector2 playerPos = map.GetWorldCoordinates(map.StartPosition);
+            Player = new Player(this, "Phong", playerPos);
+            GameObjects.Add(Player);
+
+            // Generate the game objects that make up the floor
+            LoadFloor(CurrentMap);
+
+            // create camera
+            Camera = new Camera(this);
         }
 
         private void LoadFloor(Map map) {
-            var width = Map.WorldUnitWidth;
-            var height = Map.WorldUnitHeight;
+            var width = map.MapUnitWidth;
+            var height = map.MapUnitHeight;
             for (int i = 0; i < map.Width; i++) {
                 for (int j = 0; j < map.Height; j++) {
                     var x = (i * width) + width / 2;
@@ -134,24 +173,24 @@ namespace Project {
 
                     Map.UnitType unitType = map[i, j];
                     if (unitType == Map.UnitType.PlayerStart) {
-                        var startObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        var startObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z), width, height);
                         GameObjects.Add(startObject);
                         Tiles[new Point(i, j)] = startObject;
                     }
                     if (unitType == Map.UnitType.PlayerEnd) {
-                        var endObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        var endObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z), width, height);
                         endObject.IsEndObject = true;
                         GameObjects.Add(endObject);
                         Tiles[new Point(i, j)] = endObject;
                     }
                     else if (unitType == Map.UnitType.Floor) {
-                        var floorObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z));
+                        var floorObject = new FloorUnitGameObject(this, "Phong", new Vector3(x, y, z), width, height);
                         GameObjects.Add(floorObject);
                         Tiles[new Point(i, j)] = floorObject;
                     }
                     else if (unitType == Map.UnitType.Wall) {
                         z = -width / 2.0f;
-                        var wallObject = new WallGameObject(this, "Phong", new Vector3(x, y, z));
+                        var wallObject = new WallGameObject(this, "Phong", new Vector3(x, y, z), width);
                         GameObjects.Add(wallObject);
                         Tiles[new Point(i, j)] = wallObject;
                     }
@@ -166,7 +205,7 @@ namespace Project {
         }
 
         protected override void Update(GameTime gameTime) {
-            if (IsRunning && Started) {
+            if (IsStarted) {
                 KeyboardState = keyboardManager.GetState();
                 flushAddedAndRemovedGameObjects();
                 float deltaTime = (float)gameTime.ElapsedGameTime.Milliseconds / 1000f;
@@ -221,7 +260,7 @@ namespace Project {
             if (IsRunning) {
                 // Clears the screen with the Color.Black
                 GraphicsDevice.Clear(Color.Black);
-                if (!Started) return;
+                if (!IsStarted) return;
                 for (int i = 0; i < GameObjects.Count; i++) {
                     GameObjects[i].Draw(gameTime);
                 }

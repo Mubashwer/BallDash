@@ -1,0 +1,15 @@
+﻿[Settings]
+Index=0
+Name=Level 1
+Description=The First Level
+MapUnitWidth=3
+MapUnitHeight=3
+MapUnitDepth=3
+
+[Map]
+xxxxxxxxxxxxxxxxxxx
+xx....  ..........x
+x.x s....ox   x...x
+x.........xxxxx  .x
+x...xxxx..... x  ex
+xxxxxxxxxxxxxxxxxxx
