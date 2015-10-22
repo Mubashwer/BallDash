@@ -97,15 +97,9 @@
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
-    <ToolkitFxc Include="Content\Cel.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </ToolkitFxc>
     <Content Include="Content\marble.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <ToolkitFxc Include="Content\Rainbow.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </ToolkitFxc>
     <Content Include="Content\wooden_floor.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
