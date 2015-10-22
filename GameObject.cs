@@ -22,7 +22,6 @@ namespace Project {
         private Effect effect;
         public string ShaderName { get; set; }
         public bool IsHintObject = false;
-        public bool IsEndObject = false;
 
         public abstract void Update(GameTime gametime);
 
@@ -82,12 +81,7 @@ namespace Project {
 
                 // only apply Ka if the shader is capable of using it
                 if (effect.Parameters.Contains("Ka")) {
-                    if (IsHintObject && game.MazeSolver.Enabled) effect.Parameters["Ka"].SetValue(2.0f);
-                    else if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
-                    else effect.Parameters["Ka"].SetValue(1.0f);
-
-                    if (IsEndObject) effect.Parameters["Ka"].SetValue(4.0f);
-                    else if (game.MazeSolver.Enabled)
+                    if (game.MazeSolver.Enabled)
                     {
                         if (IsHintObject) effect.Parameters["Ka"].SetValue(1.0f);
                         else effect.Parameters["Ka"].SetValue(0.7f);
@@ -96,7 +90,6 @@ namespace Project {
                     {
                         effect.Parameters["Ka"].SetValue(1.0f);
                     }
-
                 }
             }
         }

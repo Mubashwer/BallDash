@@ -106,6 +106,9 @@
     <Content Include="Content\wooden_floor.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\wooden_floor_exit.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\wooden_wall.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

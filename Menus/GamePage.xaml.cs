@@ -58,7 +58,6 @@ namespace Project.Menus {
         private void StopGame() {
             parent.Game.StopGame();
 
-            //parent.Game.Dispose();
             parent.Children.Add(new MainMenu(parent));
             parent.Children.Remove(this);
             parent.Game.AllLevelsComplete -= Game_AllLevelsComplete;

@@ -16,10 +16,9 @@ namespace Project {
             this.unitWidth = unitWidth;
             this.unitHeight = unitHeight;
             this.textureName = textureName;
-            myModel = game.Assets.GetModel("FloorUnit" + unitWidth.ToString() + ":" + unitHeight.ToString(), CreateFloorModel);
+            myModel = game.Assets.GetModel("FloorUnit:" + textureName + ":" + unitWidth.ToString() + ":" + unitHeight.ToString(), CreateFloorModel);
             transform = new Transform(position);
             ShaderName = shaderName;
-            
         }
 
         public MyModel CreateFloorModel() {
@@ -27,8 +26,8 @@ namespace Project {
         }
 
         public override void Update(GameTime gametime) {
-           
+
         }
     }
-    
+
 }

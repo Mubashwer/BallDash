@@ -295,9 +295,8 @@ namespace Project {
                         Tiles[new Point(i, j)] = startObject;
                     }
                     if (unitType == Map.UnitType.PlayerEnd) {
-                        var endObject = new FloorUnitGameObject(this, "Phong", "wooden_floor.dds", new Vector3(x, y, z), width, height);
+                        var endObject = new FloorUnitGameObject(this, "Phong", "wooden_floor_exit.dds", new Vector3(x, y, z), width, height);
 
-                        endObject.IsEndObject = true;
                         GameObjects.Add(endObject);
                         Tiles[new Point(i, j)] = endObject;
                     }
