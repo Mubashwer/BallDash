@@ -32,7 +32,7 @@ namespace Project {
             for (int x = 0; x < map.Width; x++) {
                 for (int y = 0; y < map.Height; y++) {
                     var unitType = map[x, y];
-                    if (unitType != Map.UnitType.Floor && unitType != Map.UnitType.PlayerEnd && unitType != Map.UnitType.PlayerStart) {
+                    if (!unitType.HasFlag(Map.UnitType.Floor)) {
                         continue;
                     }
 
@@ -80,7 +80,7 @@ namespace Project {
         private int AddEdge(Point current, Point neighbour) {
             if (!OutofBound(neighbour)) {
                 var mapUnit = GetMapUnit(neighbour);
-                if (mapUnit == Map.UnitType.Floor || mapUnit == Map.UnitType.PlayerEnd || mapUnit == Map.UnitType.PlayerStart) {
+                if (mapUnit.HasFlag(Map.UnitType.Floor)) {
                     graph.AddEdge(current, neighbour, 1);
                     return 0;
                 }

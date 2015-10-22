@@ -74,12 +74,12 @@ namespace Project {
         private readonly object isStartedLock = new object();
         public bool IsStarted {
             get {
-                lock(isStartedLock) {
+                lock (isStartedLock) {
                     return isStarted;
                 }
             }
             set {
-                lock(isStartedLock) {
+                lock (isStartedLock) {
                     isStarted = value;
                 }
             }
@@ -176,7 +176,7 @@ namespace Project {
         }
 
         private void PlayerCompletedLevel(object sender, EventArgs args) {
-            lock(isStartedLock) {
+            lock (isStartedLock) {
                 // find the next level higher than this one and load it
                 int currentLevelIndex = AvailableLevels.IndexOf(CurrentLevel);
                 if (currentLevelIndex >= 0) {
@@ -201,7 +201,7 @@ namespace Project {
 
 
         public void ChangeLevel(LevelInfo level) {
-            lock(isStartedLock) {
+            lock (isStartedLock) {
                 CurrentLevel = level;
                 ChangeMap(level.Map);
             }
@@ -244,7 +244,7 @@ namespace Project {
         }
 
         public void StopGame() {
-            lock(isStartedLock) {
+            lock (isStartedLock) {
                 this.IsStarted = false;
                 this.GraphicsDevice.Clear(Color.Black);
                 this.GraphicsDevice.Present();
@@ -288,25 +288,25 @@ namespace Project {
                     var z = 0f;
 
                     Map.UnitType unitType = map[i, j];
-                    if (unitType == Map.UnitType.PlayerStart) {
-                        var startObject = new FloorUnitGameObject(this, "Phong", "wooden_floor.dds", new Vector3(x, y, z), width, height);
 
-                        GameObjects.Add(startObject);
-                        Tiles[new Point(i, j)] = startObject;
-                    }
-                    if (unitType == Map.UnitType.PlayerEnd) {
-                        var endObject = new FloorUnitGameObject(this, "Phong", "wooden_floor_exit.dds", new Vector3(x, y, z), width, height);
+                    if (unitType.HasFlag(Map.UnitType.Floor)) {
+                        string texture = "wooden_floor.dds";
+                        if (unitType.HasFlag(Map.UnitType.PlayerStart)) {
+                            texture = "wooden_floor.dds";
+                        }
+                        else if (unitType.HasFlag(Map.UnitType.PlayerEnd)) {
+                            texture = "wooden_floor_exit.dds";
+                        }
+                        else if (unitType.HasFlag(Map.UnitType.Rainbow)) {
+                            texture = "rainbow.dds";
+                        }
 
-                        GameObjects.Add(endObject);
-                        Tiles[new Point(i, j)] = endObject;
-                    }
-                    else if (unitType == Map.UnitType.Floor) {
-                        var floorObject = new FloorUnitGameObject(this, "Phong", "wooden_floor.dds", new Vector3(x, y, z), width, height);
+                        var floorObject = new FloorUnitGameObject(this, "Phong", texture, new Vector3(x, y, z), width, height);
 
                         GameObjects.Add(floorObject);
                         Tiles[new Point(i, j)] = floorObject;
                     }
-                    else if (unitType == Map.UnitType.Wall) {
+                    else if (unitType.HasFlag(Map.UnitType.Wall)) {
                         z = -width / 2.0f;
                         var wallObject = new WallGameObject(this, "Phong", new Vector3(x, y, z), width);
                         GameObjects.Add(wallObject);
@@ -323,7 +323,7 @@ namespace Project {
         }
 
         protected override void Update(GameTime gameTime) {
-            lock(isStartedLock) {
+            lock (isStartedLock) {
                 if (IsStarted) {
                     KeyboardState = keyboardManager.GetState();
                     FlushAddedAndRemovedGameObjects();

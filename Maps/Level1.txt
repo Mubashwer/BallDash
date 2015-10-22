@@ -8,7 +8,7 @@ MapUnitDepth=3
 
 [Map]
 xxxxxxxxxxxxxxxxxxx
-xx....  ..........x
+xx....  ......r...x
 x.x s....ox   x...x
 x.........xxxxx  .x
 x...xxxx..... x  ex

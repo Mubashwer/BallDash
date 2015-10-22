@@ -100,7 +100,7 @@ namespace Project {
 
             // also consider arrow keys for getting input tilt
             if (game.KeyboardState.IsKeyDown(Keys.Up)) {
-                tiltY = 2 * Math.PI * ((double)90/360); // tilt forwards 90 degrees
+                tiltY = 2 * Math.PI * ((double)90 / 360); // tilt forwards 90 degrees
             }
 
             if (game.KeyboardState.IsKeyDown(Keys.Down)) {
@@ -164,10 +164,8 @@ namespace Project {
             // Gravity: Check if the current square is a floor, and if so, do not change the height
             Map.UnitType floorType = game.CurrentLevel.Map[(int)currentBallMapPos.X, (int)currentBallMapPos.Y];
 
-            if (!game.RainbowModeOn)
-            {
-                if (floorType == Map.UnitType.None)
-                {
+            if (!game.RainbowModeOn) {
+                if (floorType.HasFlag(Map.UnitType.Rainbow)) {
                     game.RainbowModeOn = true;
                 }
             }
@@ -184,17 +182,13 @@ namespace Project {
             }
 
             // detect the ground
-            if (floorType == Map.UnitType.Floor
-                || floorType == Map.UnitType.Wall
-                || floorType == Map.UnitType.PlayerStart
-                || floorType == Map.UnitType.PlayerEnd) {
-
+            if (floorType.HasFlag(Map.UnitType.Floor)) {
                 position.Z = -radius;
                 velocity.Z = 0;
             }
 
             // detect the player reaching the end tile
-            if (floorType == Map.UnitType.PlayerEnd) {
+            if (floorType.HasFlag(Map.UnitType.PlayerEnd)) {
                 if (CompletedLevel != null) {
                     CompletedLevel(this, null);
                 }
@@ -221,7 +215,7 @@ namespace Project {
                 var pointFloorType = game.CurrentLevel.Map[(int)pointMapPos.X, (int)pointMapPos.Y];
 
                 // if it's a wall, we have a collision.
-                if (pointFloorType == Map.UnitType.Wall) {
+                if (pointFloorType.HasFlag(Map.UnitType.Wall)) {
                     // check if the point's map position is to the left or to the right of the current map position
                     if ((int)pointMapPos.X > (int)currentBallMapPos.X) {
                         collisionRight = true;

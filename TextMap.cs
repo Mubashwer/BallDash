@@ -16,12 +16,13 @@ namespace Project {
         public const char FloorCharacter = '.';
         public const char PlayerStartCharacter = 's';
         public const char PlayerEndCharacter = 'e';
+        public const char RainbowCharacter = 'r';
 
         private List<List<UnitType>> mapDefinition;
 
         private Point startPosition;
         private Point endPosition;
-        public override Point StartPosition { get {return startPosition; } }
+        public override Point StartPosition { get { return startPosition; } }
         public override Point EndPosition { get { return endPosition; } }
 
         private int height;
@@ -49,7 +50,7 @@ namespace Project {
 
             int maxWidth = -1;
             // (0,0) on the map is the bottom left, so we need to iterate j backwards
-            for (int j = mapLines.Count -1; j >= 0 ; j--) {
+            for (int j = mapLines.Count - 1; j >= 0; j--) {
                 List<UnitType> currentRow = new List<UnitType>();
                 for (int i = 0; i < mapLines[j].Length; i++) {
                     char currentChar = mapLines[j][i];
@@ -69,10 +70,13 @@ namespace Project {
                             currentRow.Add(UnitType.Hole);
                             break;
                         case PlayerStartCharacter:
-                            currentRow.Add(UnitType.PlayerStart);
+                            currentRow.Add(UnitType.PlayerStart | UnitType.Floor);
                             break;
                         case PlayerEndCharacter:
-                            currentRow.Add(UnitType.PlayerEnd);
+                            currentRow.Add(UnitType.PlayerEnd | UnitType.Floor);
+                            break;
+                        case RainbowCharacter:
+                            currentRow.Add(UnitType.Rainbow | UnitType.Floor);
                             break;
                     }
                 }
@@ -96,13 +100,12 @@ namespace Project {
         private void UpdateStartEndPositions() {
             for (int i = 0; i < this.Height; i++) {
                 for (int j = 0; j < this.Width; j++) {
-                    switch (this[j, i]) {
-                        case UnitType.PlayerStart:
-                            startPosition = new Point(j, i);
-                                break;
-                        case UnitType.PlayerEnd:
-                            endPosition = new Point(j, i);
-                            break;
+                    if (this[j, i].HasFlag(UnitType.PlayerStart)) {
+                        startPosition = new Point(j, i);
+                    }
+
+                    if (this[j, i].HasFlag(UnitType.PlayerEnd)) {
+                        endPosition = new Point(j, i);
                     }
                 }
             }
