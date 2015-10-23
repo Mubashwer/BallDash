@@ -95,7 +95,7 @@ namespace Project {
                     if (game.MazeSolver.Enabled)
                     {
                         if (IsHintObject) effect.Parameters["Ka"].SetValue(1.0f);
-                        else effect.Parameters["Ka"].SetValue(0.7f);
+                        else effect.Parameters["Ka"].SetValue(0.2f);
                     }
                     else
                     {

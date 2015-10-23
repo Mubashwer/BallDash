@@ -98,11 +98,13 @@ namespace Project {
                 if (value) // Rainbow mode turns on three moving red, green and blue lights
                 {
                     Lights[0].LightColor = Color.Red.ToColor4();
+                    Lights[0].LightIntensity = 1.0f;
                     Lights[1].LightColor = Color.Green.ToColor4();
                     Lights[2].LightColor = Color.Blue.ToColor4();
                 }
                 else { // Use 1 white light only
                     Lights[0].LightColor = Color.White.ToColor4();
+                    Lights[0].LightIntensity = 0.5f;
                     Lights[0].LightPosition = new Vector3(CurrentLevel.Map.Width / 2f * CurrentLevel.Map.MapUnitWidth, 
                         CurrentLevel.Map.Height* CurrentLevel.Map.MapUnitHeight / 2f, 
                         DefaultLightHeight);

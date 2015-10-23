@@ -31,7 +31,7 @@ float4x4 Projection;
 float4 cameraPos;
 float4x4 worldInvTrp;
 
-float4 lightAmbCol = float4(0.6f, 0.6f, 0.6f, 1.0f);
+float4 lightAmbCol = float4(0.4f, 0.4f, 0.4f, 1.0f);
 float Ka;
 
 float4 lightPosition[MAX_LIGHTS];
@@ -130,7 +130,7 @@ technique Lighting
 {
 	pass Pass1
 	{
-		Profile = 10.0;
+		Profile = 9.1;
 		VertexShader = VS;
 		PixelShader = PS;
 	}
