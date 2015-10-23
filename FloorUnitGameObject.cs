@@ -22,7 +22,7 @@ namespace Project {
         }
 
         public MyModel CreateFloorModel() {
-            return game.Assets.CreateTexturedPlane(unitWidth, unitHeight, 1, textureName);
+            return game.Assets.CreateTexturedPlane(unitWidth, unitHeight, textureName);
         }
 
         public override void Update(GameTime gametime) {
