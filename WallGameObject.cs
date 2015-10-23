@@ -12,7 +12,7 @@ namespace Project {
         public WallGameObject(MazeGame game, string shaderName, Vector3 position, float size) {
             this.game = game;
             this.size = size;
-            myModel = game.Assets.GetModel("Wall" + size.ToString(), CreateWallModel);
+            myModel = game.Assets.GetModel("Wall", CreateWallModel);
             transform = new Transform(position);
             ShaderName = shaderName;
         }

@@ -97,7 +97,7 @@ float4 PS(PS_IN input) : SV_Target
 	returnColComb.a = col.a;
 	returnColComb.rgb += amb;
 
-	for (int i = 0; i < MAX_LIGHTS; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		// Calculate diffuse RBG reflections
 		float fAtt = 1;

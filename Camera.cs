@@ -23,7 +23,7 @@ namespace Project {
         private Vector3 up;
         private Vector3 playerPosition;
         private float defaultCameraHeight = -15;
-        private float maxCameraHeight = -25;
+        private float maxCameraHeight = -20;
         private float minCameraHeight = -6f;
 
 
@@ -49,7 +49,7 @@ namespace Project {
             up = defaultUp;
             Position = new Vector3(playerPosition.X, playerPosition.Y, defaultCameraHeight);
             View = Matrix.LookAtLH(Position, defaultCameraTarget, defaultUp);
-            Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.01f, 1000.0f);
+            Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)game.GraphicsDevice.BackBuffer.Width / game.GraphicsDevice.BackBuffer.Height, 0.01f, 100.0f);
             this.game = game;
 
         }
