@@ -93,10 +93,10 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Common\Assets\Logo.png" />
-    <Content Include="Common\Assets\SmallLogo.png" />
-    <Content Include="Common\Assets\SplashScreen.png" />
-    <Content Include="Common\Assets\StoreLogo.png" />
+    <Content Include="Assets\Logo.png" />
+    <Content Include="Assets\SmallLogo.png" />
+    <Content Include="Assets\SplashScreen.png" />
+    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Content\black_floor.dds" />
     <Content Include="Content\marble.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
