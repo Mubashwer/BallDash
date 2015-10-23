@@ -119,7 +119,7 @@ namespace Project {
             // use the tilt angle to calculate the ball's X and Y acceleration
             double ballXAccel = Math.Sin(tiltX) * 0.01;
             double ballYAccel = Math.Sin(tiltY) * 0.01;
-            double ballZAccel = 0.01;
+            double ballZAccel = 0.04;
 
             // add ball acceleration to the ball's velocity
             velocity.X += (float)(ballXAccel * elapsedMs);
