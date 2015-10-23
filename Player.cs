@@ -179,6 +179,9 @@ namespace Project {
                 // reset player position
                 this.velocity = new Vector3();
                 this.position = startPosition;
+
+                // disable rainbow
+                this.game.RainbowModeOn = false;
             }
 
             // detect the ground
