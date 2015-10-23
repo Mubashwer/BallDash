@@ -13,3 +13,5 @@ Ball dash is a classic marble maze game designed for Windows. Your goal is to co
 * Customised phong shader was used to handle the graphics which supports textures and multiple lights. The Camera is placed above the maze board and faces the ball. It follows the ball and updates its position and target appropriately. Pinching of the screen controls the zooming of the camera. 
 
 * The Priority Queue used in our implementation of Djkistra's Algorithm is copied directly from Satsuma .NET library (http://sourceforge.net/projects/satsumagraph/). The license is included above the class definition.
+
+* The physics engine is homemade. It calculates the rough angle that the collision occurred on (a multiple of 45 degrees), and uses that value to calculate a change in X and Y velocity components, adding dampening as it does so.
