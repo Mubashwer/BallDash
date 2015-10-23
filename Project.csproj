@@ -97,15 +97,9 @@
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Content\bump.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\bump2.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <ToolkitFxc Include="Content\bump2.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </ToolkitFxc>
     <ToolkitFxc Include="Content\bumpMap.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </ToolkitFxc>
@@ -116,18 +110,15 @@
     <Content Include="Content\rainbow.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\rainbow.png" />
     <Content Include="Content\wooden_floor.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\wooden_floor.jpg" />
     <Content Include="Content\wooden_floor_exit.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\wooden_wall.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\wooden_wall.jpg" />
     <Content Include="Maps\Level3.txt" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Maps\Level2.txt">
@@ -137,13 +128,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Project_StoreKey.pfx" />
-    <ToolkitFxc Include="Content\Gouraud.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </ToolkitFxc>
     <ToolkitFxc Include="Content\Phong.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </ToolkitFxc>
-    <Content Include="Content\marble.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

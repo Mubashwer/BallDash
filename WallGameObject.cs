@@ -18,7 +18,7 @@ namespace Project {
         }
 
         public MyModel CreateWallModel() {
-            return game.Assets.CreateTexturedCube(size, "wooden_wall.jpg");
+            return game.Assets.CreateTexturedCube(size, "wooden_wall.dds");
         }
 
         public override void Update(GameTime gametime) {
