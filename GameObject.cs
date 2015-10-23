@@ -23,11 +23,22 @@ namespace Project {
         public string ShaderName { get; set; }
         public bool IsHintObject = false;
 
+
+        public bool MustDraw { get; set; }
+        Vector2 DrawDistanceFromPlayer = new Vector2(25, 25);
+
         public abstract void Update(GameTime gametime);
 
         public void Draw(GameTime gametime) {
-            // Some objects such as the Enemy Controller have no model and thus will not be drawn
             if (myModel != null) {
+                // Do not draw "far away" game objects
+                if (!MustDraw) {
+                    if (Math.Abs(game.Player.transform.Position.X - transform.Position.X) >= DrawDistanceFromPlayer.X)
+                        return;
+                    if (Math.Abs(game.Player.transform.Position.Y - transform.Position.Y) >= DrawDistanceFromPlayer.Y)
+                        return;
+                }
+
                 SetupEffect();
                 GetParamsFromModel();
                 game.GraphicsDevice.SetBlendState(game.GraphicsDevice.BlendStates.AlphaBlend);

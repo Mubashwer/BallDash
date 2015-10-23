@@ -284,8 +284,10 @@ namespace Project {
             var width = map.MapUnitWidth;
             var height = map.MapUnitHeight;
 
-            // Add background floor below maze board twice the size of map
-            GameObjects.Add(new FloorUnitGameObject(this, "Phong", "black_floor.dds", new Vector3(width*map.Width/2f, height*map.Height/2f, 6), map.Width*2*width, map.Height*2*height));
+            // Add background floor below maze board twice the size of map and always draw it
+            var bg = (new FloorUnitGameObject(this, "Phong", "black_floor.dds", new Vector3(width * map.Width / 2f, height * map.Height / 2f, 6), map.Width * 2 * width, map.Height * 2 * height));
+            bg.MustDraw = true;
+            GameObjects.Add(bg);
 
             for (int i = 0; i < map.Width; i++) {
                 for (int j = 0; j < map.Height; j++) {
