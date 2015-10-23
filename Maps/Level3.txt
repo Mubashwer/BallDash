@@ -2,69 +2,69 @@
 Index=2
 Name=Level 3
 Description=The Third Level
-MapUnitWidth=2
-MapUnitHeight=2
-MapUnitDepth=2
+MapUnitWidth=3
+MapUnitHeight=3
+MapUnitDepth=3
  
 [Map]
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-x.....x.......................x........x.................x.ex
-x.....x.......................x........x.................x..x
-x..x..xxxxxxxxxxxxxxxxxxxxxx..x..x..xxxx..xxxxxxxxxx..x..x..x
-x..x..x.......................x..x........x.....x.....x.....x
-x..x..x.......................x..x........x.....x.....x.....x
-x..x..x..xxxx..xxxxxxxxxxxxx..x..xxxxxxxxxx..x..x..xxxxxxx..x
-x..x.....x.....x.....x........x..x...........x..x.....x.....x
-x..x.....x.....x.....x........x..x...........x..x.....x.....x
-x..xxxxxxx..xxxx..x..xxxxxxxxxx..x..xxxxxxxxxx..xxxx..xxxxxxx
-x.....x..x.....x..x...........x..x...........x.....x........x
-x.....x..x.....x..x...........x..x...........x.....x........x
-xxxx..x..xxxx..x..xxxxxxxxxx..x..x..xxxxxxx..xxxx..xxxxxxx..x
-x.....x..x.....x...........x..x..x........x..x.....x.....x..x
-x.....x..x.....x...........x..x..x........x..x.....x.....x..x
-x..xxxx..x..xxxxxxx..xxxxxxx..x..xxxxxxxxxx..x..xxxxxxx..x..x
-x..x.....x..x..x.....x........x.....x.....x..x...........x..x
-x..x.....x..x..x.....x........x.....x.....x..x...........x..x
-x..x..xxxx..x..x..xxxx..xxxx..xxxx..x..x..x..xxxxxxxxxx..x..x
-x..x..x.....x..x..x.....x........x..x..x..x.....x........x..x
-x..x..x.....x..x..x.....x........x..x..x..x.....x........x..x
-x..x..x..xxxx..x..x..xxxxxxxxxxxxx..x..x..xxxx..x..xxxxxxx..x
-x..x........x..x..x........x.....x.....x........x..x........x
-x..x........x..x..x........x.....x.....x........x..x........x
-x..xxxxxxx..x..x..xxxxxxx..x..x..xxxxxxxxxxxxx..xxxx..xxxxxxx
-x..x.....x..x..x..x..x.....x..x...........x.....x.....x.....x
-x..x.....x..x..x..x..x.....x..x...........x.....x.....x.....x
-x..x..x..x..x..x..x..x..xxxx..xxxx..xxxxxxx..xxxx..xxxx..x..x
-x.....x..x.....x..x..x........x..x...........x.....x.....x..x
-x.....x..x.....x..x..x........x..x...........x.....x.....x..x
-x..xxxx..x..xxxx..x..xxxxxxxxxx..xxxxxxxxxxxxx..xxxxxxxxxx..x
-x.....x..x..x.....x........x.....x...........x.....x.....x..x
-x.....x..x..x.....x........x.....x...........x.....x.....x..x
-xxxx..x..xxxx..xxxxxxxxxx..x..x..x..xxxxxxx..xxxx..x..xxxx..x
-x..x..x........x...........x..x........x.....x..x.....x.....x
-x..x..x........x...........x..x........x.....x..x.....x.....x
-x..x..xxxxxxxxxx..xxxxxxxxxx..xxxxxxxxxx..x..x..xxxxxxxxxx..x
-x.....x...........x........x.....x.....x..x..x..............x
-x.....x...........x........x.....x.....x..x..x..............x
-x..xxxxxxx..xxxx..x..xxxx..x..xxxx..x..x..x..xxxxxxxxxx..xxxx
-x........x..x.....x.....x.....x.....x.....x...........x.....x
-x........x..x.....x.....x.....x.....x.....x...........x.....x
-xxxxxxx..x..xxxxxxxxxx..xxxxxxx..xxxxxxxxxxxxxxxxxxx..x..x..x
-x........x..............x........x...........x........x..x..x
-x........x..............x........x...........x........x..x..x
-x..xxxxxxxxxxxxxxxxxxxxxx..xxxxxxx..x..xxxxxxx..xxxxxxxxxx..x
-x........x..............x..x........x..x.....x..x...........x
-x........x..............x..x........x..x.....x..x...........x
-xxxxxxx..x..xxxxxxxxxx..x..x..xxxx..xxxx..x..x..x..xxxxxxx..x
-x.....x..x........x..x.....x..x..x..x.....x.....x.....x..x..x
-x.....x..x........x..x.....x..x..x..x.....x.....x.....x..x..x
-xxxx..x..xxxxxxx..x..xxxxxxx..x..x..x..xxxxxxxxxxxxx..x..x..x
-x.....x.....x.....x...........x.....x.....x..x........x..x..x
-x.....x.....x.....x...........x.....x.....x..x........x..x..x
-x..xxxxxxx..x..xxxx..xxxxxxxxxxxxx..xxxx..x..x..x..xxxx..x..x
-x.....x.....x..x.....x.....x.....x..x.....x.....x..x.....x..x
-x.....x.....x..x.....x.....x.....x..x.....x.....x..x.....x..x
-x........xxxx..x..x..x..x..x..x..xxxx..xxxxxxxxxx..x..xxxx..x
-x.s.x..........x..x.....x.....x....................x........x
-x...x..........x..x.....x.....x....................x.......xx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   xxx      xxx            xxxxxx   xxxxxx   xxxxxx      xxxx
+x...........x...........r.............. .............r .....x
+ ...........x...........r..............x.............. .....x
+ ..xxxxxx ..x..      xxxx..      x..    ..    ..   x..xxxx..x
+ ..x..... .....r.. .....x.....x.....x.....x.r .. ..x........ 
+x.. .....x........x..... ..... .....x..... ..x.. ..x........ 
+ ..xxx ..   xxx    .. ..   x.. ..   x..    r.x..x..xxxxxxx.. 
+x.....x..x...s.... ..x........ .. .....x..... ..x..x........ 
+x.....x.. ........ .. ........ .. .....x.....x..x.. ...r.... 
+   x.. ..x..   x..x.r ..      xxxx..    .. .. ..x..x..   xxx 
+ ........ .. .....r.. .. ........ ..x.....x.. .. .. ........ 
+ .....r..x.. .......r ..x........x.. ..... ..x..x.. ........x
+ ..   xxxx..    ..xxx    ..xxxx..x..xxxx..xxxx.. ..      x.. 
+x..x..... ..... .. .....x.. .. ........ .. ..... ....rx.....x
+x..x..... .....x..x.....x.. .. ........ .. ..... .....x.....x
+ .. .. ..x.. ..xxx .. ..x..x..xxxxxxx..x.. ..    ..    ..   x
+ ..x.. ..x.. ........ ..... ..x..... ..... ..xr.......x.. ..x
+ ..x.. .. r. ..r.....x..... ..x..... ..... .. ........x.. .. 
+ .rx.. ..xxxxxxxxxxxx   x.. .. .. ..xxx   x.. ..xxx .. ..x..x
+ ..x.. ........x........ ..... .rx..... .....x..... .....x.. 
+x.. ..x........ ........x..... ..x..... .....x..... .....x.. 
+ ..x..xxxxxx .. ..   x..xxxxxxx..    ..x..xxx   x..xxx   x.. 
+x..x........ ..... .. ....r......x..... ........x........... 
+ .. ..r.....x.....x..x........... .....x........ ...........x
+ ..   xxxxr.   xxxx..      xxx    ..xxx   xxxx..   xxx    .r 
+ ..... .. ..... ....r.........x.....x...........x..x..... ..x
+ .....x..x..... ...........r.. ..... ...........x..x.....x.. 
+xxx ..x..xxx ..x..x..       ..x..       ..      x..x..x..x.. 
+x.. ..... ..... ..x.. .....x..x...........x..r.. r....x..x..x
+x..x..... ..... ..x..x..... ..x...........x...r. .....x.. ..x
+x..   x..x..   x..    ..x..xxxxxx         xxxx..x..    ..x.. 
+ ..... ..x..x.....x.....x........... ...........x.. .....x.. 
+ ..... .. r. ..... ..... ...........x..........rx.r .....x..x
+x.. .. .. ..   x..x..          ..xxxx..xxxx..xxx ..x..xxx ..x
+x.. ..x..x..... ..x..x.....x.....x.....x..x........ ......r.x
+x.. .. ..x.....x.. ..x.....x.....x..r..x.r ........ ........ 
+    .. ..   x..x..x.. .. .. ..xxxx..xxx r.   xxxxxxxxxxxx   x
+x.r... ..x.....x.. .. .. ..x..r..... .......................x
+x.....x.. ..... ..x..x.. r.x........x.......................x
+x..xxxx..x..    ..x..xxxx..xxx   xxx      xxxx..      xxxx.. 
+ ....r... ..x..... .....x...r..........x...r.x..... ....r...x
+x........x.. .....x..... .............. .....x.....x........ 
+ ..xxx    .. .. ..    ..       ..xxxx.. ..x..xxxxxxx..xxxx.. 
+ ........x..x.. .....x........x.rx........ ........x.. ..... 
+ ........ .. .. ...r. ........x.. ........ ........x..x..... 
+xxxx..xxx .. ..    ..xxxxxxx..x..      xxxxxx   x..xr.x..xxxx
+ ..x.. .....x..... ........... ...r......r ..... ..... .. .. 
+ ..x..x..... .....x...........x..........rx..... .....x..x..x
+ .. ..x..xxx   xr.      xxx    ..xxx   x..x..xxxxxxxxx .. ..x
+ .r...x..x..x..... ..... ..............x.. .. ...r.......x.. 
+x..... .. .. .....x...r. .............. .. ..x........... .. 
+x..xxx ..x..x.rxxxx..x..x..   xxxxxxxxx .. ..x..xxx       .. 
+x.....x.. .r... .....x.. ........x.....x.. ..x.....x........ 
+x..... ..x..... ..r..x..x........x..... ..x..x..... ........x
+   x..x..    ..    ..x..xxx   xxx ..x.. ..x..xxxx..    .. ..x
+x..... .. .. ..x.....x..............x..x.. .. .r... ..... ..x
+ .....x.. ..xr.x..... .........r.... .. r.x..xr.... .....x..x
+ ..xxxx.. .. ..x..xxxxxx      xxx    ..x..x.. ..xxxx..xxxx..x
+x..... ..... .....x.......................x...........x.....x
+x..... ..... .....x.......................x........... .r.e. 
+   xxx      xxx            xxxxxx   xxxxxx   xxxxxx      xxx

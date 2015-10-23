@@ -42,6 +42,7 @@ namespace Project {
         private KeyboardManager keyboardManager;
         private Stack<GameObject> addedGameObjects;
         private Stack<GameObject> removedGameObjects;
+        public Texture2D normalMap;
 
         public List<GameObject> GameObjects { get; set; }
         public List<Light> Lights { get; set; }
@@ -169,6 +170,7 @@ namespace Project {
             removedGameObjects = new Stack<GameObject>();
             Tiles = new Dictionary<Point, GameObject>();
             Lights = new List<Light>();
+            normalMap = Content.Load<Texture2D>("bump2.bmp");
 
             // load all levels
             LoadLevels();
