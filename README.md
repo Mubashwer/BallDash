@@ -2,9 +2,9 @@
 Ball dash is a classic marble maze game designed for Windows. Your goal is to control the marble ball to solve the maze without falling into any holes.
 
 ### Developers
-Ryan Crosby
-Mubashwer Salman Khurshid (mskh, 601738)
-Geordie Wicks
+* Ryan Crosby
+* Mubashwer Salman Khurshid (mskh, 601738)
+* Geordie Wicks
 
 ### Version
 1.0.0
