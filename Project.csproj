@@ -97,6 +97,18 @@
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Content\bump.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bump2.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <ToolkitFxc Include="Content\bump2.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </ToolkitFxc>
+    <ToolkitFxc Include="Content\bumpMap.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </ToolkitFxc>
     <Content Include="Content\black_floor.dds" />
     <Content Include="Content\marble.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
