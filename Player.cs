@@ -201,7 +201,7 @@ namespace Project {
                     CompletedLevel(this, null);
                 }
             }
-            
+
             // holds the cartesian sum of all the angle vectors for all the points that are found colliding
             Vector2 averageHitVector = new Vector2();
             bool collisionOccured = false;
@@ -258,31 +258,26 @@ namespace Project {
                     newBallVelocityAngle = (2 * collisionNormalAngle) - ballVelocityAngle + (float)Math.PI;
 
                     // calculate new ball X and Y velocity componants
-                    velocity.X = (float)Math.Cos(newBallVelocityAngle);
-                    velocity.Y = (float)Math.Sin(newBallVelocityAngle);
-                    velocity.Normalize();
-                    velocity *= ballVelocityMag;
+                    velocity.X = (float)Math.Cos(newBallVelocityAngle) * ballVelocityMag;
+                    velocity.Y = (float)Math.Sin(newBallVelocityAngle) * ballVelocityMag;
 
                     // dampen the velocity of the ball in the direction of the collided surface's normal
                     // calculate component of new velocity that is away from the wall normal
-                    float normalReboundVelocity = ballVelocityMag * (float)Math.Sin(newBallVelocityAngle + Math.PI);
+                    float normalReboundVelocity = ballVelocityMag * (float)Math.Sin(newBallVelocityAngle - Math.PI);
 
                     // the amound to dampen the rebound of the ball by
-                    float normalDampeningVelocity = Math.Abs(normalReboundVelocity) * 0.6f;
+                    float normalDampeningVelocity = normalReboundVelocity * 0.6f;
 
                     // calculate the normal of the surface the ball hit, which is 180 degrees plus the collision normal angle
                     float surfaceNormalAngle = collisionNormalAngle + (float)Math.PI;
 
                     // now calculate the dampening vector
-                    Vector2 dampeningVector = new Vector2((float)Math.Cos(surfaceNormalAngle), (float)Math.Sin(surfaceNormalAngle));
-                    dampeningVector.Normalize();
-                    dampeningVector *= normalDampeningVelocity;
+                    Vector2 dampeningVector = new Vector2((float)Math.Cos(surfaceNormalAngle) * normalDampeningVelocity,
+                        (float)Math.Sin(surfaceNormalAngle) * normalDampeningVelocity);
 
                     // apply the dampening vector to the velocity by subtracting them
-                    //if (normalDampeningVelocity > 0.5) {
-                        velocity.X -= dampeningVector.X;
-                        velocity.Y -= dampeningVector.Y;
-                    //}
+                    velocity.X -= dampeningVector.X;
+                    velocity.Y -= dampeningVector.Y;
 
                     // reset player position to previous uncollided position
                     //position = lastPosition;
