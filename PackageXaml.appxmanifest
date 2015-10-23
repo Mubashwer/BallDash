@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="33031Crozone.BallDash" Publisher="CN=BA3BCB96-C58B-454D-B02B-16DDFF1A6639" Version="1.1.0.6" />
+  <Identity Name="33031Crozone.BallDash" Publisher="CN=BA3BCB96-C58B-454D-B02B-16DDFF1A6639" Version="1.1.0.8" />
   <Properties>
     <DisplayName>BallDash</DisplayName>
     <PublisherDisplayName>Crozone</PublisherDisplayName>

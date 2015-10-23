@@ -17,7 +17,7 @@
     <TargetFrameworkVersion />
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>02BD0DA3A8B28F793D125D7BC9A09EF5CE16A00E</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>F0E4E3D5557EEC3734AC7A86EEE7A1E91232836C</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Project_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -100,6 +100,7 @@
     <Content Include="Content\bump2.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Project_StoreKey.pfx" />
     <ToolkitFxc Include="Content\bumpMap.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </ToolkitFxc>
@@ -127,7 +128,6 @@
     <Content Include="Maps\Level1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Project_StoreKey.pfx" />
     <ToolkitFxc Include="Content\Phong.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </ToolkitFxc>

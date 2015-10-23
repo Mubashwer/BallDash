@@ -152,9 +152,14 @@ namespace Project {
             //    point lies over an adjacent wall
             // 3. If a point on the player's edge is over a wall, there is a collision. So:
             //    a) Move the player back to their previous uncollided position
-            //    b) Determine the angle of the collided point, and determine what axis on the ball this effects
-            //    c) Reverse the players velocity  with dampening
-            //    d) Trigger a collision event so a sound effect can be played
+            //    b) Determine the average angle over all collided points, to determine the
+            //       angle at which the ball collided with the plane
+            //    c) Using the angle of the players current velocity and the incident angle, 
+            //       calculate the incident angle that the player should bounce off of the plane
+            //    d) Apply dampening to the velocity in the direction of the surface normal only
+            //       (Do not apply dampening parallel to the normal as this will act like friction
+            //        and stop the ball sliding along the walls, which is undesirable)
+            //    c) Trigger a collision event so a sound effect can be played
 
             //1.
             Vector3 currentBallCenterWorldPosition = GetPlayerWorldPosition();
@@ -196,31 +201,31 @@ namespace Project {
                     CompletedLevel(this, null);
                 }
             }
-
-            //2.
-            // Check that, given the current position of the ball, no part of the balls 
-            // circumference is touching a wall
-
+            
+            // holds the cartesian sum of all the angle vectors for all the points that are found colliding
             Vector2 averageHitVector = new Vector2();
             bool collisionOccured = false;
 
-            int points = 32; // the number of points to check, 16 is a good approximation
+            int points = 64; // the number of points to check, 16 is a good approximation
             for (int k = 0; k < points; k++) {
+                // calculate the vector from the center of the ball to the current point being checked
                 float offsetX = (radius * (float)Math.Cos((k / (double)points) * 2 * Math.PI));
                 float offsetY = (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
 
+                // calculate the world coordinate of the current point being checked
                 float pointX = currentBallCenterWorldPosition.X + offsetX;
                 float pointY = currentBallCenterWorldPosition.Y + offsetY;
 
-                // get the map coordinates for this point
+                // get the map coordinates for the current point being checked
                 Vector2 pointMapPos = game.CurrentLevel.Map.GetMapUnitCoordinates(new Vector2(pointX, pointY));
 
-                // get the unit type that this point is located within
+                // get the map unit type that this point is located within
                 var pointFloorType = game.CurrentLevel.Map[(int)pointMapPos.X, (int)pointMapPos.Y];
 
-                // if it's a wall, we have a collision.
+                // if the map unit type is a wall, we have a collision.
                 if (pointFloorType.HasFlag(Map.UnitType.Wall)) {
                     collisionOccured = true;
+                    // add the current vector to the average hit vector
                     averageHitVector.X += offsetX;
                     averageHitVector.Y += offsetY;
                 }
@@ -233,6 +238,7 @@ namespace Project {
 
                 // get averaged angle of collision normal
                 if (collisionOccured) {
+                    // calculate the normal of the ball to the surface we are hitting based upon the average vector
                     collisionNormalAngle = (float)Math.Atan2(averageHitVector.Y, averageHitVector.X);
 
                     // find length and angle of current ball velocity
@@ -243,21 +249,46 @@ namespace Project {
                         playSoundEffect = true;
                     }
 
+                    // find the current angle of the ball's velocity vector
                     float ballVelocityAngle = (float)Math.Atan2(velocity.Y, velocity.X);
 
-                    // dampen ball speed
-                    float newBallVelocityMag = (ballVelocityMag > 2) ? (ballVelocityMag * CollisionReboundDampening) : ballVelocityMag;
                     // calculate reflection angle
                     // reflection angle is 180 degrees minus the angle between the perpendicular vector of the collision normal
                     // and the ball velocity angle
-                    newBallVelocityAngle = (collisionNormalAngle + (float)Math.PI) - ((ballVelocityAngle + (float)Math.PI - (collisionNormalAngle + (float)Math.PI)));
+                    newBallVelocityAngle = (2 * collisionNormalAngle) - ballVelocityAngle + (float)Math.PI;
 
                     // calculate new ball X and Y velocity componants
-                    velocity.X = newBallVelocityMag * (float)Math.Cos(newBallVelocityAngle);
-                    velocity.Y = newBallVelocityMag * (float)Math.Sin(newBallVelocityAngle);
+                    velocity.X = (float)Math.Cos(newBallVelocityAngle);
+                    velocity.Y = (float)Math.Sin(newBallVelocityAngle);
+                    velocity.Normalize();
+                    velocity *= ballVelocityMag;
+
+                    // dampen the velocity of the ball in the direction of the collided surface's normal
+                    // calculate component of new velocity that is away from the wall normal
+                    float normalReboundVelocity = ballVelocityMag * (float)Math.Sin(newBallVelocityAngle + Math.PI);
+
+                    // the amound to dampen the rebound of the ball by
+                    float normalDampeningVelocity = Math.Abs(normalReboundVelocity) * 0.6f;
+
+                    // calculate the normal of the surface the ball hit, which is 180 degrees plus the collision normal angle
+                    float surfaceNormalAngle = collisionNormalAngle + (float)Math.PI;
+
+                    // now calculate the dampening vector
+                    Vector2 dampeningVector = new Vector2((float)Math.Cos(surfaceNormalAngle), (float)Math.Sin(surfaceNormalAngle));
+                    dampeningVector.Normalize();
+                    dampeningVector *= normalDampeningVelocity;
+
+                    // apply the dampening vector to the velocity by subtracting them
+                    //if (normalDampeningVelocity > 0.5) {
+                        velocity.X -= dampeningVector.X;
+                        velocity.Y -= dampeningVector.Y;
+                    //}
 
                     // reset player position to previous uncollided position
-                    position = lastPosition;
+                    //position = lastPosition;
+
+                    // add the velocity to the current player position
+                    position = lastPosition + velocity * (float)(elapsedMs / 1000f);
                 }
 
                 if (playSoundEffect) {
