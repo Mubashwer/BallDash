@@ -55,7 +55,7 @@ namespace Project {
             transform = new Transform(base.position);
             ShaderName = shaderName;
             CollisionsEnabled = true;
-            CollisionReboundDampening = 0.4f;
+            CollisionReboundDampening = 0.7f;
 
             game.Input.gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
             game.Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
@@ -201,7 +201,7 @@ namespace Project {
             Vector2 averageHitVector = new Vector2();
             bool collisionOccured = false;
 
-            int points = 256; // the number of points to check, 16 is a good approximation
+            int points = 32; // the number of points to check, 16 is a good approximation
             for (int k = 0; k < points; k++) {
                 float offsetX = (radius * (float)Math.Cos((k / (double)points) * 2 * Math.PI));
                 float offsetY = (radius * (float)Math.Sin((k / (double)points) * 2 * Math.PI));
@@ -224,33 +224,38 @@ namespace Project {
             }
 
             float collisionNormalAngle = 0;
+            float newBallVelocityAngle = 0;
             if (CollisionsEnabled) {
                 bool playSoundEffect = false;
 
                 // get averaged angle of collision normal
                 if (collisionOccured) {
-                    // reset player position to previous uncollided position
-                    position = lastPosition;
-
                     collisionNormalAngle = (float)Math.Atan2(averageHitVector.Y, averageHitVector.X);
 
                     // find length and angle of current ball velocity
                     float ballVelocityMag = velocity.Length();
+
+                    // trigger the sound effect if ball hit wall with enough velocity
+                    if (ballVelocityMag > 2) {
+                        playSoundEffect = true;
+                    }
+
                     float ballVelocityAngle = (float)Math.Atan2(velocity.Y, velocity.X);
 
                     // dampen ball speed
-                    float newBallVelocityMag = ballVelocityMag * CollisionReboundDampening;
-                    // calculate reflection normal
-                    // TODO: THIS IS INCORRECT. Need to calculate proper reflection angle from
-                    // ballVelocityAngle and collisionNormalAngle
-                    float newBallVelocityAngle = collisionNormalAngle + (float)Math.PI;
+                    float newBallVelocityMag = (ballVelocityMag > 2) ? (ballVelocityMag * CollisionReboundDampening) : ballVelocityMag;
+                    // calculate reflection angle
+                    // reflection angle is 180 degrees minus the angle between the perpendicular vector of the collision normal
+                    // and the ball velocity angle
+                    newBallVelocityAngle = (collisionNormalAngle + (float)Math.PI) - ((ballVelocityAngle + (float)Math.PI - (collisionNormalAngle + (float)Math.PI)));
 
                     // calculate new ball X and Y velocity componants
                     velocity.X = newBallVelocityMag * (float)Math.Cos(newBallVelocityAngle);
                     velocity.Y = newBallVelocityMag * (float)Math.Sin(newBallVelocityAngle);
-                }
 
-                
+                    // reset player position to previous uncollided position
+                    position = lastPosition;
+                }
 
                 if (playSoundEffect) {
                     if (Collision != null) {
@@ -293,7 +298,8 @@ namespace Project {
                     + Environment.NewLine + "Ball Map Point Y: " + currentBallMapPoint.Y
                     + Environment.NewLine + "Tile Type: " + floorType
                     + Environment.NewLine + "Collision Occured: " + collisionOccured
-                    + Environment.NewLine + "Collision Normal Angle: " + RadiansToDegrees(collisionNormalAngle) + " degrees";
+                    + Environment.NewLine + "Collision Normal Angle: " + RadiansToDegrees(collisionNormalAngle) + " degrees"
+                    + Environment.NewLine + "Collision Rebound Angle: " + RadiansToDegrees(newBallVelocityAngle) + " degrees";
 
 
                 if (touchPosition != null) {
@@ -305,6 +311,15 @@ namespace Project {
             }
         }
 
+        private double GetAngleDifference(double angle1, double angle2) {
+            double xTotal = 0;
+            double yTotal = 0;
+
+            xTotal = Math.Cos(angle1) + Math.Cos(angle2);
+            yTotal = Math.Sin(angle1) + Math.Sin(angle2);
+
+            return Math.Atan2(yTotal, xTotal);
+        }
 
         private Vector3 ConstrainVector(Vector3 vector, Vector3 absMax) {
             if (Math.Abs(vector.X) > absMax.X) {
