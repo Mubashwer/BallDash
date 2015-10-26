@@ -185,16 +185,22 @@ namespace Project {
 
         private void SaveLevelStatus(LevelStatus status, string levelId) {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            LevelStatus previousStatus = GetStartingLevelStatus(levelId);
+            // Only save the high score if the hint wasn't used
+            if (!status.HintUsed) {
+                // get previous scores to compare with
+                LevelStatus previousStatus = GetStartingLevelStatus(levelId);
 
-            if ((previousStatus.BestCollisions == null) ||
-                (status.Collisions < previousStatus.BestCollisions)) {
-                localSettings.Values[string.Format("HighScore_{0}_BestCollisions", levelId)] = status.Collisions;
-            }
+                // update collisions high score
+                if ((previousStatus.BestCollisions == null) ||
+                    (status.Collisions < previousStatus.BestCollisions)) {
+                    localSettings.Values[string.Format("HighScore_{0}_BestCollisions", levelId)] = status.Collisions;
+                }
 
-            if ((previousStatus.BestTime == null) ||
-                (status.Time < previousStatus.BestTime)) {
-                localSettings.Values[string.Format("HighScore_{0}_BestTime", levelId)] = (int)(status.Time.TotalMilliseconds + 0.5);
+                // update time high score
+                if ((previousStatus.BestTime == null) ||
+                    (status.Time < previousStatus.BestTime)) {
+                    localSettings.Values[string.Format("HighScore_{0}_BestTime", levelId)] = (int)(status.Time.TotalMilliseconds + 0.5);
+                }
             }
         }
 
@@ -226,7 +232,7 @@ namespace Project {
             lock (isStartedLock) {
                 //stop the current stopwatch and record the current time
                 levelTimer.Stop();
-                TimeSpan levelTime = new TimeSpan(levelTimer.ElapsedTicks);
+                TimeSpan levelTime = new TimeSpan(0, 0, 0, 0, (int)levelTimer.ElapsedMilliseconds);
                 CurrentLevelStatus.Time = levelTime;
                 SaveLevelStatus(CurrentLevelStatus, CurrentLevel.LevelID);
 

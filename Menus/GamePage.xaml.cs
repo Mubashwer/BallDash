@@ -50,22 +50,40 @@ namespace Project.Menus {
             txtCurrentTime.Text += status.Time.TotalSeconds.ToString();
             if (status.BestTime != null) {
                 txtBestTime.Text += ((TimeSpan)status.BestTime).TotalSeconds.ToString();
-                if (status.Time < status.BestTime) {
-                    txtBestTime.Foreground = new SolidColorBrush(Colors.Green);
+                if ((status.Time < status.BestTime)){
+                    txtCurrentTime.Foreground = new SolidColorBrush(Colors.Green);
                 }
                 else {
-                    txtBestTime.Foreground = new SolidColorBrush(Colors.Red);
+                    txtCurrentTime.Foreground = new SolidColorBrush(Colors.Red);
                 }
             }
             else {
-                txtBestTime.Foreground = new SolidColorBrush(Colors.White);
+                txtCurrentTime.Foreground = new SolidColorBrush(Colors.White);
                 txtBestTime.Text += "None";
             }
 
-            txtStats.Text = string.Format("Hint used: {0}\nCollisions: {1}\nBest: {2}", 
-                status.HintUsed,
-                status.Collisions,
-                status.BestCollisions.HasValue ? status.BestCollisions.Value.ToString() : "None");
+            txtHintUsed.Text = "Hint used:" + (status.HintUsed ? "Yes - High Score Forfeit!" : "No");
+            txtCurrentCollisions.Text = "Collisions:" + status.Collisions;
+            txtBestCollisions.Text = "Best:" + (status.BestCollisions.HasValue ? status.BestCollisions.Value.ToString() : "None");
+
+            if (status.BestCollisions.HasValue) {
+                if (status.Collisions < status.BestCollisions.Value) {
+                    txtCurrentCollisions.Foreground = new SolidColorBrush(Colors.Green);
+                }
+                else {
+                    txtCurrentCollisions.Foreground = new SolidColorBrush(Colors.Red);
+                }
+            }
+
+            if (status.HintUsed) {
+                txtCurrentTime.Foreground = new SolidColorBrush(Colors.Red);
+                txtHintUsed.Foreground = new SolidColorBrush(Colors.Red);
+                txtCurrentCollisions.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else {
+                txtHintUsed.Foreground = new SolidColorBrush(Colors.Green);
+            }
+
         }
 
         // Button for Hint
