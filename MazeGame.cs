@@ -198,6 +198,16 @@ namespace Project {
             }
         }
 
+        public void EraseAllHighScores() {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            var highScores = localSettings.Values.Where(o => o.Key.StartsWith("HighScore", StringComparison.OrdinalIgnoreCase));
+
+            foreach (var score in highScores) {
+                localSettings.Values.Remove(score.Key);
+            }
+        }
+
         public LevelStatus GetStartingLevelStatus(string levelId) {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             var levelStatus = new LevelStatus();
