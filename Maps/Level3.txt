@@ -1,5 +1,6 @@
 ﻿[Settings]
 Index=2
+ID=00000003
 Name=Level 3
 Description=The Third Level
 MapUnitWidth=3

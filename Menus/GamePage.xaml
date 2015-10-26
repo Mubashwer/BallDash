@@ -11,6 +11,9 @@
     <Grid>
         <Button x:Name="btnHint" Content="Hint" HorizontalAlignment="Right" Height="77" Margin="0,47,41,0" VerticalAlignment="Top" Width="163" Click="ChangeHint"/>
         <Button x:Name="btnBack" Content="Menu" HorizontalAlignment="Right" Height="77" Margin="0,167,41,0" VerticalAlignment="Top" Width="163" Click="Back"/>
-        <TextBlock x:Name="txtStats" HorizontalAlignment="Left" Margin="10,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="681" Width="300"/>
+        <TextBlock x:Name="txtDebugStats" HorizontalAlignment="Left" Margin="10,295,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="476" Width="355"/>
+        <TextBlock x:Name="txtCurrentTime" HorizontalAlignment="Left" Margin="10,21,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top" Height="54" Width="509" FontSize="42.667" FontFamily="ModeSeven"/>
+        <TextBlock x:Name="txtBestTime" HorizontalAlignment="Left" Margin="10,87,0,0" TextWrapping="Wrap" Text="Best:" VerticalAlignment="Top" Height="54" Width="509" FontSize="42.667" FontFamily="ModeSeven"/>
+        <TextBlock x:Name="txtStats" HorizontalAlignment="Left" Margin="10,146,0,0" TextWrapping="Wrap" Text="Hint Used:" VerticalAlignment="Top" Height="144" Width="509" FontSize="24" FontFamily="ModeSeven"/>
     </Grid>
 </Page>

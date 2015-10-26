@@ -57,6 +57,8 @@ namespace Project {
         public List<LevelInfo> AvailableLevels { get; private set; }
         public Dictionary<Point, GameObject> Tiles { get; set; }
         public LevelInfo CurrentLevel { get; set; }
+        public LevelStatus CurrentLevelStatus { get; set; }
+        private Stopwatch levelTimer = new Stopwatch();
 
         // Represents the camera's position and orientation
         public Camera Camera { get; set; }
@@ -181,8 +183,19 @@ namespace Project {
             base.LoadContent();
         }
 
+        private void SaveLevelScore(LevelStatus status, string levelId) {
+            // TODO: Save the level score to database of some kind
+        }
+
         private void PlayerCompletedLevel(object sender, EventArgs args) {
             lock (isStartedLock) {
+                //stop the current stopwatch and record the current time
+                levelTimer.Stop();
+                TimeSpan levelTime = new TimeSpan(levelTimer.ElapsedTicks);
+                CurrentLevelStatus.Time = levelTime;
+                SaveLevelScore(CurrentLevelStatus, CurrentLevel.LevelID);
+
+
                 // find the next level higher than this one and load it
                 int currentLevelIndex = AvailableLevels.IndexOf(CurrentLevel);
                 if (currentLevelIndex >= 0) {
@@ -214,39 +227,65 @@ namespace Project {
         }
 
         private void ChangeMap(Map map) {
-            // clear out all existing assets
-            GameObjects.Clear();
-            addedGameObjects.Clear();
-            removedGameObjects.Clear();
-            Tiles.Clear();
-            Lights.Clear();
+            lock(isStartedLock) {
+                // clear out all existing assets
+                GameObjects.Clear();
+                addedGameObjects.Clear();
+                removedGameObjects.Clear();
+                Tiles.Clear();
+                Lights.Clear();
 
-            // Solve the maze
-            // This precomputes the shortest path to the maze exit for every
-            // possible map position
-            MazeSolver = new MazeSolver(this, map);
-            MazeSolver.SolveMaze();
+                // Solve the maze
+                // This precomputes the shortest path to the maze exit for every
+                // possible map position
+                MazeSolver = new MazeSolver(this, map);
+                MazeSolver.SolveMaze();
 
-            // Create player
-            Vector2 playerPos = map.GetWorldCoordinates(((Vector2)map.StartPosition) + 0.5f);
+                // Create player
+                Vector2 playerPos = map.GetWorldCoordinates(((Vector2)map.StartPosition) + 0.5f);
 
-            if (Player != null) {
-                Player.CompletedLevel -= PlayerCompletedLevel;
+                if (Player != null) {
+                    Player.CompletedLevel -= PlayerCompletedLevel;
+                    Player.Collision -= Player_Collision;
+                }
+
+                Player = new Player(this, "Phong", playerPos);
+                Player.CompletedLevel += PlayerCompletedLevel;
+                Player.Collision += Player_Collision;
+
+                GameObjects.Add(Player);
+
+                // Generate the game objects that make up the floor
+                LoadFloor(map);
+                DefaultLightHeight = CurrentLevel.Map.Width / -2f * CurrentLevel.Map.MapUnitWidth;
+                AddEnvironmentLights();
+                RainbowModeOn = false;
+
+                // create camera
+                Camera = new Camera(this);
+
+                // reset the current level stats
+                ResetLevelStatus();
             }
+        }
 
-            Player = new Player(this, "Phong", playerPos);
-            Player.CompletedLevel += PlayerCompletedLevel;
+        private void Player_Collision(object sender, EventArgs e) {
+            if (CurrentLevelStatus != null) {
+                // add a collision to the current level stats
+                CurrentLevelStatus.Collisions++;
+            }
+        }
 
-            GameObjects.Add(Player);
+        public void ResetLevelStatus() {
+            CurrentLevelStatus = GetStartingLevelStatus(CurrentLevel.LevelID);
+            this.levelTimer.Restart();
+        }
 
-            // Generate the game objects that make up the floor
-            LoadFloor(map);
-            DefaultLightHeight = CurrentLevel.Map.Width / -2f * CurrentLevel.Map.MapUnitWidth;
-            AddEnvironmentLights();
-            RainbowModeOn = false;
+        public LevelStatus GetStartingLevelStatus(string levelId) {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var levelStatus = new LevelStatus();
 
-            // create camera
-            Camera = new Camera(this);
+            return levelStatus;
         }
 
         public void StopGame() {
@@ -340,32 +379,6 @@ namespace Project {
                     KeyboardState = keyboardManager.GetState();
                     FlushAddedAndRemovedGameObjects();
                     float deltaTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
-                    //float speed = 3f;
-
-                    //if (KeyboardState.IsKeyDown(Keys.W)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.pitch -= speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.S)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.pitch += speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.A)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.yaw -= speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.D)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.yaw += speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.Q)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.roll -= speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.E)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.roll += speed * deltaTime;
-                    //}
 
                     // H toggles hint
                     if (KeyboardState.IsKeyPressed(Keys.H)) {
@@ -396,11 +409,20 @@ namespace Project {
 
                     MazeSolver.Hint();
                     UpdateLightPositions(gameTime);
+
+                    if (CurrentLevelStatus != null) {
+                        CurrentLevelStatus.Time = new TimeSpan(0, 0, 0, 0, (int)levelTimer.ElapsedMilliseconds);
+                        if (MazeSolver != null) {
+                            if (MazeSolver.Enabled) {
+                                CurrentLevelStatus.HintUsed = true;
+                            }
+                        }
+                        GameOverlayPage.UpdateStats(CurrentLevelStatus);
+                    }
                 }
             }
             // Handle base.Update
             base.Update(gameTime);
-
         }
 
         protected override void Draw(GameTime gameTime) {
