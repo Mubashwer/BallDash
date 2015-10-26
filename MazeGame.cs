@@ -518,7 +518,7 @@ namespace Project {
                 }
             }
             if (Camera != null) {
-                Camera.Zoom(args.Delta.Scale);
+                Camera.Zoom(-args.Delta.Scale + 2);
             }
         }
 
