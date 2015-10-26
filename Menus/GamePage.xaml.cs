@@ -44,13 +44,17 @@ namespace Project.Menus {
         }
 
         public void UpdateStats(LevelStatus status) {
-            txtCurrentTime.Text = "Time:";
-            txtBestTime.Text = "Best:";
+            // update score text
+            txtCurrentTime.Text = "Time:" + status.Time.TotalSeconds.ToString();
+            txtBestTime.Text = "Best:" + (status.BestTime.HasValue ? status.BestTime.Value.TotalSeconds.ToString() : "None");
 
-            txtCurrentTime.Text += status.Time.TotalSeconds.ToString();
-            if (status.BestTime != null) {
-                txtBestTime.Text += ((TimeSpan)status.BestTime).TotalSeconds.ToString();
-                if ((status.Time < status.BestTime)){
+            txtHintUsed.Text = "Hint used:" + (status.HintUsed ? "Yes - High Score Forfeit!" : "No");
+            txtCurrentCollisions.Text = "Collisions:" + status.Collisions;
+            txtBestCollisions.Text = "Best:" + (status.BestCollisions.HasValue ? status.BestCollisions.Value.ToString() : "None");
+
+            // set colours based on score values
+            if (status.BestTime.HasValue) {
+                if ((status.Time < status.BestTime)) {
                     txtCurrentTime.Foreground = new SolidColorBrush(Colors.Green);
                 }
                 else {
@@ -59,12 +63,7 @@ namespace Project.Menus {
             }
             else {
                 txtCurrentTime.Foreground = new SolidColorBrush(Colors.White);
-                txtBestTime.Text += "None";
             }
-
-            txtHintUsed.Text = "Hint used:" + (status.HintUsed ? "Yes - High Score Forfeit!" : "No");
-            txtCurrentCollisions.Text = "Collisions:" + status.Collisions;
-            txtBestCollisions.Text = "Best:" + (status.BestCollisions.HasValue ? status.BestCollisions.Value.ToString() : "None");
 
             if (status.BestCollisions.HasValue) {
                 if (status.Collisions < status.BestCollisions.Value) {
@@ -73,6 +72,9 @@ namespace Project.Menus {
                 else {
                     txtCurrentCollisions.Foreground = new SolidColorBrush(Colors.Red);
                 }
+            }
+            else {
+                txtBestCollisions.Foreground = new SolidColorBrush(Colors.White);
             }
 
             if (status.HintUsed) {
