@@ -57,6 +57,8 @@ namespace Project {
         public List<LevelInfo> AvailableLevels { get; private set; }
         public Dictionary<Point, GameObject> Tiles { get; set; }
         public LevelInfo CurrentLevel { get; set; }
+        public LevelStatus CurrentLevelStatus { get; set; }
+        private Stopwatch levelTimer = new Stopwatch();
 
         // Represents the camera's position and orientation
         public Camera Camera { get; set; }
@@ -105,8 +107,8 @@ namespace Project {
                 else { // Use 1 white light only
                     Lights[0].LightColor = Color.White.ToColor4();
                     Lights[0].LightIntensity = 0.5f;
-                    Lights[0].LightPosition = new Vector3(CurrentLevel.Map.Width / 2f * CurrentLevel.Map.MapUnitWidth, 
-                        CurrentLevel.Map.Height* CurrentLevel.Map.MapUnitHeight / 2f, 
+                    Lights[0].LightPosition = new Vector3(CurrentLevel.Map.Width / 2f * CurrentLevel.Map.MapUnitWidth,
+                        CurrentLevel.Map.Height * CurrentLevel.Map.MapUnitHeight / 2f,
                         DefaultLightHeight);
                     Lights[1].LightColor = Color.Black.ToColor4();
                     Lights[2].LightColor = Color.Black.ToColor4();
@@ -141,7 +143,7 @@ namespace Project {
             Input.gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
 
             IsStarted = false;
-            
+
         }
 
         private void LoadLevels() {
@@ -181,8 +183,54 @@ namespace Project {
             base.LoadContent();
         }
 
+        private void SaveLevelStatus(LevelStatus status, string levelId) {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            LevelStatus previousStatus = GetStartingLevelStatus(levelId);
+
+            if ((previousStatus.BestCollisions == null) ||
+                (status.Collisions < previousStatus.BestCollisions)) {
+                localSettings.Values[string.Format("HighScore_{0}_BestCollisions", levelId)] = status.Collisions;
+            }
+
+            if ((previousStatus.BestTime == null) ||
+                (status.Time < previousStatus.BestTime)) {
+                localSettings.Values[string.Format("HighScore_{0}_BestTime", levelId)] = (int)(status.Time.TotalMilliseconds + 0.5);
+            }
+        }
+
+        public void EraseAllHighScores() {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            var highScores = localSettings.Values.Where(o => o.Key.StartsWith("HighScore", StringComparison.OrdinalIgnoreCase));
+
+            foreach (var score in highScores) {
+                localSettings.Values.Remove(score.Key);
+            }
+        }
+
+        public LevelStatus GetStartingLevelStatus(string levelId) {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var levelStatus = new LevelStatus();
+
+            int? bestTimeMs = localSettings.Values[string.Format("HighScore_{0}_BestTime", levelId)] as int?;
+            if (bestTimeMs != null) {
+                levelStatus.BestTime = new TimeSpan(0, 0, 0, 0, (int)bestTimeMs);
+            }
+
+            levelStatus.BestCollisions = localSettings.Values[string.Format("HighScore_{0}_BestCollisions", levelId)] as int?;
+
+            return levelStatus;
+        }
+
         private void PlayerCompletedLevel(object sender, EventArgs args) {
             lock (isStartedLock) {
+                //stop the current stopwatch and record the current time
+                levelTimer.Stop();
+                TimeSpan levelTime = new TimeSpan(levelTimer.ElapsedTicks);
+                CurrentLevelStatus.Time = levelTime;
+                SaveLevelStatus(CurrentLevelStatus, CurrentLevel.LevelID);
+
+
                 // find the next level higher than this one and load it
                 int currentLevelIndex = AvailableLevels.IndexOf(CurrentLevel);
                 if (currentLevelIndex >= 0) {
@@ -214,39 +262,58 @@ namespace Project {
         }
 
         private void ChangeMap(Map map) {
-            // clear out all existing assets
-            GameObjects.Clear();
-            addedGameObjects.Clear();
-            removedGameObjects.Clear();
-            Tiles.Clear();
-            Lights.Clear();
+            lock (isStartedLock) {
+                // clear out all existing assets
+                GameObjects.Clear();
+                addedGameObjects.Clear();
+                removedGameObjects.Clear();
+                Tiles.Clear();
+                Lights.Clear();
 
-            // Solve the maze
-            // This precomputes the shortest path to the maze exit for every
-            // possible map position
-            MazeSolver = new MazeSolver(this, map);
-            MazeSolver.SolveMaze();
+                // Solve the maze
+                // This precomputes the shortest path to the maze exit for every
+                // possible map position
+                MazeSolver = new MazeSolver(this, map);
+                MazeSolver.SolveMaze();
 
-            // Create player
-            Vector2 playerPos = map.GetWorldCoordinates(((Vector2)map.StartPosition) + 0.5f);
+                // Create player
+                Vector2 playerPos = map.GetWorldCoordinates(((Vector2)map.StartPosition) + 0.5f);
 
-            if (Player != null) {
-                Player.CompletedLevel -= PlayerCompletedLevel;
+                if (Player != null) {
+                    Player.CompletedLevel -= PlayerCompletedLevel;
+                    Player.Collision -= Player_Collision;
+                }
+
+                Player = new Player(this, "Phong", playerPos);
+                Player.CompletedLevel += PlayerCompletedLevel;
+                Player.Collision += Player_Collision;
+
+                GameObjects.Add(Player);
+
+                // Generate the game objects that make up the floor
+                LoadFloor(map);
+                DefaultLightHeight = CurrentLevel.Map.Width / -2f * CurrentLevel.Map.MapUnitWidth;
+                AddEnvironmentLights();
+                RainbowModeOn = false;
+
+                // create camera
+                Camera = new Camera(this);
+
+                // reset the current level stats
+                ResetLevelStatus();
             }
+        }
 
-            Player = new Player(this, "Phong", playerPos);
-            Player.CompletedLevel += PlayerCompletedLevel;
+        private void Player_Collision(object sender, EventArgs e) {
+            if (CurrentLevelStatus != null) {
+                // add a collision to the current level stats
+                CurrentLevelStatus.Collisions++;
+            }
+        }
 
-            GameObjects.Add(Player);
-
-            // Generate the game objects that make up the floor
-            LoadFloor(map);
-            DefaultLightHeight = CurrentLevel.Map.Width / -2f * CurrentLevel.Map.MapUnitWidth;
-            AddEnvironmentLights();
-            RainbowModeOn = false;
-
-            // create camera
-            Camera = new Camera(this);
+        public void ResetLevelStatus() {
+            CurrentLevelStatus = GetStartingLevelStatus(CurrentLevel.LevelID);
+            this.levelTimer.Restart();
         }
 
         public void StopGame() {
@@ -260,11 +327,11 @@ namespace Project {
         // Add Red, Green and Blue environment lights with different rate of movements
         private void AddEnvironmentLights() {
             var rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
-            var red = new Light(this,Color.Red.ToColor4(), 1f, rate);
+            var red = new Light(this, Color.Red.ToColor4(), 1f, rate);
             rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
-            var green = new Light(this,Color.Green.ToColor4(), 1f, rate);
+            var green = new Light(this, Color.Green.ToColor4(), 1f, rate);
             rate = new Vector3(RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f), RandomGenerator.NextFloat(0.001f, 0.005f));
-            var blue = new Light(this,Color.Blue.ToColor4(), 1f, rate);
+            var blue = new Light(this, Color.Blue.ToColor4(), 1f, rate);
             Lights.Add(red);
             Lights.Add(green);
             Lights.Add(blue);
@@ -340,32 +407,6 @@ namespace Project {
                     KeyboardState = keyboardManager.GetState();
                     FlushAddedAndRemovedGameObjects();
                     float deltaTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
-                    //float speed = 3f;
-
-                    //if (KeyboardState.IsKeyDown(Keys.W)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.pitch -= speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.S)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.pitch += speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.A)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.yaw -= speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.D)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.yaw += speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.Q)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.roll -= speed * deltaTime;
-                    //}
-                    //if (KeyboardState.IsKeyDown(Keys.E)) {
-                    //    Camera.cameraMoved = true;
-                    //    Camera.roll += speed * deltaTime;
-                    //}
 
                     // H toggles hint
                     if (KeyboardState.IsKeyPressed(Keys.H)) {
@@ -396,11 +437,20 @@ namespace Project {
 
                     MazeSolver.Hint();
                     UpdateLightPositions(gameTime);
+
+                    if (CurrentLevelStatus != null) {
+                        CurrentLevelStatus.Time = new TimeSpan(0, 0, 0, 0, (int)levelTimer.ElapsedMilliseconds);
+                        if (MazeSolver != null) {
+                            if (MazeSolver.Enabled) {
+                                CurrentLevelStatus.HintUsed = true;
+                            }
+                        }
+                        GameOverlayPage.UpdateStats(CurrentLevelStatus);
+                    }
                 }
             }
             // Handle base.Update
             base.Update(gameTime);
-
         }
 
         protected override void Draw(GameTime gameTime) {

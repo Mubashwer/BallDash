@@ -172,16 +172,7 @@ namespace Project {
 
             if (currentBallCenterWorldPosition.Z > radius) {
                 // the ball has half fallen down a hole, consider this a game over event
-                if (PlayerDied != null) {
-                    PlayerDied(this, null);
-                }
-
-                // reset player position
-                this.velocity = new Vector3();
-                this.position = startPosition;
-
-                // disable rainbow
-                this.game.RainbowModeOn = false;
+                OnPlayerDied();
             }
 
             // detect the ground
@@ -240,7 +231,7 @@ namespace Project {
             }
 
             if (CollisionsEnabled) {
-                bool playSoundEffect = false;
+                bool isHardHit = false;
                 // now, apply collisions based on what we discovered in the previous step
                 if ((collisionLeft && velocity.X < 0)
                     || (collisionRight && velocity.X > 0)) {
@@ -248,7 +239,7 @@ namespace Project {
                     position.X = lastPosition.X;
 
                     if (Math.Abs(velocity.X) > 0.5) {
-                        playSoundEffect = true;
+                        isHardHit = true;
                     }
                 }
 
@@ -258,11 +249,11 @@ namespace Project {
                     position.Y = lastPosition.Y;
 
                     if (Math.Abs(velocity.Y) > 0.5) {
-                        playSoundEffect = true;
+                        isHardHit = true;
                     }
                 }
 
-                if (playSoundEffect) {
+                if (isHardHit) {
                     if (Collision != null) {
                         Collision(this, null);
                     }
@@ -312,10 +303,25 @@ namespace Project {
                     + Environment.NewLine + "Touch Y: " + touchPosition.Value.Y;
                 }
 
-                game.GameOverlayPage.UpdateStats(stats);
+                game.GameOverlayPage.UpdateDebugStats(stats);
             }
         }
 
+        private void OnPlayerDied() {
+            // trigger the player died event
+            if (PlayerDied != null) {
+                PlayerDied(this, null);
+            }
+
+            // reset player position
+            this.velocity = new Vector3();
+            this.position = startPosition;
+
+            // disable rainbow
+            this.game.RainbowModeOn = false;
+            this.game.MazeSolver.Enabled = false;
+            game.ResetLevelStatus();
+        }
 
         private Vector3 ConstrainVector(Vector3 vector, Vector3 absMax) {
             if (Math.Abs(vector.X) > absMax.X) {

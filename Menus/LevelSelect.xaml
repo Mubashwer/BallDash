@@ -9,24 +9,31 @@
     d:DesignWidth="1280"
     d:DesignHeight="800">
     <Grid>
-        <ListBox x:Name="LevelList" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Stretch"
-                 Margin="0,69,0,310" Height="421" Width="1083">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="400" />
-                            <ColumnDefinition Width="400" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Name}" Margin="3" Grid.Column="0" />
-                        <TextBlock Text="{Binding Description}" Margin="3" Grid.Column="1" />
-                        <Button Grid.Column="2" Margin="3" x:Name="btnSelectLevel" Content="Start" Tag="{Binding LevelInfo}" HorizontalAlignment="Center" Height="77" VerticalAlignment="Center" Width="163" Click="StartLevel"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid Margin="0,0,0,294">
+            <ListView x:Name="LevelList" Grid.Row="1" HorizontalAlignment="Center" 
+                      VerticalAlignment="Center" HorizontalContentAlignment="Stretch" Background="DarkGray">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="200" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Name}" Margin="5" Grid.Column="0" FontFamily="Global User Interface" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Description}" Margin="5" Grid.Column="1" FontFamily="Global User Interface" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding BestTime}" Margin="5" Grid.Column="2" FontFamily="Global User Interface" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding LeastCollisions}" Margin="5" Grid.Column="3" FontFamily="Global User Interface" HorizontalAlignment="Center"/>
+                            <Button Grid.Column="4" Margin="5" x:Name="btnSelectLevel" Content="Start" Tag="{Binding LevelInfo}" HorizontalAlignment="Center" Height="77" VerticalAlignment="Center" Width="163" Click="StartLevel" FontFamily="Global User Interface"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
 
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,549,0,174" VerticalAlignment="Center" Width="163" Click="GoBack"/>
+        <Button x:Name="btnDeleteHighScores" Content="Delete High Scores" HorizontalAlignment="Center" Height="77" Margin="0,684,0,39" VerticalAlignment="Center" Width="163" Click="btnDeleteHighScores_Click"/>
     </Grid>
 </Page>

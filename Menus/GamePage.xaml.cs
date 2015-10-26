@@ -22,6 +22,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using SharpDX;
 using System;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
 
 namespace Project.Menus {
     /// <summary>
@@ -37,8 +39,33 @@ namespace Project.Menus {
             parent.Game.AllLevelsComplete += Game_AllLevelsComplete;
         }
 
-        public void UpdateStats(string stats) {
-            txtStats.Text = stats;
+        public void UpdateDebugStats(string stats) {
+            txtDebugStats.Text = stats;
+        }
+
+        public void UpdateStats(LevelStatus status) {
+            txtCurrentTime.Text = "Time:";
+            txtBestTime.Text = "Best:";
+
+            txtCurrentTime.Text += status.Time.TotalSeconds.ToString();
+            if (status.BestTime != null) {
+                txtBestTime.Text += ((TimeSpan)status.BestTime).TotalSeconds.ToString();
+                if (status.Time < status.BestTime) {
+                    txtBestTime.Foreground = new SolidColorBrush(Colors.Green);
+                }
+                else {
+                    txtBestTime.Foreground = new SolidColorBrush(Colors.Red);
+                }
+            }
+            else {
+                txtBestTime.Foreground = new SolidColorBrush(Colors.White);
+                txtBestTime.Text += "None";
+            }
+
+            txtStats.Text = string.Format("Hint used: {0}\nCollisions: {1}\nBest: {2}", 
+                status.HintUsed,
+                status.Collisions,
+                status.BestCollisions.HasValue ? status.BestCollisions.Value.ToString() : "None");
         }
 
         // Button for Hint

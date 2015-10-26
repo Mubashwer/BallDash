@@ -41,6 +41,8 @@ namespace Project.Menus {
 
         private void GoBack(object sender, RoutedEventArgs e)
         {
+            AppSettingsStorage.SetGameSettings(parent.GameSettings);
+
             parent.Children.Add(parent.MainMenu);
             parent.Children.Remove(this);
         }

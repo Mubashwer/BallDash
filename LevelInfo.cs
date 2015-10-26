@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Project {
     public class LevelInfo {
         public int Index { get; set; }
+        public string LevelID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public Map Map { get; set; }
@@ -88,6 +89,9 @@ namespace Project {
                         }
 
                         levelInfo.Index = index;
+                    }
+                    else if (currentVariable.Key.Equals("ID", StringComparison.OrdinalIgnoreCase)) {
+                        levelInfo.LevelID = currentVariable.Value;
                     }
                     else if (currentVariable.Key.Equals("Name", StringComparison.OrdinalIgnoreCase)) {
                         levelInfo.Name = currentVariable.Value;

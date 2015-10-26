@@ -43,6 +43,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AppSettingsStorage.cs" />
     <Compile Include="Assets.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="GraphicCache.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="LevelInfo.cs" />
+    <Compile Include="LevelStatus.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Menus\GamePage.xaml.cs">

@@ -36,11 +36,8 @@ namespace Project.Menus {
         {
             InitializeComponent();
 
-            GameSettings = new GameSettings() {
-                AccelerometerEnabled = true,
-                TouchControlsEnabled = true,
-                DebugEnabled = false
-            };
+            GameSettings = AppSettingsStorage.GetGameSettings();
+
             CreateGame();
             MainMenu = new MainMenu(this);
             this.Children.Add(MainMenu);

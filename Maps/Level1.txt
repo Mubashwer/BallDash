@@ -1,5 +1,6 @@
 ﻿[Settings]
 Index=0
+ID=00000001
 Name=Level 1
 Description=The First Level
 MapUnitWidth=3

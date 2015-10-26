@@ -38,10 +38,7 @@ namespace Project.Menus {
             InitializeComponent();
 
             this.LevelList.ItemsSource = Levels;
-
-            foreach (LevelInfo levelInfo in parent.Game.AvailableLevels) {
-                Levels.Add(new LevelElement(levelInfo));
-            }
+            LoadLevelList();
         }
 
         // TASK 2: Starts the game.  Not that it seems easier to simply move the game.Run(this) command to this function,
@@ -57,6 +54,13 @@ namespace Project.Menus {
             parent.Game.GameOverlayPage = GamePage;
         }
 
+        private void LoadLevelList() {
+            Levels.Clear();
+            foreach (LevelInfo levelInfo in parent.Game.AvailableLevels) {
+                Levels.Add(new LevelElement(levelInfo, parent.Game.GetStartingLevelStatus(levelInfo.LevelID)));
+            }
+        }
+
         private void StartLevel(object sender, RoutedEventArgs e) {
             LevelInfo level = (LevelInfo)(((Button)e.OriginalSource).Tag);
             StartGame(level);
@@ -68,8 +72,21 @@ namespace Project.Menus {
         }
 
         public class LevelElement {
-            public LevelElement(LevelInfo levelInfo) {
+            public LevelElement(LevelInfo levelInfo, LevelStatus levelStatus) {
                 this.LevelInfo = levelInfo;
+                if (levelStatus.BestTime.HasValue) {
+                    this.BestTime = "Best Time: " + levelStatus.BestTime.Value.TotalSeconds.ToString();
+                }
+                else {
+                    this.BestTime = "Best Time: None";
+                }
+
+                if (levelStatus.BestCollisions.HasValue) {
+                    this.LeastCollisions = "Lowest Hits: " + levelStatus.BestCollisions.Value.ToString();
+                }
+                else {
+                    this.LeastCollisions = "Lowest Hits: None";
+                }
             }
 
             public LevelInfo LevelInfo { get; private set; }
@@ -85,7 +102,14 @@ namespace Project.Menus {
                 }
             }
 
+            public string BestTime { get; set; }
+            public string LeastCollisions { get; set; }
 
+        }
+
+        private void btnDeleteHighScores_Click(object sender, RoutedEventArgs e) {
+            parent.Game.EraseAllHighScores();
+            LoadLevelList();
         }
     }
 }
