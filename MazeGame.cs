@@ -346,8 +346,8 @@ namespace Project {
             if (!RainbowModeOn) return;
             var time = gameTime.TotalGameTime.TotalMilliseconds;
             Vector3 rate = Lights[0].Rate;
-            var deltaY = CurrentLevel.Map.Height / 2f;
-            var deltaX = CurrentLevel.Map.Width / 2f;
+            var deltaY = CurrentLevel.Map.Height / 2f * CurrentLevel.Map.MapUnitHeight;
+            var deltaX = CurrentLevel.Map.Width / 2f * CurrentLevel.Map.MapUnitWidth; 
             Lights[0].LightPosition = new Vector3(deltaX * (float)Math.Sin(time * rate.X) + deltaX, deltaY * (float)Math.Cos(time * rate.Y) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
             rate = Lights[1].Rate;
             Lights[1].LightPosition = new Vector3(deltaX * (float)Math.Cos(time * rate.Y) + deltaX, deltaY * (float)Math.Sin(time * rate.X) + deltaY, DefaultLightHeight * (float)Math.Cos(time * rate.Z));
