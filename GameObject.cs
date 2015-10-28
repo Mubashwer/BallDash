@@ -68,7 +68,12 @@ namespace Project {
                 Texture2D texture;
                 if (!game.GraphicCache.TextureCache.TryGetValue(myModel.TextureName, out texture))
                 {
-                    texture = game.Content.Load<Texture2D>(myModel.TextureName);
+                    try {
+                        texture = game.Content.Load<Texture2D>(myModel.TextureName);
+                    }
+                    catch (SharpDXException e) {
+                        Debug.WriteLine(e);
+                    }
                     game.GraphicCache.TextureCache[myModel.TextureName] = texture;
                 }
 
