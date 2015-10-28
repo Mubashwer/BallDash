@@ -8,11 +8,13 @@
     mc:Ignorable="d"    
     d:DesignWidth="1280"
     d:DesignHeight="800">
-    <Grid>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
-        <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="48" Margin="0,205,0,547" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Center" TextAlignment="Center" Width="784"/>
-        <CheckBox x:Name="chkDebugEnabled" Content="Show Debug Statistics" HorizontalAlignment="Center" Margin="559,399,520,374" VerticalAlignment="Center" Checked="chkDebugEnabled_Checked" Unchecked="chkDebugEnabled_Unchecked" Width="201"/>
-        <CheckBox x:Name="chkAccelerometerEnabled" Content="Enable Accelerometer" HorizontalAlignment="Center" Margin="559,308,520,465" VerticalAlignment="Center" Checked="chkAccelerometerEnabled_Checked" Unchecked="chkAccelerometerEnabled_Unchecked" Width="201"/>
-        <CheckBox x:Name="chkTouchControlsEnabled" Content="Enable Touch Controls" HorizontalAlignment="Center" Margin="559,354,520,419" VerticalAlignment="Center" Checked="chkTouchControlsEnabled_Checked" Unchecked="chkTouchControlsEnabled_Unchecked" Width="201"/>
-    </Grid>
+    <Viewbox>
+        <Grid>
+            <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
+            <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="48" Margin="0,205,0,547" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Center" TextAlignment="Center" Width="784" FontSize="21.333"/>
+            <CheckBox x:Name="chkDebugEnabled" Content="Show Debug Statistics" HorizontalAlignment="Center" Margin="0,399,0,374" VerticalAlignment="Center" Checked="chkDebugEnabled_Checked" Unchecked="chkDebugEnabled_Unchecked" Width="201" FontSize="16"/>
+            <CheckBox x:Name="chkAccelerometerEnabled" Content="Enable Accelerometer" HorizontalAlignment="Center" Margin="0,308,0,465" VerticalAlignment="Center" Checked="chkAccelerometerEnabled_Checked" Unchecked="chkAccelerometerEnabled_Unchecked" Width="201" FontSize="16"/>
+            <CheckBox x:Name="chkTouchControlsEnabled" Content="Enable Touch Controls" HorizontalAlignment="Center" Margin="0,354,0,419" VerticalAlignment="Center" Checked="chkTouchControlsEnabled_Checked" Unchecked="chkTouchControlsEnabled_Unchecked" Width="201" FontSize="16"/>
+        </Grid>
+    </Viewbox>
 </Page>

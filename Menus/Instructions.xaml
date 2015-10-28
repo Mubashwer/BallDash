@@ -8,12 +8,14 @@
     mc:Ignorable="d"    
     d:DesignWidth="1280"
     d:DesignHeight="800">
-    <Grid>
-        <Button x:Name="cmdBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
-        <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="215" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" Width="784" FontSize="20">
+    <Viewbox>
+        <Grid>
+            <Button x:Name="cmdBack" Content="Back" HorizontalAlignment="Center" Height="77" Margin="0,400,0,50" VerticalAlignment="Center" Width="163" Click="GoBack"/>
+            <TextBlock x:Name="txtInstructions" HorizontalAlignment="Center" Height="215" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" Width="784" FontSize="20">
         	<Run Text="Ball dash is a classic marble maze game designed for Windows. Your goal is to control the marble ball to solve the maze without falling into any holes. The maze board can be tilted by tilting the tablet. The ball can also be moved by arrow keys. If the screen is touched, the ball will attempt to move towards the point of touch. If the ball falls into a hole, the game will restart. If the ball touches the &quot;Rainbow&quot; tile, it will enable disco-like lights. Pinch the screen to zoom in and out. The game is over once the ball reaches the green end tile. Good Luck!"/>
         	<LineBreak/>
         	<Run/>
-        </TextBlock>
-    </Grid>
+            </TextBlock>
+        </Grid>
+    </Viewbox>
 </Page>
